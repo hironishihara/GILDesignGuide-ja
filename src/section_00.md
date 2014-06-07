@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # Generic Image Library設計ガイド
 
 #### 著者:

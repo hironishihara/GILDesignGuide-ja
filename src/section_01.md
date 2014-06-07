@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 <!--
 1. Overview
 Images are essential in any image processing, vision and video project,
