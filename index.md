@@ -1,0 +1,28 @@
+<!--
+          Copyright Hiroaki Nishihara 2014.
+ Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at
+          http://www.boost.org/LICENSE_1_0.txt)
+-->
+
+# Generic Image Library設計ガイド 日本語訳
+
+この文章は[Generic Image Library Design Guide](http://stlab.adobe.com/gil/html/gildesignguide.html)の日本語訳です。
+この日本語訳は原文の著者や権利者とまったく関係がありません。
+また、原文と訳文の正確さに関して、訳者は一切の責任を負いません。
+
+#### 原文:
+Generic Image Library Design Guide  
+<http://stlab.adobe.com/gil/html/gildesignguide.html>
+
+#### 原文のVersion:
+2.1
+
+#### 訳者:
+Hiroaki Nishihara (<hiro.nishihara@gmail.com>)
+
+#### 訳文のLicense:
+Boost Software License, Version 1.0
+
+#### 翻訳日時:
+2014年6月6日〜
