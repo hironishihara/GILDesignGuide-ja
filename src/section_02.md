@@ -50,14 +50,14 @@ Conceptとは、型(もしくは、関連する型のセット)がジェネリ�
 例えば、GILのpixelクラスはGILの`PixelConcept`に基づくモデルです。
 `PixelConcept`の要求を満たす限りにおいて、ユーザはPixelクラスを自前のPixelクラスに置き換えることができ、他のGILクラスやアルゴリズムはその自前のPixelクラスと共に動作することが可能です。
 Conceptに関する詳細は、次のURLを参照ください。  
-http://www.generic-programming.org/languages/conceptcpp/  
+<http://www.generic-programming.org/languages/conceptcpp/>  
 
 この文章では、次のURLにあるC++0xのConcept拡張の提案書に記述されている、Concept定義のための構文を使用します。  
-http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2081.pdf
+<http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2081.pdf>
 
 ここで、GILでよく用いられるいくつかのConceptを紹介します。
 そのほとんどは、次のサイトで定義されています。  
-http://www.generic-programming.org/languages/conceptcpp/concept_web.php  
+<http://www.generic-programming.org/languages/conceptcpp/concept_web.php>  
 
 {% highlight C++ %}
 
