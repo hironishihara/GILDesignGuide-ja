@@ -18,6 +18,10 @@ Generic Image Library Design Guide
 #### 原文のVersion:
 2.1
 
+#### 原文のライセンス
+Boost Software License, Version 1.0 (2008)  
+MIT License (2005-2007)
+
 #### 訳者:
 Hiroaki Nishihara (<hiro.nishihara@gmail.com>)
 
