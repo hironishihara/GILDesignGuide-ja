@@ -59,7 +59,8 @@ http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2081.pdf
 そのほとんどは、次のサイトで定義されています。  
 http://www.generic-programming.org/languages/conceptcpp/concept_web.php  
 
-```cpp
+{% highlight C++ %}
+
 auto concept DefaultConstructible<typename T> {
     T::T();
 };
@@ -85,14 +86,17 @@ template<typename T> concept_map SameType<T, T> {  unspecified  };
 auto concept Swappable<typename T> {
     void swap(T& t, T& u);
 };
-```
+
+{% endhighlight %}
 
 また、GILが必要とする基本的なConceptをいくつか挙げておきます。
 
-```cpp
+{% highlight C++ %}
+
 auto concept Regular<typename T> : DefaultConstructible<T>, CopyConstructible<T>, EqualityComparable<T>, Assignable<T>, Swappable<T> {};
 
 auto concept Metafunction<typename T> {
     typename type;
 };
-```
+
+{% endhighlight %}

@@ -1,4 +1,4 @@
 auto: true
 server: true
 markdown: kramdown
-
+pygments: true
