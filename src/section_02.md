@@ -62,7 +62,7 @@ auto concept DefaultConstructible<typename T> {
 
 auto concept CopyConstructible<typename T> {
     T::T(T);
-    T::‾T();
+    T::~T();
 };
 
 auto concept Assignable<typename T, typename U = T> {
