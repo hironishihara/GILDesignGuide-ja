@@ -67,7 +67,8 @@ Pointは、画像上のPixelの位置を定義します。
 また、Pointは画像の次元数を記述するためにも用いられます。
 一般に、PointはN次元であり、次に示すConceptに基づいたモデルです。
 
-```cpp
+{% highlight C++ %}
+
 concept PointNDConcept<typename T> : Regular<T> {
     // the type of a coordinate along each axis
     template <size_t K> struct axis; where Metafunction<axis>;
@@ -78,11 +79,13 @@ concept PointNDConcept<typename T> : Regular<T> {
     template <size_t K> const typename axis<K>::type& T::axis_value() const;
     template <size_t K>       typename axis<K>::type& T::axis_value();
 };
-```
+
+{% endhighlight %}
 
 GILは、各次元の座標の型が同じになるように改良した`PointNDConcept`である、2次元のPointを使用します。
 
-```cpp
+{% highlight C++ %}
+
 concept Point2DConcept<typename T> : PointNDConcept<T> {
     where num_dimensions == 2;
     where SameType<axis<0>::type, axis<1>::type>;
@@ -94,14 +97,18 @@ concept Point2DConcept<typename T> : PointNDConcept<T> {
 
     value_type x,y;
 };
-```
+
+{% endhighlight %}
 
 ##### 関連するConcept:
 
-```cpp
+{% highlight C++ %}
+
 PointNDConcept<T>
 Point2DConcept<T>
-Models:
-```
+
+{% endhighlight %}
+
+##### Model:
 
 GILは、`Point2DConcept`に基づいたモデルである`point2<T>`を提供します。この`T`は座標の型を表しています。
