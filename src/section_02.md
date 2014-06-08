@@ -46,7 +46,7 @@ Most of them are defined here: http://www.generic-programming.org/languages/conc
 ## 2. Conceptについて
 GILで定義されるものは、全て、GILのConceptに基づいたモデルになっています。
 Conceptとは、型(もしくは、関連する型のセット)がジェネリックアルゴリズム内で正しく利用されるために満たさなければならない要件のセットです。
-これらの要件には、構文的な保証とアルゴリズム的な保障が含まれます。
+これらの要件には、構文的な保証とアルゴリズム的な保証が含まれます。
 例えば、GILのpixelクラスはGILの`PixelConcept`に基づくモデルです。
 `PixelConcept`の要求を満たす限りにおいて、ユーザはPixelクラスを自前のPixelクラスに置き換えることができ、他のGILクラスやアルゴリズムはその自前のPixelクラスと共に動作することが可能です。
 Conceptに関する詳細は、次のURLを参照ください。  
