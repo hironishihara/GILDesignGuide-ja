@@ -37,13 +37,15 @@ for a Concepts extension to C++0x specified here: http://www.open-std.org/jtc1/s
 
 Here are some common concepts that will be used in GIL.
 Most of them are defined here: http://www.generic-programming.org/languages/conceptcpp/concept_web.php
+
+Here are some additional basic concepts that GIL needs:
 -->
 
 ## 2. Conceptについて
-GILで定義されるものは、全て、GILのConceptに基づいたモデルになっています。
+GILで定義される全てのものは、GILが指定するConceptに基づいたModelです。
 Conceptとは、型(もしくは、関連する型のセット)がジェネリックアルゴリズム内で正しく利用されるために満たさなければならない要件のセットです。
 これらの要件には、構文的な保証とアルゴリズム的な保証が含まれます。
-例えば、GILのPixelクラスはGILの`PixelConcept`に基づくモデルです。
+例えば、GILのPixelクラスはGILの`PixelConcept`に基づいたModelです。
 `PixelConcept`に示された要件を満たす限りにおいて、ユーザはPixelクラスを自前のPixelクラスに置き換えることができ、他のGILクラスやアルゴリズムはその自前のPixelクラスと共に動作することが可能です。
 Conceptに関する詳細は、次のURLを参照ください。  
 <http://www.generic-programming.org/languages/conceptcpp/>  
@@ -83,7 +85,7 @@ auto concept Swappable<typename T> {
 };
 ```
 
-また、GILが必要とする基本的なConceptをいくつか挙げておきます。
+また、GILが必要とする基本的なConceptを追加でいくつか挙げておきます。
 
 ```cpp
 auto concept Regular<typename T> : DefaultConstructible<T>, CopyConstructible<T>, EqualityComparable<T>, Assignable<T>, Swappable<T> {};

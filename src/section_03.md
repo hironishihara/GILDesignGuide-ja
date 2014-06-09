@@ -24,7 +24,9 @@
 
 <!--
 
-A point defines the location of a pixel inside an image. It can also be used to describe the dimensions of an image. In most general terms, points are N-dimensional and model the following concept:
+A point defines the location of a pixel inside an image.
+It can also be used to describe the dimensions of an image.
+In most general terms, points are N-dimensional and model the following concept:
 concept PointNDConcept<typename T> : Regular<T> {
     // the type of a coordinate along each axis
     template <size_t K> struct axis; where Metafunction<axis>;
@@ -59,9 +61,9 @@ GIL provides a model of Point2DConcept, point2<T> where T is the coordinate type
 -->
 
 ## 3. Point
-Pointは、画像上のPixelの位置を定義します。
-また、Pointは画像の次元数を記述するためにも用いられます。
-一般に、PointはN次元であり、次に示すConceptに基づいたモデルです。
+Pointは、Pixelの画像上における位置を定義します。
+また、画像の次元数を表現するためにも用いられます。
+一般に、PointはN次元であり、次に示すConceptに基づいたModelです。
 
 ```cpp
 concept PointNDConcept<typename T> : Regular<T> {
@@ -76,7 +78,7 @@ concept PointNDConcept<typename T> : Regular<T> {
 };
 ```
 
-GILは、各次元の座標の型が同じになるように改良した`PointNDConcept`である、2次元のPointを使用します。
+GILは、2つの次元の座標の型が同じになるように改良した`PointNDConcept`である、2次元のPointを用います。
 
 ```cpp
 concept Point2DConcept<typename T> : PointNDConcept<T> {
@@ -97,7 +99,8 @@ concept Point2DConcept<typename T> : PointNDConcept<T> {
 ```cpp
 PointNDConcept<T>
 Point2DConcept<T>
-Models:
 ```
 
-GILは、`Point2DConcept`に基づいたモデルである`point2<T>`を提供します。この`T`は座標の型を表しています。
+##### Model:
+
+GILは、`Point2DConcept`に基づいたModelである`point2<T>`を提供します。この`T`は座標の型を表しています。
