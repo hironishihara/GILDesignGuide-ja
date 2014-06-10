@@ -26,7 +26,7 @@ layout: default
 -->
 
 
-# Generic Image Library設計ガイド
+# Generic Image Libraryデザインガイド
 
 #### 著者:
 Lubomir Bourdev (<bourdev@adobe.com>)  
