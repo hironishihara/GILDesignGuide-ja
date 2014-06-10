@@ -75,11 +75,13 @@ Color Spaceは、そのColor Spaceがもつ全ての要素の型を包含したM
 
 ##### 関連するConcept:
 
-```cpp
+{% highlight C++ %}
+
 ColorSpaceConcept<ColorSpace>
 ColorSpacesCompatibleConcept<ColorSpace1,ColorSpace2>
 ChannelMappingConcept<Mapping>
-```
+
+{% endhighlight %}
 
 ##### Model:
 
@@ -89,13 +91,15 @@ Layoutについて言えば、スタンダードなLayoutはもちろんのこ�
 
 ひとつの例として、GILがどのようにしてRGBA Color Spaceを定義しているか示します。
 
-```cpp
+{% highlight C++ %}
+
 struct red_t{};
 struct green_t{};
 struct blue_t{};
 struct alpha_t{};
 typedef mpl::vector4<red_t,green_t,blue_t,alpha_t> rgba_t;
-```
+
+{% endhighlight %}
 
 Color Spaceの定義におけるChannelの順序は、Channelのセマンテックな順序を規定します。
 例を挙げると、`red_t`は`rgba_t`のセマンティックな順序における最初のChannelです。
@@ -106,20 +110,24 @@ A color space and its associated mapping are often used together.
 Color Spaceとその中のChannelのマッピングはよく一緒に使用されます。
 そのため、このふたつはGILのLayoutとしてまとめられています。
 
-```cpp
+{% highlight C++ %}
+
 template <typename ColorSpace,
           typename ChannelMapping = mpl::range_c<int,0,mpl::size<ColorSpace>::value> >
 struct layout {
     typedef ColorSpace      color_space_t;
     typedef ChannelMapping  channel_mapping_t;
 };
-```
+
+{% endhighlight %}
 
 RGBA Color SpaceのLayoutの作り方は、次の通りです。
 
-```cpp
+{% highlight C++ %}
+
 typedef layout<rgba_t> rgba_layout_t; // default ordering is 0,1,2,3...
 typedef layout<rgba_t, mpl::vector4_c<int,2,1,0,3> > bgra_layout_t;
 typedef layout<rgba_t, mpl::vector4_c<int,1,2,3,0> > argb_layout_t;
 typedef layout<rgba_t, mpl::vector4_c<int,3,2,1,0> > abgr_layout_t;
-```
+
+{% endhighlight %}
