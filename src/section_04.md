@@ -232,7 +232,7 @@ struct float_one  { static float apply() { return 1.0f; } };
 typedef scoped_channel_value<float,float_zero,float_one> bits32f;
 ```
 
-GILは、ビット単位のレンジに対応したChannelのためのModelも提供しています。
+GILは、ビット単位のレンジをもつChannelのためのModelも提供しています。
 
 ```cpp
 // Value of a channel defined over NumBits bits. Models ChannelValueConcept
@@ -252,8 +252,8 @@ template <int NumBits,       // Defines the sequence of bits in the data value t
 class packed_dynamic_channel_reference;
 ```
 
-Channelレンジのオフセットが、テンプレートで指定される参照Proxyと、実行時のパラメータで指定される参照Proxyの、異なる2つの参照Proxy Modelがあることに注意してください。
-前者は軽快かつコンパクトなModelであり、後者はより柔軟なModelです。
+各Channelレンジまでのオフセットについて、テンプレートで指定する参照Proxyと実行時のパラメータで指定する参照Proxyの異なる2種類の参照Proxy Modelがあることに注意してください。
+前者は軽快かつコンパクトなModelであり、後者はより適応性のあるModelです。
 例を挙げると、後者のModelはビット単位のレンジをもつChannel上で動作するIteratorを構築することができます。
 
 ##### Algorithms:
@@ -300,7 +300,7 @@ Channel変換は、不可逆な操作です。
 GILのChannel変換は、変換元Channelのレンジと変換先Channelのレンジとの線形変換です。
 最小値と最小値、最大値と最大値がぴったりと対応します。
 (ひとつ例を挙げます。GILは`uint8_t`から`uint16_t`への変換に際してビットシフトは行いません。というのも、ビットシフトでは最大値がぴったり一致しない可能性があるからです。
-そのかわりに、GILは変換元Channelの値と257の積を求めるます。)
+そのかわりに、GILは変換元Channelの値と257の積を求めます。)
 GLが提供する全てのChannel Modelは、整数型と実数型の間で相互に変換可能です。
 そして、これらのChannel Modelは算術演算子をサポートしています。
 ここで、GILが提供するChannelレベルのアルゴリズムを示します。
