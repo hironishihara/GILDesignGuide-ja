@@ -9,7 +9,7 @@ layout: default
           http://www.boost.org/LICENSE_1_0.txt)
 -->
 
-# Generic Image Library設計ガイド 日本語訳
+# Generic Image Library Design Guide 日本語訳
 
 この文章は[Generic Image Library Design Guide](http://stlab.adobe.com/gil/html/gildesignguide.html)の日本語訳です。
 この日本語訳は原文の著者や権利者とまったく関係がありません。
