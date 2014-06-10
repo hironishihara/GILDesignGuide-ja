@@ -57,7 +57,8 @@ Channelは、色成分の強度を示します (例： RGB画素の赤Channel)�
 また、Channelには最小値と最大値が設定されています。
 GILのChannelは、次に示すConceptに基づいたModelです。
 
-```cpp
+{% highlight C++ %}
+
 concept ChannelConcept<typename T> : EqualityComparable<T> {
     typename value_type      = T;        // use channel_traits<T>::value_type to access it
        where ChannelValueConcept<value_type>;
@@ -74,7 +75,8 @@ concept ChannelConcept<typename T> : EqualityComparable<T> {
 concept MutableChannelConcept<ChannelConcept T> : Swappable<T>, Assignable<T> {};
 
 concept ChannelValueConcept<ChannelConcept T> : Regular<T> {};
-```
+
+{% endhighlight %}
 
 <!--
 GIL allows built-in integral and floating point types to be channels.
@@ -107,7 +109,8 @@ concept ChannelConvertibleConcept {
 GILは、組み込みの整数型と浮動小数点型をChannelとして認めています。
 そのため、Channelに関連づけられた型とレンジの情報は、次にデフォルトの実装を示す、`channel_traits`で定義されています。
 
-```cpp
+{% highlight C++ %}
+
 template <typename T>
 struct channel_traits {
     typedef T         value_type;
@@ -119,24 +122,29 @@ struct channel_traits {
     static value_type min_value() { return std::numeric_limits<T>::min(); }
     static value_type max_value() { return std::numeric_limits<T>::max(); }
 };
-```
+
+{% endhighlight %}
 
 ふたつのChannelが同じ型の値をもつ場合、そのChannelの組み合わせには互換性があります。
 
-```cpp
+{% highlight C++ %}
+
 concept ChannelsCompatibleConcept<ChannelConcept T1, ChannelConcept T2> {
     where SameType<T1::value_type, T2::value_type>;
 };
-```
+
+{% endhighlight %}
 
 また、あるChannelが他のChannelに変換可能な場合もあります。
 
-```cpp
+{% highlight C++ %}
+
 template <ChannelConcept Src, ChannelValueConcept Dst>
 concept ChannelConvertibleConcept {
     Dst channel_convert(Src);
 };
-```
+
+{% endhighlight %}
 
 <!--
 Note that ChannelConcept and MutableChannelConcept do not require a default constructor.
@@ -203,42 +211,49 @@ Algorithms:
 
 ##### 関連するConcept:
 
-```cpp
+{% highlight C++ %}
+
 ChannelConcept<T>
 ChannelValueConcept<T>
 MutableChannelConcept<T>
 ChannelsCompatibleConcept<T1,T2>
 ChannelConvertibleConcept<SrcChannel,DstChannel>
-```
+
+{% endhighlight %}
 
 ##### Model:
 
 組み込みの整数型と浮動小数点型は、全て、有効なChannelです。
 GILは、いくつかの整数型について、標準のtypedefを提供しています。
 
-```cpp
+{% highlight C++ %}
+
 typedef boost::uint8_t  bits8;
 typedef boost::uint16_t bits16;
 typedef boost::uint32_t bits32;
 typedef boost::int8_t   bits8s;
 typedef boost::int16_t  bits16s;
 typedef boost::int32_t  bits32s;
-```
+
+{% endhighlight %}
 
 組み込み型を用いたChannelにおける最小値と最大値は、その型の`std::numeric_limits`で定められている、組み込み型のフィジカルレンジに由来する最小値と最大値に対応しています。
 しかし、状況によってはフィジカルレンジが適切でない場合もあります。
 GILは、特別なレンジを定めるためのChannelアダプタのModelである、`scoped_channel_value`を提供します。
 私たちは、[0..1]の浮動小数点を定義するために、`scoped_channel_value`を次のように用います。
 
-```cpp
+{% highlight C++ %}
+
 struct float_zero { static float apply() { return 0.0f; } };
 struct float_one  { static float apply() { return 1.0f; } };
 typedef scoped_channel_value<float,float_zero,float_one> bits32f;
-```
+
+{% endhighlight %}
 
 GILは、ビット単位のレンジに対応したChannelのためのModelも提供しています。
 
-```cpp
+{% highlight C++ %}
+
 // Value of a channel defined over NumBits bits. Models ChannelValueConcept
 template <int NumBits> class packed_channel_value;
 
@@ -254,7 +269,8 @@ Models ChannelConcept
 template <int NumBits,       // Defines the sequence of bits in the data value that contain the channel
           bool Mutable>      // true if the reference is mutable
 class packed_dynamic_channel_reference;
-```
+
+{% endhighlight %}
 
 Channelレンジのオフセットが、テンプレートで指定される参照Proxyと、実行時のパラメータで指定される参照Proxyの、異なる2つの参照Proxy Modelがあることに注意してください。
 前者は軽快かつコンパクトなModelであり、後者はより柔軟なModelです。
@@ -264,7 +280,8 @@ Channelレンジのオフセットが、テンプレートで指定される参�
 
 16bitの3Channelである"565" Pixelを構築し、各Channelに最大値を代入する方法を示します。
 
-```cpp
+{% highlight C++ %}
+
 typedef packed_channel_reference<0,5,true> channel16_0_5_reference_t;
 typedef packed_channel_reference<5,6,true> channel16_5_6_reference_t;
 typedef packed_channel_reference<11,5,true> channel16_11_5_reference_t;
@@ -278,27 +295,32 @@ channel1=channel_traits<channel16_0_5_reference_t>::max_value();
 channel2=channel_traits<channel16_5_6_reference_t>::max_value();
 channel3=channel_traits<channel16_11_5_reference_t>::max_value();
 assert(data==65535);
-```
+
+{% endhighlight %}
 
 代入、比較、コピーコンストラクタは、互換性をもつChannel間にだけ定義されています。
 
-```cpp
+{% highlight C++ %}
+
 packed_channel_value<5> channel_6bit = channel1;
 channel_6bit = channel3;
 
 //channel_6bit = channel2; // compile error: Assignment between incompatible channels.
-```
+
+{% endhighlight %}
 
 All channel models provided by GIL are pairwise convertible:
 GILによって提供される全てのChannel Modelが互いに変換可能です。
 
-```cpp
+{% highlight C++ %}
+
 channel1 = channel_traits<channel16_0_5_reference_t>::max_value();
 assert(channel1 == 31);
 
 bits16 chan16 = channel_convert<bits16>(channel1);
 assert(chan16 == 65535);
-```
+
+{% endhighlight %}
 
 Channel変換は、不可逆な操作です。
 GILのChannel変換は、変換元Channelのレンジと変換先Channelのレンジとの線形変換です。
@@ -309,7 +331,8 @@ GLが提供する全てのChannel Modelは、整数型と実数型の間で相�
 そして、これらのChannel Modelは算術演算子をサポートしています。
 ここで、GILが提供するChannelレベルのアルゴリズムを示します。
 
-```cpp
+{% highlight C++ %}
+
 // Converts a source channel value into a destrination channel. Linearly maps the value of the source
 // into the range of the destination
 template <typename DstChannel, typename SrcChannel>
@@ -322,4 +345,5 @@ typename channel_traits<Channel>::value_type channel_invert(Channel x);
 // returns a * b / max_value
 template <typename Channel>
 typename channel_traits<Channel>::value_type channel_multiply(Channel a, Channel b);
-```
+
+{% endhighlight %}
