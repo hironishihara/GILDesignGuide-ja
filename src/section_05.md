@@ -104,9 +104,7 @@ typedef mpl::vector4<red_t,green_t,blue_t,alpha_t> rgba_t;
 Color Spaceの定義におけるChannelの順序は、Channelのセマンテックな順序を規定します。
 例を挙げると、`red_t`は`rgba_t`のセマンティックな順序における最初のChannelです。
 あるColor Spaceにおいて、セマンティックなChannel順序は一意に決まる一方、メモリ上でのフィジカルなChannel順序は異なっている可能性があります。
-The mapping of channels is specified by ChannelMappingConcept, which is an MPL random access sequence of integral types.
 Channelのマッピングは、整数型のMPLランダムアクセスシークエンスである、`ChannelMappingConcept`によって規定されています。
-A color space and its associated mapping are often used together.
 Color Spaceとその中のChannelのマッピングはよく一緒に使用されます。
 そのため、このふたつはGILのLayoutとしてまとめられています。
 
