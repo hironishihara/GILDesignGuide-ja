@@ -35,7 +35,8 @@ Color BaseはPixelの実装のなかで、すなわち色要素がChannelの値�
 そのIteratorは、各ChannelのIteratorを要素とするColor Baseを使用します。
 Color BaseのModelは、次に示すConceptを満たさなければなりません。
 
-```cpp
+{% highlight C++ %}
+
 concept ColorBaseConcept<typename T> : CopyConstructible<T>, EqualityComparable<T> {
     // a GIL layout (the color space and element permutation)
     typename layout_t;
@@ -91,7 +92,8 @@ concept ColorBasesCompatibleConcept<ColorBaseConcept C1, ColorBaseConcept C2> {
     //     where Convertible<kth_semantic_element_type<C1,K>::type, kth_semantic_element_type<C2,K>::type>;
     //     where Convertible<kth_semantic_element_type<C2,K>::type, kth_semantic_element_type<C1,K>::type>;
 };
-```
+
+{% endhighlight %}
 
 Color Baseは、Layoutを必ず1個もっていなければなりません (そのLayoutはColor SpaceとChannelの順序から構成されています)。
 Color Baseの各要素へのインデクシングには2種類の方法があります。
@@ -106,11 +108,13 @@ GILは、あらゆる`ColorBaseConcept`のModel上で動作し、セマンティ
 
 GILは、ホモジーニアスなColor Base(各要素が全て同じ型のColor Base)のためのModelを提供します。
 
-```cpp
+{% highlight C++ %}
+
 namespace detail {
     template <typename Element, typename Layout, int K> struct homogeneous_color_base;
 }
-```
+
+{% endhighlight %}
 
 このModelは、GILのPixel、Planar Pixelの参照、Planar PixelのIteratorの実装に使われています。
 もうひとつの`ColorBaseConcept`のModelは`packed_pixel`であり、ビット単位のレンジをもつChannelに基づいたPixelです。
@@ -120,7 +124,8 @@ Algorithms:
 
 GILは、次に示す、Color Base上で動作する関数とメタ関数を提供します。
 
-```cpp
+{% highlight C++ %}
+
 // Metafunction returning an mpl::int_ equal to the number of elements in the color base
 template <class ColorBase> struct size;
 
@@ -148,12 +153,14 @@ typename color_const_reference_t<Color,ColorBase>::type get_color(const ColorBas
 template <typename ColorBase> struct element_type;
 template <typename ColorBase> struct element_reference_type;
 template <typename ColorBase> struct element_const_reference_type;
-```
+
+{% endhighlight %}
 
 GILは、Color Baseで動作する、次のようなアルゴリズムも提供しています。
 これらのアルゴリズムが各要素をセマンティックなペアで扱うことに注意してください。
 
-```cpp
+{% highlight C++ %}
+
 // Equivalents to std::equal, std::copy, std::fill, std::generate
 template <typename CB1,typename CB2>   bool static_equal(const CB1& p1, const CB2& p2);
 template <typename Src,typename Dst>   void static_copy(const Src& src, Dst& dst);
@@ -192,14 +199,16 @@ template <typename HCB> typename element_const_reference_type<HCB>::type static_
 template <typename HCB> typename element_reference_type<HCB>::type       static_min(      HCB&);
 template <typename HCB> typename element_const_reference_type<HCB>::type static_max(const HCB&);
 template <typename HCB> typename element_reference_type<HCB>::type       static_max(      HCB&);
-```
+
+{% endhighlight %}
 
 これらのアルゴリズムは、レンジのかわりにColor Baseを使って各要素のオペレーションを行うという点を除いて、STLアルゴリズムに対応するようにデザインされています。
 さらに、コンパイル時の再帰を用いる実装になっています (そのため、prefixに"static_"がついてます)。
 そして、これらのアルゴリズムは、メモリ上のフィジカルな順序ではなく、セマンテックな順序に基づいて要素のペアを作ります。
 例えば、`static_equal`の実装を挙げると次のようになります。
 
-```cpp
+{% highlight C++ %}
+
 namespace detail {
 template <int K> struct element_recursion {
     template <typename P1,typename P2>
@@ -219,7 +228,8 @@ bool static_equal(const P1& p1, const P2& p2) {
     gil_function_requires<ColorSpacesCompatibleConcept<P1::layout_t::color_space_t,P2::layout_t::color_space_t> >();
     return detail::element_recursion<size<P1>::value>::static_equal(p1,p2);
 }
-```
+
+{% endhighlight %}
 
 このアルゴリズムは、例えば、ふたつのPixel間の`operator==`を実行するときに用います。
 セマンティックなアクセサを使うことで、RGB PixelとBGR Pixelを適切に比較できます。
