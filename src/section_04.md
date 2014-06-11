@@ -48,7 +48,7 @@ concept ChannelValueConcept<ChannelConcept T> : Regular<T> {};
 -->
 
 ## 4. Channel
-Channelは、色成分の強度を示します (例： RGB画素の赤Channel)。
+Channelは、色成分の強度を示します (例: RGB Pixelの赤Channel)。
 基本的なChannel操作として、Channel値の取得(get)や比較(compare)や代入(set)があります。
 また、Channelには最小値と最大値が設定されています。
 GILのChannelは、次に示すConceptに基づいたModelです。
@@ -258,7 +258,7 @@ class packed_dynamic_channel_reference;
 
 ##### Algorithms:
 
-16bitの3Channelである"565" Pixelを構築し、各Channelに最大値を代入する方法を示します。
+16bitの中で3個のChannelをもつ"565" Pixelを構築し、各Channelに最大値を代入する方法を示します。
 
 ```cpp
 typedef packed_channel_reference<0,5,true> channel16_0_5_reference_t;
@@ -285,7 +285,6 @@ channel_6bit = channel3;
 //channel_6bit = channel2; // compile error: Assignment between incompatible channels.
 ```
 
-All channel models provided by GIL are pairwise convertible:
 GILによって提供される全てのChannel Modelが互いに変換可能です。
 
 ```cpp
