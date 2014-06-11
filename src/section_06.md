@@ -112,7 +112,7 @@ namespace detail {
 もうひとつの`ColorBaseConcept`のModelは`packed_pixel`であり、ビット単位のレンジをもつChannelに基づいたPixelです。
 詳しくは、第7章を参照ください。
 
-Algorithms:
+##### Algorithm:
 
 GILは、次に示す、Color Base上で動作する関数とメタ関数を提供します。
 
@@ -191,7 +191,7 @@ template <typename HCB> typename element_reference_type<HCB>::type       static_
 ```
 
 これらのアルゴリズムは、レンジのかわりにColor Baseを使って各要素のオペレーションを行うという点を除いて、STLアルゴリズムに対応するようにデザインされています。
-さらに、コンパイル時の再帰を用いる実装になっています (そのため、prefixに"static_"がついてます)。
+さらに、コンパイル時の再帰を用いる実装になっています (そのため、prefixに`static_`がついてます)。
 そして、これらのアルゴリズムは、メモリ上のフィジカルな順序ではなく、セマンテックな順序に基づいて要素のペアを作ります。
 例えば、`static_equal`の実装を挙げると次のようになります。
 
