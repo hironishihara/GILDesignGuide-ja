@@ -40,7 +40,8 @@ Const性、メモリ上での配置、参照であるか値であるかは無視
 
 Pixelは、(Pixelに基づいて構築されるIterator、Locator、View、Imageなどといった他のGILクラスと同様、)そのColor Space、Channelマッピング、Channel数、(そのPixelがホモジニアスであるなら)Channel型にアクセスするためのメタ関数を提供しなければなりません。
 
-```cpp
+{% highlight C++ %}
+
 concept PixelBasedConcept<typename T> {
     typename color_space_type<T>;
         where Metafunction<color_space_type<T> >;
@@ -58,11 +59,13 @@ concept HomogeneousPixelBasedConcept<PixelBasedConcept T> {
         where Metafunction<channel_type<T> >;
         where ChannelConcept<channel_type<T>::type>;
 };
-```
+
+{% endhighlight %}
 
 Pixelは次のConceptに基づいたModelです。
 
-```cpp
+{% highlight C++ %}
+
 concept PixelConcept<typename P> : ColorBaseConcept<P>, PixelBasedConcept<P> {
     where is_pixel<P>::type::value==true;
     // where for each K [0..size<P>::value-1]:
@@ -101,26 +104,30 @@ concept PixelsCompatibleConcept<PixelConcept P1, PixelConcept P2> : ColorBasesCo
     // where for each K [0..size<P1>::value):
     //    ChannelsCompatibleConcept<kth_semantic_element_type<P1,K>::type, kth_semantic_element_type<P2,K>::type>;
 };
-```
+
+{% endhighlight %}
 
 あるPixelが、自身の色をもう一方のPixelの形式に近似できるとき、もう一方のPixelと変換可能です。
 変換は、数学的に陽であり、非対称であり、ほとんどの場合は(ChannelとColor Space両方の近似が原因で)不可逆変換です。
 
 交換可能性は、次のConceptに基づいた実装を要求します。
 
-```cpp
+{% highlight C++ %}
+
 template <PixelConcept SrcPixel, MutablePixelConcept DstPixel>
 concept PixelConvertibleConcept {
     void color_convert(const SrcPixel&, DstPixel&);
 };
-```
+
+{% endhighlight %}
 
 `PixelConcept`と`PixelValueConcept`の違いは、ChannelとColor Baseの違いと似ています。
 Pixel参照Proxyは両方のConceptに基づいたModelですが、Pixelは後者のConceptだけに基づいたModelです。
 
 ##### 関連するConcept:
 
-```cpp
+{% highlight C++ %}
+
 PixelBasedConcept<P>
 PixelConcept<Pixel>
 MutablePixelConcept<Pixel>
@@ -130,14 +137,16 @@ MutableHomogeneousPixelConcept<Pixel>
 HomogeneousPixelValueConcept<Pixel>
 PixelsCompatibleConcept<Pixel1,Pixel2>
 PixelConvertibleConcept<SrcPixel,DstPixel>
-```
+
+{% endhighlight %}
 
 ##### Model:
 
 最もよく用いられるPixelは、メモリ上でひとまとまりになったホモジーニアスPixelです。
 このために、GILはChannelに関連づけられた型とLayoutでテンプレート化した`struct pixel`を提供しています。
 
-```cpp
+{% highlight C++ %}
+
 // models HomogeneousPixelValueConcept
 template <typename ChannelValue, typename Layout> struct pixel;
 
@@ -155,20 +164,23 @@ assert(rgb8 == bgr8);   // assignment and equality operate on the semantic chann
 assert(at_c<0>(rgb8) != at_c<0>(bgr8));
 assert(dynamic_at_c(bgr8,0) != dynamic_at_c(rgb8,0));
 assert(rgb8[0] != bgr8[0]); // same as above (but operator[] is defined for pixels only)
-```
+
+{% endhighlight %}
 
 プラナーPixelは、メモリ上の離れた地点に配置されたChannelをもちます。
 Channelに関連づけられた型についてインタリーブPixelと同じ型を共有している場合、その参照型は各Channelの参照をもつProxyクラスになっています。
 これは`struct planar_pixel_reference`で実装されています。
 
-```cpp
+{% highlight C++ %}
+
 // models HomogeneousPixel
 template <typename ChannelReference, typename ColorSpace> struct planar_pixel_reference;
 
 // Define the type of a mutable and read-only reference. (These typedefs are already provided by GIL)
 typedef planar_pixel_reference<      bits8&,rgb_t> rgb8_planar_ref_t;
 typedef planar_pixel_reference<const bits8&,rgb_t> rgb8c_planar_ref_t;
-```
+
+{% endhighlight %}
 
 `struct planar_pixel_reference`は、Layoutでテンプレート化されている`struct pixel`とは異なり、Color Spaceでテンプレート化されていることに注意してください。
 これらは、常に標準化されたChannel順を用います。
@@ -178,7 +190,8 @@ Pixelの各Channelはバイト境界と一致していない可能性もあり�
 例えば、'556' RGB Pixelは赤(Red)、緑(Green)、青(Blue)の各Channelが[0..4]、[5..9]、[10..15]bitを占める16bitのPixelです。
 GILは上記のようなPaced Pixel形式のためのModelを提供しています。
 
-```cpp
+{% highlight C++ %}
+
 // define an rgb565 pixel
 typedef packed_pixel_type<uint16_t, mpl::vector3_c<unsigned,5,6,5>, rgb_layout_t>::type rgb565_pixel_t;
 
@@ -192,7 +205,8 @@ function_requires<PixelValueConcept<bgr556_pixel_t> >();
 
 // rgb565 is compatible with bgr556.
 function_requires<PixelsCompatibleConcept<rgb565_pixel_t,bgr556_pixel_t> >();
-```
+
+{% endhighlight %}
 
 ある場合には、Pixel自体がバイト単位にならないかもしれません。
 例として、'232' RGB Pixelを考えてみましょう。
@@ -204,7 +218,8 @@ Packed Pixelはバイト単位なので、そのPixel参照にはC++の参照を
 ビット単位Pixelの値の型は`packed_pixel`です。
 ここで、ビット単位のPixelとIteratorの使い方を示します。
 
-```cpp
+{% highlight C++ %}
+
 // Mutable reference to a BGR232 pixel
 typedef const bit_aligned_pixel_reference<mpl::vector3_c<unsigned,2,3,2>, bgr_layout_t, true>  bgr232_ref_t;
 
@@ -227,13 +242,15 @@ for (int i=0; i<8; ++i) {
     *pix_it++ = red;
 }
 // Result: 0x60 0x30 0x11 0x0C 0x06 0x83 0xC1
-```
+
+{% endhighlight %}
 
 ##### Algorithm:
 
 Pixelは`ColorBaseConcept`と`PixelBaseConcept`に基づいたModelなので、Pixel上でも全てのColor Baseアルゴリズムとメタ関数は問題なく動作します。
 
-```cpp
+{% highlight C++ %}
+
 // This is how to access the first semantic channel (red)
 assert(semantic_at_c<0>(rgb8) == semantic_at_c<0>(bgr8));
 
@@ -266,12 +283,15 @@ get_color(r565,red_t())   = channel_convert<rgb565_channel0_t>(get_color(rgb_ful
 get_color(r565,green_t()) = channel_convert<rgb565_channel1_t>(get_color(rgb_full,green_t()));
 get_color(r565,blue_t())  = channel_convert<rgb565_channel2_t>(get_color(rgb_full,blue_t()));
 assert(r565 == rgb565_pixel_t((uint16_t)65535));
-```
+
+{% endhighlight %}
 
 また、GILはColor SpaceとChannel型が異なるPixel間の変換を行う`color_convert`アルゴリズムを提供します。
 
-```cpp
+{% highlight C++ %}
+
 rgb8_pixel_t red_in_rgb8(255,0,0);
 cmyk16_pixel_t red_in_cmyk16;
 color_convert(red_in_rgb8,red_in_cmyk16);
-```
+
+{% endhighlight %}
