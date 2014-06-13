@@ -49,7 +49,7 @@ concept ChannelValueConcept<ChannelConcept T> : Regular<T> {};
 
 ## 4. Channel
 Channelは、色成分の強度を示します (例: RGB Pixelの赤Channel)。
-基本的なChannel操作として、Channel値の取得(get)や比較(compare)や代入(set)があります。
+基本的なChannel操作として、値の取得(get)や比較(compare)や代入(set)があります。
 また、Channelには最小値と最大値が設定されています。
 GILのChannelは、次に示すConceptに基づいたModelです。
 
@@ -101,7 +101,8 @@ concept ChannelConvertibleConcept {
 -->
 
 GILは、組み込みの整数型と浮動小数点型をChannelとして認めています。
-そのため、Channelに関連づけられた型とレンジの情報は、次にデフォルトの実装を示す、`channel_traits`で定義されています。
+そのため、Channelに関連づけられた型とレンジ情報に関する情報は`channel_traits`で定義されています。
+`channel_traits`のデフォルトの実装を次に示します。
 
 ```cpp
 template <typename T>
@@ -117,7 +118,7 @@ struct channel_traits {
 };
 ```
 
-ふたつのChannelが同じ型の値をもつ場合、そのChannelの組み合わせには互換性があります。
+ふたつのChannelが同じ型の値をもつ場合、そのふたつのChannelには互換性があります。
 
 ```cpp
 concept ChannelsCompatibleConcept<ChannelConcept T1, ChannelConcept T2> {
@@ -189,12 +190,12 @@ Algorithms:
 -->
 
 `ChannelConcept`と`MutableChannelConcept`が、デフォルトコンストラクタを要求していないことに注意してください。
-デフォルトコンストラクタ(と、それに伴う既定の型)をサポートするChannelは、`ChannelValueConcept`に基づいたModelです。
+デフォルトコンストラクタをサポートする(その結果、正則型である)Channelは、`ChannelValueConcept`に基づいたModelです。
 このような区別を設けた動機を理解するために、"565"のビットパターンをもつ16bit RGB Pixelを考えます。
 各Channelは、それぞれのビットレンジに対応しています。
 このようなChannelをサポートするためには、バイト境界をまたがるChannel参照にも対応する特別なProxyクラスをつくる必要があります。
 このときProxy参照クラスは`ChannelConcept`だけに従って実装されます。
-なぜなら、このようなChannelは、C++の参照と同様に、デフォルトコンストラクタをもたない可能性があるからです。
+なぜなら、このようなChannelは、C++における参照のように、デフォルトコンストラクタをもたない可能性があるからです。
 また、アルゴリズムが、算術演算子のサポートなど、追加の要件を課すかもしれないことにも注意が必要です。
 
 ##### 関連するConcept:
@@ -258,7 +259,7 @@ class packed_dynamic_channel_reference;
 
 ##### Algorithms:
 
-16bitの中で3個のChannelをもつ"565" Pixelを構築し、各Channelに最大値を代入する方法を示します。
+"565"のビットパターンをもつ16bit Pixelを構築し、各Channelに最大値を代入する方法を示します。
 
 ```cpp
 typedef packed_channel_reference<0,5,true> channel16_0_5_reference_t;
@@ -276,7 +277,7 @@ channel3=channel_traits<channel16_11_5_reference_t>::max_value();
 assert(data==65535);
 ```
 
-代入、比較、コピーコンストラクタは、互換性をもつChannel間にだけ定義されています。
+代入、比較、コピーコンストラクタは、互換性をもつChannel間にだけ定義されます。
 
 ```cpp
 packed_channel_value<5> channel_6bit = channel1;
