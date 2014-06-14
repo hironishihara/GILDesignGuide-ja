@@ -58,7 +58,6 @@ concept MutablePixelIteratorConcept : PixelIteratorConcept<Iterator>, MutableRan
 Pixelのビルトインポインタ`pixel<ChannelValue,Layout>*`は、インタリーブ形式のホモジーニアスPixelを対象とするPixel IteratorのためのGILのModelです。
 同様に、`packed_pixel<PixelData,ChannelRefVec,Layout>*`は、インタリーブ形式バイト単位Pixelを対象とするIteratorのためのGILのModelです。
 
-For planar homogeneous pixels, GIL provides the class planar_pixel_iterator, templated over a channel iterator and color space.
 プラナー型ホモジーニアスPixelのために、GILはChannel IteratorとColor Spaceについてテンプレート化した`planar_pixel_iterator`クラスを提供します。
 
 ここで、unsigned char型プラナー形式RGB PixelについてmutableなIteratorとread-onlyのIteratorがどのように定義されているのかを示します。
@@ -377,7 +376,6 @@ concept HasDynamicYStepTypeConcept<typename T> {
 
 GILが提供する全てのLocatorとImage Viewは`HasDynamicYStepTypeConcept`に基づいたModelです。
 
-Sometimes it is necessary to swap the meaning of X and Y for a given locator or image view type (for example, GIL provides a function to transpose an image view).
 与えられたLocatorやImage Viewについて、X軸とY軸の入れ替えが必要になることがあります(例を挙げると、GILはImage Viewの転置変換を行う関数を提供しています)。
 上記のようなLocatorやViewは転置変換可能でなければなりません。
 
@@ -520,5 +518,5 @@ private:
 `iterator_from_2d`を用いた画像中の全Pixelへの走査は、水平方向Iteratorを用いた各行での走査の全行分の合算よりも低速です。
 これは、1ステップ毎にIteratorによるループの終了判定と`iterator_from_2d::operator++`による行の終端判定との2個の比較が行われることが原因です。
 Pixelのコピーのような高速な処理では、この2個目の判定は約15%の遅延の原因となります(Intelプラットホーム上にて、インタリーブ画像で計測)。
-GILは`std::copy`や`std::fill`といったいくつかのSTLアルゴリズムをオーバーライドしており、実行時`iterator_from_2d`が渡された場合には各行に対して基本となる水平Iteratorを用います。
-また、画像にパディングがない(例：`iterator_from_2d::is_1d_traversable()`が`true`を返す)ときには、シンプルに水平Iteratorを直接用いる走査を行います。
+GILは`std::copy`や`std::fill`といったいくつかのSTLアルゴリズムをオーバーライドしており、実行時`iterator_from_2d`が渡された場合には、各行に対して基本となる水平方向Iteratorを用います。
+また、画像にパディングがない(例：`iterator_from_2d::is_1d_traversable()`が`true`を返す)場合には、シンプルな水平方向Iteratorを直接用います。
