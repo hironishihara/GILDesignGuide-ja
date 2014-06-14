@@ -32,7 +32,8 @@ layout: default
 Pixel Iteratorは、`PixelValueConcept`に基づいたModelである`value_type`のランダム走査Iteratorです。
 Pixel Iteratorは、mutableであるか否か(すなわち、指し示すPixelが変更可能か否か)を判定するメタ関数、immutable (read-only)なIteratorを取得するメタ関数、素のIteratorかAdaptorをまとった他種のIteratorなのかを判定するメタ関数を提供します。
 
-```cpp
+{% highlight C++ %}
+
 concept PixelIteratorConcept<RandomAccessTraversalIteratorConcept Iterator> : PixelBasedConcept<Iterator> {
     where PixelValueConcept<value_type>;
     typename const_iterator_type<It>::type;
@@ -43,7 +44,8 @@ concept PixelIteratorConcept<RandomAccessTraversalIteratorConcept Iterator> : Pi
 
 template <typename Iterator>
 concept MutablePixelIteratorConcept : PixelIteratorConcept<Iterator>, MutableRandomAccessIteratorConcept<Iterator> {};
-```
+
+{% endhighlight %}
 
 ##### 関連するConcept:
 
@@ -61,20 +63,23 @@ For planar homogeneous pixels, GIL provides the class planar_pixel_iterator, tem
 
 ここで、unsigned char型プラナー形式RGB PixelについてmutableなIteratorとread-onlyのIteratorがどのように定義されているのかを示します。
 
-```cpp
+{% highlight C++ %}
+
 template <typename ChannelPtr, typename ColorSpace> struct planar_pixel_iterator;
 
 // GIL provided typedefs
 typedef planar_pixel_iterator<const bits8*, rgb_t> rgb8c_planar_ptr_t;
 typedef planar_pixel_iterator<      bits8*, rgb_t> rgb8_planar_ptr_t;
-```
+
+{% endhighlight %}
 
 `planar_pixel_iterator`は`HomogeneousColorBaseConcept` (`homogeneous_color_base`のサブクラス)に基づいたModelであり、つまり、全てのcolor baseアルゴリズムを適用できます。
 そのColor Baseの要素の型はChannel Iteratorです。
 For example, GIL implements operator++ of planar iterators approximately like this:
 例を挙げると、GILではプラナー形式Iteratorの`operator++`をおおよそ次のように実装しています。
 
-```cpp
+{% highlight C++ %}
+
 template <typename T>
 struct inc : public std::unary_function<T,T> {
     T operator()(T x) const { return ++x; }
@@ -86,7 +91,8 @@ planar_pixel_iterator<ChannelPtr,ColorSpace>::operator++() {
     static_transform(*this,*this,inc<ChannelPtr>());
     return *this;
 }
-```
+
+{% endhighlight %}
 
 `static_transform`はコンパイル時の再帰を用いるので、`rgb8_planar_ptr_t`インスタンスのインクリメントは3個のpointerのインクリメントに変換されます。
 また、GILは、ビット単位Pixelを走査するPixel IteratorのModelとして、`bit_aligned_pixel_iterator`クラスを用います。
@@ -97,7 +103,8 @@ Iteratorアダプタは他のIteratorをラップしたIteratorです。
 その`is_iterator_adaptor`というメタ関数は`true`でなければなりません。
 また、Base Iteratorを返すメンバ関数、型を取得するメタ関数、他のBase Iteratorに再結合するメタ関数を提供する必要があります。
 
-```cpp
+{% highlight C++ %}
+
 concept IteratorAdaptorConcept<RandomAccessTraversalIteratorConcept Iterator> {
     where SameType<is_iterator_adaptor<Iterator>::type, mpl::true_>;
 
@@ -115,7 +122,8 @@ concept IteratorAdaptorConcept<RandomAccessTraversalIteratorConcept Iterator> {
 
 template <boost_concepts::Mutable_ForwardIteratorConcept Iterator>
 concept MutableIteratorAdaptorConcept : IteratorAdaptorConcept<Iterator> {};
-```
+
+{% endhighlight %}
 
 ##### 関連するConcept:
 
@@ -137,7 +145,8 @@ GILは`IteratorAdaptorConcept`のModelをいくつか提供しています。
 Pixel間接参照アダプタは、Pixel Iteratorから間接参照した値を受け取る、ひとつの引数をもつ関数です。
 この引数の型はどんなものでも構いません(よくあるのは`PixelConcept`です)。また、戻り値の型は`PixelConcept`に変換可能でなければなりません。
 
-```cpp
+{% highlight C++ %}
+
 template <boost::UnaryFunctionConcept D>
 concept PixelDereferenceAdaptorConcept : DefaultConstructibleConcept<D>, CopyConstructibleConcept<D>, AssignableConcept<D>  {
     typename const_t;         where PixelDereferenceAdaptorConcept<const_t>;
@@ -148,7 +157,8 @@ concept PixelDereferenceAdaptorConcept : DefaultConstructibleConcept<D>, CopyCon
 
     where Convertible<value_type, result_type>;
 };
-```
+
+{% endhighlight %}
 
 ##### Model:
 
@@ -174,13 +184,15 @@ GILは、間接参照した値に色変換を実行するImage ViewやPixelのN�
 Step iterators are forward traversal iterators that allow changing the step between adjacent values:
 ステップIteratorは、隣り合う値に対してのステップ数の変更を許可する前方移動Iteratorです。
 
-```cpp
+{% highlight C++ %}
+
 concept StepIteratorConcept<boost_concepts::ForwardTraversalConcept Iterator> {
     template <Integral D> void Iterator::set_step(D step);
 };
 
 concept MutableStepIteratorConcept<boost_concepts::Mutable_ForwardIteratorConcept Iterator> : StepIteratorConcept<Iterator> {};
-```
+
+{% endhighlight %}
 
 いまのところ、GILは`PixelValueConcept`に基づいて実装された`value_type`をもつステップIteratorを提供します。
 そのとき、ステップにはメモリ上での単位(バイト単位かビット単位か)が指定されています。
@@ -194,7 +206,8 @@ concept MutableStepIteratorConcept<boost_concepts::Mutable_ForwardIteratorConcep
 また、メモリ単位に基づいて指定された距離分だけIteratorを進める関数も提供しなければなりません。
 `memunit_advanced`と`memunit_advanced_ref`はデフォルトの実装をもっていますが、いくつかのIteratorではより効率的なバージョンを提供しているかもしれません。
 
-```cpp
+{% highlight C++ %}
+
 concept MemoryBasedIteratorConcept<boost_concepts::RandomAccessTraversalConcept Iterator> {
     typename byte_to_memunit<Iterator>; where metafunction<byte_to_memunit<Iterator> >;
     std::ptrdiff_t      memunit_step(const Iterator&);
@@ -203,17 +216,20 @@ concept MemoryBasedIteratorConcept<boost_concepts::RandomAccessTraversalConcept 
     Iterator            memunit_advanced(const Iterator& p, std::ptrdiff_t diff) { Iterator tmp; memunit_advance(tmp,diff); return tmp; }
     Iterator::reference memunit_advanced_ref(const Iterator& p, std::ptrdiff_t diff) { return *memunit_advanced(p,diff); }
 };
-```
+
+{% endhighlight %}
 
 他のIteratorからステップIteratorを構築できれば便利です。
 より一般的に言えば、ある型を与えたとき、それと等価で水平方向のステップ数を動的に指定可能な型を構築したいのです。
 
-```cpp
+{% highlight C++ %}
+
 concept HasDynamicXStepTypeConcept<typename T> {
     typename dynamic_x_step_type<T>;
         where Metafunction<dynamic_x_step_type<T> >;
 };
-```
+
+{% endhighlight %}
 
 GILが提供する全てのPixel Iterator、Locator、Image ViewのModelは、`HasDynamicXStepConcept`をサポートしています。
 
@@ -234,10 +250,12 @@ GILの実装では、基本となるIteratorと、1ステップで進む数を�
 `ptrdiff_t`には負の数を使うこともできます。
 GILは、基本となるIteratorとステップを指定してステップIteratorを作成する関数を提供しています。
 
-```cpp
+{% highlight C++ %}
+
 template <typename I>  // Models MemoryBasedIteratorConcept, HasDynamicXStepTypeConcept
 typename dynamic_x_step_type<I>::type make_step_iterator(const I& it, std::ptrdiff_t step);
-```
+
+{% endhighlight %}
 
 GILは、`position_iterator`という、仮想的なPixel配列に対するIteratorのModelも提供しています。
 これは、Pixelの位置情報を保持し、その位置にあるPixelの値を間接参照で取得する関数オブジェクトを実行するステップIteratorです。
@@ -250,7 +268,8 @@ Locatorは、本来であればN次元Iteratorと呼ぶべきですが、Iterato
 
 N次元Locatorは次のConceptに基づいたModelです。
 
-```cpp
+{% highlight C++ %}
+
 concept RandomAccessNDLocatorConcept<Regular Loc> {
     typename value_type;        // value over which the locator navigates
     typename reference;         // result of dereferencing
@@ -298,11 +317,13 @@ template <typename Loc>
 concept MutableRandomAccessNDLocatorConcept : RandomAccessNDLocatorConcept<Loc> {
     where Mutable<reference>;
 };
-```
+
+{% endhighlight %}
 
 2次元Locatorには追加の要件があります。
 
-```cpp
+{% highlight C++ %}
+
 concept RandomAccess2DLocatorConcept<RandomAccessNDLocatorConcept Loc> {
     where num_dimensions==2;
     where Point2DConcept<point_t>;
@@ -339,17 +360,20 @@ concept RandomAccess2DLocatorConcept<RandomAccessNDLocatorConcept Loc> {
 };
 
 concept MutableRandomAccess2DLocatorConcept<RandomAccess2DLocatorConcept Loc> : MutableRandomAccessNDLocatorConcept<Loc> {};
-```
+
+{% endhighlight %}
 
 2次元Locatorは、水平方向だけではなく垂直方向にも、動的なステップをもつことができます。
 これはつまり、Y軸における`HasDynamicXStepTypeConcept`です。
 
-```cpp
+{% highlight C++ %}
+
 concept HasDynamicYStepTypeConcept<typename T> {
     typename dynamic_y_step_type<T>;
         where Metafunction<dynamic_y_step_type<T> >;
 };
-```
+
+{% endhighlight %}
 
 GILが提供する全てのLocatorとImage Viewは`HasDynamicYStepTypeConcept`に基づいたModelです。
 
@@ -357,19 +381,22 @@ Sometimes it is necessary to swap the meaning of X and Y for a given locator or 
 与えられたLocatorやImage Viewについて、X軸とY軸の入れ替えが必要になることがあります(例を挙げると、GILはImage Viewの転置変換を行う関数を提供しています)。
 上記のようなLocatorやViewは転置変換可能でなければなりません。
 
-```cpp
+{% highlight C++ %}
+
 concept HasTransposedTypeConcept<typename T> {
     typename transposed_type<T>;
         where Metafunction<transposed_type<T> >;
 };
-```
+
+{% endhighlight %}
 
 GILが提供する全てのLocatorとViewは、`HasTransposedTypeConcept`に基づいたModelです。
 
 GILが用いるLocatorは、`PixelConcept`のModel上で動作し、X軸とY軸の次元の型が同じです。
 これらのLocatorは次に示すConceptに基づいたModelです。
 
-```cpp
+{% highlight C++ %}
+
 concept PixelLocatorConcept<RandomAccess2DLocatorConcept Loc> {
     where PixelValueConcept<value_type>;
     where PixelIteratorConcept<x_iterator>;
@@ -380,7 +407,8 @@ concept PixelLocatorConcept<RandomAccess2DLocatorConcept Loc> {
 };
 
 concept MutablePixelLocatorConcept<PixelLocatorConcept Loc> : MutableRandomAccess2DLocatorConcept<Loc> {};
-```
+
+{% endhighlight %}
 
 ##### 関連するConcept:
 
@@ -403,10 +431,12 @@ GILは2種類の`PixelLocatorConcept`のModelを提供します。
 このLocatorは、テンプレートのパラメータとして`StepIteratorConcept`のModelを取ります。
 (`MutableStepIteratorConcept` Modelの場合を例にすると、これは`MutablePixelLocatorConcept`に基づいたModelです。)
 
-```cpp
+{% highlight C++ %}
+
 template <typename StepIterator>  // Models StepIteratorConcept, MemoryBasedIteratorConcept
 class memory_based_2d_locator;
-```
+
+{% endhighlight %}
 
 ステップIteratorのステップは、各行において、メモリ単位(数バイトまたは数ビット)の倍数でなければなりません(すなわち、ステップIteratorはメモリ単位で移動しなければなりません)。
 `memory_based_2d_locator`クラスはステップIteratorのラッパであり、ステップIteratorが垂直方向のナビゲートに使われる一方で、そのステップIteratorの基本となるIteratorが水平方向のナビゲートに使われます。
@@ -441,7 +471,8 @@ Virtual LocatorとメモリベースLocatorは、`PixelLocatorConcept`から要�
 
 ここで、Locatorを用いたサンプルコードをいくつか示します。
 
-```cpp
+{% highlight C++ %}
+
 loc=img.xy_at(10,10);            // start at pixel (x=10,y=10)
 above=loc.cache_location(0,-1);  // remember relative locations of neighbors above and below
 below=loc.cache_location(0, 1);
@@ -450,7 +481,8 @@ loc.y()+=15;                     // move to (11,25)
 loc-=point2<std::ptrdiff_t>(1,1);// move to (10,24)
 *loc=(loc(0,-1)+loc(0,1))/2;     // set pixel (10,24) to the average of (10,23) and (10,25) (grayscale pixels only)
 *loc=(loc[above]+loc[below])/2;  // the same, but faster using cached relative neighbor locations
-```
+
+{% endhighlight %}
 
 標準的なGIL Locatorは、高速で軽量なオブジェクトです。
 例を挙げると、シンプルなインタリーブ画像のためのLocatorは、Pixelの位置を示す生ポインタとバイト単位での行サイズを値にもつ整数型との合計8バイトで構成されます。
@@ -468,7 +500,8 @@ GILの`itarator_from_2d`は、画像中の全Pixelを左から右、上から下
 
 ##### Synopsis:
 
-```cpp
+{% highlight C++ %}
+
 template <typename Locator>  // Models PixelLocatorConcept
 class iterator_from_2d {
 public:
@@ -481,7 +514,8 @@ private:
     int _x, _width;
     Locator _p;
 };
-```
+
+{% endhighlight %}
 
 `iterator_from_2d`を用いた画像中の全Pixelへの走査は、水平方向Iteratorを用いた各行での走査の全行分の合算よりも低速です。
 これは、1ステップ毎にIteratorによるループの終了判定と`iterator_from_2d::operator++`による行の終端判定との2個の比較が行われることが原因です。
