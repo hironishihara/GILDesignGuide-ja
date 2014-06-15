@@ -32,7 +32,8 @@ Renge (と、そのIterator)と同様、Image Viewは浅く、自身でデータ
 Pixelの値を変更しない処理には、値がconstantなImage View (non-mutableなImage Viewとも呼ばれます)を使用します。
 最も一般的なN次元Viewは、次のConceptを満たします。
 
-```cpp
+{% highlight C++ %}
+
 concept RandomAccessNDImageViewConcept<Regular View> {
     typename value_type;      // for pixel-based views, the pixel type
     typename reference;       // result of dereferencing
@@ -82,11 +83,13 @@ concept RandomAccessNDImageViewConcept<Regular View> {
 concept MutableRandomAccessNDImageViewConcept<RandomAccessNDImageViewConcept View> {
     where Mutable<reference>;
 };
-```
+
+{% endhighlight %}
 
 2次元のImage Viewは、次に示す追加の要件をもっています。
 
-```cpp
+{% highlight C++ %}
+
 concept RandomAccess2DImageViewConcept<RandomAccessNDImageViewConcept View> {
     where num_dimensions==2;
 
@@ -123,11 +126,13 @@ concept RandomAccess2DImageViewConcept<RandomAccessNDImageViewConcept View> {
 
 concept MutableRandomAccess2DImageViewConcept<RandomAccess2DImageViewConcept View>
   : MutableRandomAccessNDImageViewConcept<View> {};
-```
+
+{% endhighlight %}
 
 GILが通常用いるImage Viewは、`PixelValueConcept`に基づいたModelであるValue型で動作し、いくつかの追加の要件をもっています。
 
-```cpp
+{% highlight C++ %}
+
 concept ImageViewConcept<RandomAccess2DImageViewConcept View> {
     where PixelValueConcept<value_type>;
     where PixelIteratorConcept<x_iterator>;
@@ -140,16 +145,19 @@ concept ImageViewConcept<RandomAccess2DImageViewConcept View> {
 };
 
 concept MutableImageViewConcept<ImageViewConcept View> : MutableRandomAccess2DImageViewConcept<View> {};
-```
+
+{% endhighlight %}
 
 ふたつのImage Viewが、互換性のあるPixelをもち、同じ次元数であるとき、それらのImage Viewの間には互換性があります。
 
-```cpp
+{% highlight C++ %}
+
 concept ViewsCompatibleConcept<ImageViewConcept V1, ImageViewConcept V2> {
     where PixelsCompatibleConcept<V1::value_type, V2::value_type>;
     where V1::num_dimensions == V2::num_dimensions;
 };
-```
+
+{% endhighlight %}
 
 互換性のあるViewは、同じサイズ(すなわち、同じWidthとHeight)でなければなりません。
 複数のViewを用いるアルゴリズムの多くが、それぞれのViewの間での互換性を要求します。
@@ -172,7 +180,8 @@ GILは`image_view`と呼ばれる`ImageViewConcept`のためのModelを提供し
 
 #### Synopsis:
 
-```cpp
+{% highlight C++ %}
+
 template <typename Locator>  // Models PixelLocatorConcept (could be MutablePixelLocatorConcept)
 class image_view {
 public:
@@ -183,7 +192,8 @@ private:
     xy_locator _pixels;     // 2D pixel locator at the top left corner of the image view range
     point_t    _dimensions; // width and height
 };
-```
+
+{% endhighlight %}
 
 Image Viewは軽量なオブジェクトです。
 正規のインタリーブ形式Viewであれば、基本的に16バイトです。
@@ -196,19 +206,23 @@ Image Viewは軽量なオブジェクトです。
 一般的なImage Viewは、サポートされているどのようなColor Space、Channel深度、Channel順、プラナー形式またはインタリーブ形式の生データからでも構成することができます。
 インタリーブ形式Viewは、画像のDimensionsと1行あたりのバイト数と最初のPixelを指すポインタを指定した`interleaved_view`を使って構成されます。
 
-```cpp
+{% highlight C++ %}
+
 template <typename Iterator> // Models pixel iterator (like rgb8_ptr_t or rgb8c_ptr_t)
 image_view<...> interleaved_view(ptrdiff_t width, ptrdiff_t height, Iterator pixels, ptrdiff_t rowsize)
-```
+
+{% endhighlight %}
 
 プラナー形式Viewは、あらゆるColor Spaceのために定義されており、各Planeを個別に用意します。
 ここに、RGB形式のプラナー形式Viewを示します。
 
-```cpp
+{% highlight C++ %}
+
 template <typename IC>  // Models channel iterator (like bits8* or const bits8*)
 image_view<...> planar_rgb_view(ptrdiff_t width, ptrdiff_t height,
                                  IC r, IC g, IC b, ptrdiff_t rowsize);
-```
+
+{% endhighlight %}
 
 戻り値のViewが値がconstantな(immutableな)Viewである場合、提供されるPixel/Channel Iteratorがconstant (read-only)になることに注意してください。
 
@@ -218,7 +232,8 @@ image_view<...> planar_rgb_view(ptrdiff_t width, ptrdiff_t height,
 その結果は、元となる型から派生した型のViewになっている可能性もあります。
 GILは、生成された型を取得するために、次に示すメタ関数を用います。
 
-```cpp
+{% highlight C++ %}
+
 // Some result view types
 template <typename View>
 struct dynamic_xy_step_type : public dynamic_y_step_type<typename dynamic_x_step_type<View>::type> {};
@@ -239,11 +254,13 @@ template <typename SrcView>
 struct nth_channel_view_type {
     typedef ... type;
 };
-```
+
+{% endhighlight %}
 
 GILは、次に示すView変換を提供します。
 
-```cpp
+{% highlight C++ %}
+
 // flipped upside-down, left-to-right, transposed view
 template <typename View> typename dynamic_y_step_type<View>::type             flipped_up_down_view(const View& src);
 template <typename View> typename dynamic_x_step_type<View>::type             flipped_left_right_view(const View& src);
@@ -269,21 +286,24 @@ color_converted_view_type<View,P,CCV>::type                                   co
 
 template <typename View>
 nth_channel_view_type<View>::view_t                                           nth_channel_view(const View& view, int n);
-```
+
+{% endhighlight %}
 
 これらView Factoryメソッドのほとんどの実装は、単純です。
 例として、反転Viewがどのように実装されているのかを示します。
 The flip upside-down view creates a view whose first pixel is the bottom left pixel of the original view and whose y-step is the negated step of the source.
 上下反転Viewは、元のViewの最左下Pixelが先頭Pixelの、垂直方向ステップが元のステップと逆向きになったViewをつくります。
 
-```cpp
+{% highlight C++ %}
+
 template <typename View>
 typename dynamic_y_step_type<View>::type flipped_up_down_view(const View& src) {
     gil_function_requires<ImageViewConcept<View> >();
     typedef typename dynamic_y_step_type<View>::type RView;
     return RView(src.dimensions(),typename RView::xy_locator(src.xy_at(0,src.height()-1),-1));
 }
-```
+
+{% endhighlight %}
 
 `gil_function_requires`関数の呼び出しは、テンプレートのパラメータが`ImageViewConcept`の有効なModelであることを(コンパイル時に)保証します。
 これを使うことで、コンパイルエラーの追跡は容易になり、余計なコードの生成されず、実行時のパフォーマンスへの影響もありません。
@@ -292,7 +312,8 @@ typename dynamic_y_step_type<View>::type flipped_up_down_view(const View& src) {
 このガイド内のサンプルコードでは、簡潔さのために`gil_function_requires`をスキップすることにします。
 Image Viewは自由に構成することが出来ます("第12章 メタ関数とTypedef"を参照ください)。
 
-```cpp
+{% highlight C++ %}
+
 rgb16_image_t img(100,100);    // an RGB interleaved image
 
 // grayscale view over the green (index 1) channel of img
@@ -300,7 +321,8 @@ gray16_step_view_t green=nth_channel_view(view(img),1);
 
 // 50x50 view of the green channel of img, upside down and taking every other pixel in X and in Y
 gray16_step_view_t ud_fud=flipped_up_down_view(subsampled_view(green,2,2));
-```
+
+{% endhighlight %}
 
 前述のとおり、Image Viewは高速で、定量時間で動作する、浅いViewです。
 
@@ -313,7 +335,8 @@ Image Viewは`begin()`メソッドと`end()`メソッドを通じて1次元走�
 しかしながら、多くの場合、XとYでネストされたループを使う方がより効果的です。
 ここで紹介するアルゴリズムはSTLアルゴリズムと共通点がありますが、ネストされたループを抽象化し、入力として(Rangeではなく)Viewを受け取ります。
 
-```cpp
+{% highlight C++ %}
+
 // Equivalents of std::copy and std::uninitialized_copy
 // where ImageViewConcept<V1>, MutableImageViewConcept<V2>, ViewsCompatibleConcept<V1,V2>
 template <typename V1, typename V2>
@@ -375,7 +398,8 @@ void copy_and_convert_pixels(const V1& src, const V2& dst, ColorConverter ccv);
 // where ImageViewConcept<V1>, ImageViewConcept<V2>, ViewsCompatibleConcept<V1,V2>
 template <typename V1, typename V2>
 bool equal_pixels(const V1& view1, const V2& view2);
-```
+
+{% endhighlight %}
 
 複数のViewを取るアルゴリズムは、それらが同じDimensionsをもつことを要求します。
 `for_each_pixel_position`と`transform_pixel_positions`は、Pixelの参照ではなく、Pixel Locatorを関数オブジェクトに渡します。
