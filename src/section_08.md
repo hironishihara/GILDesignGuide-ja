@@ -240,7 +240,7 @@ GILが提供する全てのPixel Iterator、Locator、Image ViewのModelは、`H
 
 ##### Model:
 
-現在GILが提供している全ての基本的なメモリベースIteratorは`MemoryBasedIteratorConcept`に基づいたModelです。
+現在GILが提供している基本的なメモリベースIteratorは、全て`MemoryBasedIteratorConcept`に基づいたModelです。
 GILは`PixelIteratorConcept`、`StepIteratorConcept`、`MemoryBasedIteratorConcept`に基づいたModelである`memory_based_step_iterator`クラスを提供しています。
 これは、テンプレートのパラメータとしてBase Iterator(`PixelIteratorConcept`と`MemoryBasedIteratorConcept`に基づいたModelでなければなりません)をとり、ステップを動的に変更することを許可します。
 GIL's implementation contains the base iterator and a ptrdiff_t denoting the number of memory units (bytes or bits) to skip for a unit step.
