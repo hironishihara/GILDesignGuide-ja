@@ -35,7 +35,8 @@ Color Space、Channel深度、Channel順、インタリーブ形式/プラナー
 GILの`dynamic_image` extensionは、実行時にパラメータを決めるImageやImage Viewやその他のGILクラスを実現します。
 ここで、例を示します。
 
-```cpp
+{% highlight C++ %}
+
 #include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
 using namespace boost;
 
@@ -66,7 +67,8 @@ myImg = cmyk16_planar_image_t(200,100);
 
 // Assigning to an image not in the allowed set throws an exception
 myImg = gray8_image_t();        // will throw std::bad_cast
-```
+
+{% endhighlight %}
 
 `any_image`と`any_image_view`は、インスタンス化される型について非テンプレートの基本的なBase型と一意のインスタンス型識別子に分解した、GILの`variant`クラスのサブクラスです。
 この基本的なBase型インスタンスは、バイトのブロックとして表わされます。
@@ -77,7 +79,8 @@ GILの`variant`は`boost::variant`と考え方は似ています(だからこそ
 
 ##### Synopsis:
 
-```cpp
+{% highlight C++ %}
+
 template <typename Types>    // models MPL Random Access Container
 class variant {
     ...           _bits;
@@ -122,11 +125,13 @@ template <typename BOP, typename Types1, typename Types2>
 
 template <typename BOP, typename Types1, typename Types2>
    BOP::result_type apply_operation(const variant<Types1>& v1, const variant<Types2>& v2, UOP op);
-```
+
+{% endhighlight %}
 
 GILの`any_image_view`と`any_image`は`variant`のサブクラスです。
 
-```cpp
+{% highlight C++ %}
+
 template <typename ImageViewTypes>
 class any_image_view : public variant<ImageViewTypes> {
 public:
@@ -175,7 +180,8 @@ public:
     x_coord_t   width()         const;
     y_coord_t   height()        const;
 };
-```
+
+{% endhighlight %}
 
 処理を実行するための関数オブジェクトを`apply_operation`に渡すことによって、`variant`上での処理が実行されます。
 その`variant`で許可されている全ての型のためのコードがインスタンス化され、`switch`文を経由して適切なインスタンスが選択されます。
@@ -195,7 +201,8 @@ Imageレベルのアルゴリズムは`apply_operation`経由で実装される�
 つまり、多くの基本的な処理については、staticな型とdynamicな型の間で共有されているのです。
 加えて、全てのImage View変換とSTL-likeなImage Viewアルゴリズムの多くは、`copy_pixels`の例で示したように、`any_image`で動作するオーバーロードをもっています。
 
-```cpp
+{% highlight C++ %}
+
 rgb8_view_t v1(...);  // concrete image view
 bgr8_view_t v2(...);  // concrete image view compatible with v1 and of the same size
 any_image_view<Types>  av(...);  // run-time specified image view
@@ -209,12 +216,14 @@ copy_pixels(v1,v2);
 copy_pixels(v1, av);
 copy_pixels(av, v2);
 copy_pixels(av, av);
-```
+
+{% endhighlight %}
 
 dynamicな型をサポートするアルゴリズムのオーバーロードをもつことによって、コンパイル時に決定するImageやViewと実行時に決定するImageやViewのどちらかで動作するアルゴリズムの記述を可能にする基盤を作ります。
 例を挙げると、次に示すコードはディスク上の画像を上下反転して返すGIL I/O extensionを使用します。
 
-```cpp
+{% highlight C++ %}
+
 #include <boost¥gil¥extension¥io¥jpeg_dynamic_io.hpp>
 
 template <typename Image>    // Could be rgb8_image_t or any_image<...>
@@ -223,12 +232,14 @@ void save_180rot(const std::string& file_name) {
     jpeg_read_image(file_name, img);
     jpeg_write_view(file_name, rotated180_view(view(img)));
 }
-```
+
+{% endhighlight %}
 
 使用する全ての関数が実行時に決定する型のインスタンスを引数に取るオーバーロードをもっていることから、コンパイル時に決定するImageと実行時に決定するImageのどちらであってもインスタンス化が可能です。
 ここで、`rotated180_view`がどのように実装されているかを示します。
 
-```cpp
+{% highlight C++ %}
+
 // implementation using templated view
 template <typename View>
 typename dynamic_xy_step_type<View>::type rotated180_view(const View& src) { ... }
@@ -249,7 +260,8 @@ template <typename ViewTypes> inline // Models MPL Random Access Container of mo
 typename dynamic_xy_step_type<any_image_view<ViewTypes> >::type rotated180_view(const any_image_view<ViewTypes>& src) {
     return apply_operation(src,detail::rotated180_view_fn<typename dynamic_xy_step_type<any_image_view<ViewTypes> >::type>());
 }
-```
+
+{% endhighlight %}
 
 `variant`は、それが取りうる全てのModel毎にアルゴリズムをインスタンス化するので、(特に、ふたつ以上の`variant`を引数に取るアルゴリズムでは)注意して用いるべきです。
 これは、コンパイル時間と実行ファイルのサイズに甚大な影響を与える可能性があります。
