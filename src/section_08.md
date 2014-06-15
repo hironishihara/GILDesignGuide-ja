@@ -30,7 +30,7 @@ layout: default
 
 ### 基本となるIterator
 Pixel Iteratorは、`PixelValueConcept`に基づいたModelである`value_type`のランダム走査Iteratorです。
-Pixel Iteratorは、mutableであるか否か(すなわち、指し示すPixelが変更可能か否か)を判定するメタ関数、immutable (read-only)なIteratorを取得するメタ関数、素のIteratorかAdaptorをまとった他種のIteratorなのかを判定するメタ関数を提供します。
+Pixel Iteratorは、mutableであるか否か(すなわち、指し示すPixelが変更可能か否か)を判定するメタ関数、immutable (read-only)なIteratorを取得するメタ関数、素のIteratorかアダプタをまとった他のIteratorなのかを判定するメタ関数を提供します。
 
 {% highlight C++ %}
 
@@ -55,12 +55,12 @@ concept MutablePixelIteratorConcept : PixelIteratorConcept<Iterator>, MutableRan
 
 ##### Model:
 
-Pixelのビルトインポインタ`pixel<ChannelValue,Layout>*`は、インタリーブ形式のホモジーニアスPixelを対象とするPixel IteratorのためのGILのModelです。
+Pixelのビルトインポインタ`pixel<ChannelValue,Layout>*`は、インタリーブ形式ホモジーニアスPixelを対象とするPixel IteratorのためのGILのModelです。
 同様に、`packed_pixel<PixelData,ChannelRefVec,Layout>*`は、インタリーブ形式バイト単位Pixelを対象とするIteratorのためのGILのModelです。
 
-プラナー型ホモジーニアスPixelのために、GILはChannel IteratorとColor Spaceについてテンプレート化した`planar_pixel_iterator`クラスを提供します。
+プラナー形式ホモジーニアスPixelのために、GILはChannel IteratorとColor Spaceをパラメータにとるテンプレートである`planar_pixel_iterator`クラスを提供します。
 
-ここで、unsigned char型プラナー形式RGB PixelについてmutableなIteratorとread-onlyのIteratorがどのように定義されているのかを示します。
+ここで、unsigned char型プラナー形式RGB Pixelについて、mutableなIteratorとread-onlyのIteratorがどのように定義されているのかを示します。
 
 {% highlight C++ %}
 
@@ -72,9 +72,8 @@ typedef planar_pixel_iterator<      bits8*, rgb_t> rgb8_planar_ptr_t;
 
 {% endhighlight %}
 
-`planar_pixel_iterator`は`HomogeneousColorBaseConcept` (`homogeneous_color_base`のサブクラス)に基づいたModelであり、つまり、全てのcolor baseアルゴリズムを適用できます。
+`planar_pixel_iterator`は`HomogeneousColorBaseConcept` (`homogeneous_color_base`のサブクラス)に基づいたModelであり、つまり、全てのColor Baseアルゴリズムを適用できます。
 そのColor Baseの要素の型はChannel Iteratorです。
-For example, GIL implements operator++ of planar iterators approximately like this:
 例を挙げると、GILではプラナー形式Iteratorの`operator++`をおおよそ次のように実装しています。
 
 {% highlight C++ %}
@@ -169,19 +168,19 @@ GILは`PixelDereferenceAdaptorConcept`のModelをいくつか提供します。
 
 GILは、間接参照した値に色変換を実行するImage ViewやPixelのN番目のChannelを返すImage Viewを実装するために、Pixel間接参照アダプタを使用します。
 これらのPixel間接参照アダプタは、間接参照した値に任意関数を実行するVirtual Image View (例えば、マンデルブロ集合を表すViewなど)を実装する際に使用されます。
-`dereference_iterator_adaptor<Iterator,Fn>`は、`Iterator`で間接参照した値を引数にして与えられた間接参照Iteratorアダプタ`Fn`を実行する、Pixel Iteratorである`Iterator`を包むIteratorラッパーです。
+`dereference_iterator_adaptor<Iterator,Fn>`は、`Iterator`で間接参照した値を引数にして与えられた間接参照Iteratorアダプタ`Fn`を実行する、Pixel Iteratorである`Iterator`を包むIteratorラッパです。
 
-## ステップIterator
+### ステップIterator
 基本的なPixel Iteratorによって提供される1ステップ以上のまとまったステップ数でPixelの走査を行いたい場合があります。
 例えば、次のような場合です。
+
 - RGBインタリーブ画像の赤Channelだけをみる単独Channel View
 - 左右反転画像 (step = -fundamental_step)
 - N個間隔でPixelを取ってきたView (step = N*fundamental_step)
-- 垂直方向への移動 (step = number bytes per row)。
+- 垂直方向への移動 (step = number bytes per row)
 - 上記の組み合わせ (stepは各stepの積)
 
-Step iterators are forward traversal iterators that allow changing the step between adjacent values:
-ステップIteratorは、隣り合う値に対してのステップ数の変更を許可する前方移動Iteratorです。
+ステップIteratorは、隣り合う要素への移動についてのステップ数の変更を許可する、前方移動Iteratorです。
 
 {% highlight C++ %}
 
@@ -199,7 +198,7 @@ concept MutableStepIteratorConcept<boost_concepts::Mutable_ForwardIteratorConcep
 各行のサイズは、Pixelのサイズで割り切れるとは限りません。
 例えば、各行にワード単位アラインメントが施されているかもしれません。
 
-数バイト毎または数ビット毎に進む場合、その基本となるIteratorは`MemoryBasedIteratorConcept`に基づいて実装されていなければなりません。
+数バイト毎または数ビット毎に進む場合、そのBase Iteratorは`MemoryBasedIteratorConcept`に基づいて実装されていなければなりません。
 メモリベースIteratorは、1ビットまたは1バイトの固有のメモリ単位をもっています。
 そして、メモリ単位をビット数(1または8)で返す関数、メモリ単位で数えた現在のステップ数を返す関数、メモリ単位で数えた2つのIterator間の距離を返す関数、メモリ単位に基づいて指定された距離分だけ先にある参照を返す関数を提供しなければなりません。
 また、メモリ単位に基づいて指定された距離分だけIteratorを進める関数も提供しなければなりません。
@@ -243,11 +242,11 @@ GILが提供する全てのPixel Iterator、Locator、Image ViewのModelは、`H
 
 現在GILが提供している全ての基本的なメモリベースIteratorは`MemoryBasedIteratorConcept`に基づいたModelです。
 GILは`PixelIteratorConcept`、`StepIteratorConcept`、`MemoryBasedIteratorConcept`に基づいたModelである`memory_based_step_iterator`クラスを提供しています。
-これは、テンプレートのパラメータとして基本となるIterator(`PixelIteratorConcept`と`MemoryBasedIteratorConcept`に基づいたModelでなければなりません)をとり、ステップを動的に変更することを許可します。
+これは、テンプレートのパラメータとしてBase Iterator(`PixelIteratorConcept`と`MemoryBasedIteratorConcept`に基づいたModelでなければなりません)をとり、ステップを動的に変更することを許可します。
 GIL's implementation contains the base iterator and a ptrdiff_t denoting the number of memory units (bytes or bits) to skip for a unit step.
-GILの実装では、基本となるIteratorと、1ステップで進む数をメモリ単位に基づいて示す`ptrdiff_t`を含みます。
+GILの実装では、Base Iteratorと、1ステップで進む数をメモリ単位に基づいて示す`ptrdiff_t`を含みます。
 `ptrdiff_t`には負の数を使うこともできます。
-GILは、基本となるIteratorとステップを指定してステップIteratorを作成する関数を提供しています。
+GILは、Base Iteratorとステップを指定することでステップIteratorを作成する関数を提供しています。
 
 {% highlight C++ %}
 
@@ -436,13 +435,13 @@ class memory_based_2d_locator;
 
 {% endhighlight %}
 
-ステップIteratorのステップは、各行において、メモリ単位(数バイトまたは数ビット)の倍数でなければなりません(すなわち、ステップIteratorはメモリ単位で移動しなければなりません)。
-`memory_based_2d_locator`クラスはステップIteratorのラッパであり、ステップIteratorが垂直方向のナビゲートに使われる一方で、そのステップIteratorの基本となるIteratorが水平方向のナビゲートに使われます。
+ステップIteratorのステップは、各行において、メモリ単位(バイト数かビット数で示されます)の倍数でなければなりません(すなわち、ステップIteratorはメモリ単位で移動しなければなりません)。
+`memory_based_2d_locator`クラスはステップIteratorのラッパであり、垂直方向のナビゲートにステップIteratorが使われる一方で、水平方向のナビゲートにはそのステップIteratorのBase Iteratorが使われます。
 
-基本となるIteratorとステップIteratorの合成によって、Pixelについての複雑なメモリ配置を記述したLocatorの作成が可能になります。
+Base IteratorとステップIteratorの合成によって、Pixelについての複雑なメモリ配置を記述したLocatorの作成が可能になります。
 始めに、水平方向すなわちに同じ行にあるPixelに対する走査に用いるIteratorを選択します。
 
-基本となるIteratorやステップIteratorには、4つの選択肢が与えられています。
+Base IteratorやステップIteratorには、4つの選択肢が与えられています。
 
 - `pixel<T,C>*` (インタリーブ画像用)
 - `planar_pixel_iterator<T*,C>` (プラナー画像用)
@@ -452,7 +451,7 @@ class memory_based_2d_locator;
 もちろん、独自の水平方向Iteratorを提供することもできます。
 この先に記述されている一例として、間接参照された際に色変換を実行するIteratorアダプタがあります。
 
-水平方向Iteratorである`XIterator`が与えられるとき、メモリ単位(数バイトもしくは数ビット)の倍数と等しいステップをもつ`memory_based_step_iterator<XIterator>`として、ある列に沿って移動するIteratorである垂直方向Iteratorを選ぶことができます。
+水平方向Iteratorである`XIterator`が与えられるとき、メモリ単位(バイト数かビット数で示されます)の倍数と等しいステップをもつ`memory_based_step_iterator<XIterator>`として、ある列に沿って移動するIteratorである垂直方向Iteratorを選ぶことができます。
 ここでも、独自の垂直方向Iteratorを提供することは自由です。
 
 ここでは、ダイアグラムが示すように、2次元Pixel Locatorを得るために`memory_based_2d_locator<memory_based_step_iterator<XIterator> >`を作成します。
@@ -518,5 +517,5 @@ private:
 `iterator_from_2d`を用いた画像中の全Pixelへの走査は、水平方向Iteratorを用いた各行での走査の全行分の合算よりも低速です。
 これは、1ステップ毎にIteratorによるループの終了判定と`iterator_from_2d::operator++`による行の終端判定との2個の比較が行われることが原因です。
 Pixelのコピーのような高速な処理では、この2個目の判定は約15%の遅延の原因となります(Intelプラットホーム上にて、インタリーブ画像で計測)。
-GILは`std::copy`や`std::fill`といったいくつかのSTLアルゴリズムをオーバーライドしており、実行時`iterator_from_2d`が渡された場合には、各行に対して基本となる水平方向Iteratorを用います。
-また、画像にパディングがない(例：`iterator_from_2d::is_1d_traversable()`が`true`を返す)場合には、シンプルな水平方向Iteratorを直接用います。
+GILは`std::copy`や`std::fill`といったいくつかのSTLアルゴリズムをオーバーライドしており、実行時`iterator_from_2d`が渡された場合には、各行に対してBase Iteratorである水平方向Iteratorを用います。
+また、画像にパディングがない(例：`iterator_from_2d::is_1d_traversable()`が`true`を返す)場合には、シンプルな水平方向Iteratorを直接使用します。
