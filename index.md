@@ -53,8 +53,9 @@ Boost Software License, Version 1.0
     * Pixelロケータ
     * 2次元画像上のIterator  
 * [Image View](src/section_09.html)
-    * メモリ上の画素群からImage Viewを作成する
-    * 他のImage ViewからImage Viewを作成する
+    * メモリ上のPixel生データからのImage View作成
+    * 他のImage ViewからのImage View作成
+    * Image View上で動作するSTL-Styleアルゴリズム
 * [Image](src/section_10.html)
 * [実行時に型を指定するImageとImage View](src/section_11.html)
 * [メタ関数とTypedef](src/section_12.html)
