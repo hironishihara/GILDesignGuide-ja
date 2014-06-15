@@ -101,8 +101,9 @@ You can find a quick, jump-start GIL tutorial on the main GIL page at http://ope
     * Pixelロケータ
     * 2次元画像上のIterator  
 9. Image View  
-    * メモリ上の画素群からImage Viewを作成する
-    * 他のImage ViewからImage Viewを作成する
+    * メモリ上のPixel生データからのImage View作成
+    * 他のImage ViewからのImage View作成
+    * Image View上で動作するSTL-Styleアルゴリズム
 10. Image
 11. 実行時に型を指定するImageとImage View
 12. メタ関数とTypedef
