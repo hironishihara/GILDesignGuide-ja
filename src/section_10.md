@@ -35,7 +35,8 @@ Imageは、データの所有が重要な意味をもつ場合にだけ使用さ
 
 一般的に、ImageはN次元であり、次のConceptを満たします。
 
-```cpp
+{% highlight C++ %}
+
 concept RandomAccessNDImageConcept<typename Img> : Regular<Img> {
     typename view_t; where MutableRandomAccessNDImageViewConcept<view_t>;
     typename const_view_t = view_t::const_t;
@@ -53,11 +54,13 @@ concept RandomAccessNDImageConcept<typename Img> : Regular<Img> {
     const const_view_t&   const_view(const Img&);
     const view_t&         view(Img&);
 };
-```
+
+{% endhighlight %}
 
 2次元のImageは、追加の要件をもっています。
 
-```cpp
+{% highlight C++ %}
+
 concept RandomAccess2DImageConcept<RandomAccessNDImageConcept Img> {
     typename x_coord_t = const_view_t::x_coord_t;
     typename y_coord_t = const_view_t::y_coord_t;
@@ -71,16 +74,19 @@ concept RandomAccess2DImageConcept<RandomAccessNDImageConcept Img> {
     void Img::recreate(x_coord_t width, y_coord_t height, std::size_t alignment=1);
     void Img::recreate(x_coord_t width, y_coord_t height, value_type fill_value, std::size_t alignment);
 };
-```
+
+{% endhighlight %}
 
 GILのImageは、`ImageViewConcept`に基づいたModelでありPixel上で動作するViewをもちます。
 
-```cpp
+{% highlight C++ %}
+
 concept ImageConcept<RandomAccess2DImageConcept Img> {
     where MutableImageViewConcept<view_t>;
     typename coord_t  = view_t::coord_t;
 };
-```
+
+{% endhighlight %}
 
 LocatorやImage Viewと異なり、immutableなImageはそもそも不便であるため、わざわざ'mutable'を指定したConceptのセットはもちません。
 
@@ -94,12 +100,14 @@ LocatorやImage Viewと異なり、immutableなImageはそもそも不便であ�
 
 GILは、Value型(すなわち、Pixel)をパラメータにもつテンプレートであり、ImageConceptに基づいたModelである、Imageクラスを提供します。
 
-```cpp
+{% highlight C++ %}
+
 template <typename Pixel, \\ Models PixelValueConcept
           bool IsPlanar,  \\ planar or interleaved image
           typename A=std::allocator<unsigned char> >
 class image;
-```
+
+{% endhighlight %}
 
 デフォルトのImageは、メモリ単位0個分でアラインメントされます。すなわち、各行の末尾にパディングはありません。
 比較的複雑な`image_view::iterator`の代わりに、上記のような1次元走査可能なImageでは`image_view::x_iterator`をPixelの走査に使うことができるため、多くの処理が高速です。
