@@ -129,7 +129,7 @@ concept MutableRandomAccess2DImageViewConcept<RandomAccess2DImageViewConcept Vie
 
 {% endhighlight %}
 
-GILが通常用いるImage Viewは、`PixelValueConcept`に基づいたModelであるValue型で動作し、いくつかの追加の要件をもっています。
+GILが通常用いるImage Viewは、`PixelValueConcept`に基づいたModelであるPixel型で動作し、いくつかの追加の要件をもっています。
 
 {% highlight C++ %}
 
@@ -289,9 +289,8 @@ nth_channel_view_type<View>::view_t                                           nt
 
 {% endhighlight %}
 
-これらView Factoryメソッドのほとんどの実装は、単純です。
+これらView Factoryメソッドの実装のほとんどは、単純です。
 例として、反転Viewがどのように実装されているのかを示します。
-The flip upside-down view creates a view whose first pixel is the bottom left pixel of the original view and whose y-step is the negated step of the source.
 上下反転Viewは、元のViewの最左下Pixelが先頭Pixelの、垂直方向ステップが元のステップと逆向きになったViewをつくります。
 
 {% highlight C++ %}
@@ -308,8 +307,8 @@ typename dynamic_y_step_type<View>::type flipped_up_down_view(const View& src) {
 `gil_function_requires`関数の呼び出しは、テンプレートのパラメータが`ImageViewConcept`の有効なModelであることを(コンパイル時に)保証します。
 これを使うことで、コンパイルエラーの追跡は容易になり、余計なコードの生成されず、実行時のパフォーマンスへの影響もありません。
 私たちは`boost::concept_check`ライブラリを使用していますが、`BOOST_GIL_USE_CONCEPT_CHECK`がセットされているときにだけチェックを実行するように、`gil_function_requires`の中に`boost::concept_check`ライブラリをラップしています。
-デフォルトでは`BOOST_GIL_USE_CONCEPT_CHECK`はセットされていません。なぜなら、コンセプトチェックを使用するとコンパイルタイムが大幅に長くなるのです。
-このガイド内のサンプルコードでは、簡潔さのために`gil_function_requires`をスキップすることにします。
+そして、デフォルトでは`BOOST_GIL_USE_CONCEPT_CHECK`はセットされていません。なぜなら、コンセプトチェックを使用するとコンパイルタイムが大幅に長くなるからです。
+このガイド内のサンプルコードでは、簡潔さのために`gil_function_requires`はスキップすることにします。
 Image Viewは自由に構成することが出来ます("第12章 メタ関数とTypedef"を参照ください)。
 
 {% highlight C++ %}
