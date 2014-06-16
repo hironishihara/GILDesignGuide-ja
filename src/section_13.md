@@ -46,7 +46,8 @@ GILのI/O Extensionは、ローレベルの画像I/Oユーティリティを提�
 使うものだけで十分です。
 JPEGファイル用のI/O APIを示します(他のライブラリを使う場合には、"jpeg"を"tiff"または"png"に置き換えてください)。
 
-```cpp
+{% highlight C++ %}
+
 // Returns the width and height of the JPEG file at the specified location.
 // Throws std::ios_base::failure if the location does not correspond to a valid JPEG file
 point2<std::ptrdiff_t> jpeg_read_dimensions(const char*);
@@ -90,12 +91,14 @@ template <typename View> struct jpeg_read_support {
 template <typename View> struct jpeg_write_support {
     static const bool value = ...;
 };
-```
+
+{% endhighlight %}
 
 Dynamic Image Extensionを使う場合には、"`jpeg_io.hpp`"に代えて"`jpeg_dynamic_io.hpp`"をインクルードするようにしてください。
 Dynamic Imageを扱う場合には、上記のメソッドに加えて、次に示すオーバーロードをもちます。
 
-```cpp
+{% highlight C++ %}
+
 // Opens the given JPEG file name, selects the first type in Images whose color space and channel are compatible to those of the image file
 // and creates a new image of that type with the dimensions specified by the image file.
 // Throws std::ios_base::failure if none of the types in Images are compatible with the type on disk.
@@ -105,6 +108,7 @@ template <typename Images> void jpeg_read_image(const char*, any_image<Images>&)
 // Throws std::ios_base::failure if the currently instantiated view type is not supported for writing by the I/O extension
 // or if it fails to create the file.
 template <typename Views>  void jpeg_write_view(const char*, any_image_view<Views>&);
-```
+
+{% endhighlight %}
 
 上記の全てのメソッドは、`const char*`の代わりに`std::string`を取るオーバーロードをもちます。
