@@ -45,16 +45,19 @@ ClassTypeは、(一般的なアロケータを用いるImageであることを�
 
 いくつか例を挙げます。
 
-```cpp
+{% highlight C++ %}
+
 bgr8_image_t               i;     // 8-bit unsigned (unsigned char) interleaved BGR image
 cmyk16_pixel_t;            x;     // 16-bit unsigned (unsigned short) CMYK pixel value;
 cmyk16sc_planar_ref_t      p(x);  // const reference to a 16-bit signed integral (signed short) planar CMYK pixel x.
 rgb32f_planar_step_ptr_t   ii;    // step iterator to a floating point 32-bit (float) planar RGB pixel.
-```
+
+{% endhighlight %}
 
 GILは、与えられたChannel型、Layout、プラナー形式であるか否か、X方向のステップをもっているか否か、mutableであるか否かの情報に基づいて、基本的なホモジーニアスメモリベースGILクラスの型を返すメタ関数を提供します。
 
-```cpp
+{% highlight C++ %}
+
 template <typename ChannelValue, typename Layout, bool IsPlanar=false,                     bool IsMutable=true>
 struct pixel_reference_type { typedef ... type; };
 
@@ -78,11 +81,13 @@ struct packed_image_type { typedef ... type; };
 
 template <typename ChannelBitSizeVector, typename Layout, typename Alloc=std::allocator<unsigned char> >
 struct bit_aligned_image_type { typedef ... type; };
-```
+
+{% endhighlight %}
 
 5個までのChannelをもつバイト単位Imageとビット単位Imageを構築する、ヘルパメタ関数もあります。
 
-```cpp
+{% highlight C++ %}
+
 template <typename BitField, unsigned Size1,
           typename Layout, typename Alloc=std::allocator<unsigned char> >
 struct packed_image1_type { typedef ... type; };
@@ -122,35 +127,41 @@ struct bit_aligned_image4_type { typedef ... type; };
 template <unsigned Size1, unsigned Size2, unsigned Size3, unsigned Size4, unsigned Size5,
           typename Layout, typename Alloc=std::allocator<unsigned char> >
 struct bit_aligned_image5_type { typedef ... type; };
-```
+
+{% endhighlight %}
 
 この`ChannelValue`は`ChannelValueConcept`に基づいたModelです。
 GILのメモリベースLocatorとViewでは、垂直方向ステップを動的に指定することが可能なので、IsYStepは必要ありません。
 IteratorとViewについては、Pixel型から構築することができます。
 
-```cpp
+{% highlight C++ %}
+
 template <typename Pixel, bool IsPlanar=false, bool IsStep=false, bool IsMutable=true>
 struct iterator_type_from_pixel { typedef ... type; };
 
 template <typename Pixel, bool IsPlanar=false, bool IsStepX=false, bool IsMutable=true>
 struct view_type_from_pixel { typedef ... type; };
-```
+
+{% endhighlight %}
 
 ヘテロジーニアスPixel型からは、ヘテロジーニアスIteratorとヘテロジーニアスViewが得られます。
 また、次に示す各種の型については、水平方向Iteratorから構築することができます。
 
-```cpp
+{% highlight C++ %}
+
 template <typename XIterator>
 struct type_from_x_iterator {
     typedef ... step_iterator_t;
     typedef ... xy_locator_t;
     typedef ... view_t;
 };
-```
+
+{% endhighlight %}
 
 既存の型の幾つかのプロパティを変更してクラス型を構築するメタ関数があります。
 
-```cpp
+{% highlight C++ %}
+
 template <typename PixelReference,
           typename ChannelValue, typename Layout, typename IsPlanar, typename IsMutable>
 struct derived_pixel_reference_type {
@@ -174,19 +185,23 @@ template <typename Image,
 struct derived_image_type {
     typedef ... type;  // Models ImageConcept
 };
-```
+
+{% endhighlight %}
 
 いくつかのプロパティを置き換えて、それ以外のプロパティには`boost::use_default`を使うことができます。
 このケースにおいて、`IsPlanar`、`IsStep`、`IsMutable`はMPLブール型定数です。
 例として、Viewとよく似た、ただしグレイスケール化とプラナー形式化を行った、新たなViewの型をどのように作成するのかを示します。
 
-```cpp
+{% highlight C++ %}
+
 typedef typename derived_view_type<View, boost::use_default, gray_t, mpl::true_>::type VT;
-```
+
+{% endhighlight %}
 
 `PixelBasedConcept`と`HomogeneousPixelBasedConcept`とそれらの上に構築されたメタ関数から提供されるメタ関数を用いることで、PixelベースのGILクラス(Pixel、Iterator、Locator、View)からPixelに関する型を取得することができます。
 
-```cpp
+{% highlight C++ %}
+
 template <typename T> struct color_space_type { typedef ... type; };
 template <typename T> struct channel_mapping_type { typedef ... type; };
 template <typename T> struct is_planar { typedef ... type; };
@@ -194,13 +209,16 @@ template <typename T> struct is_planar { typedef ... type; };
 // Defined by homogeneous constructs
 template <typename T> struct channel_type { typedef ... type; };
 template <typename T> struct num_channels { typedef ... type; };
-```
+
+{% endhighlight %}
 
 これらのメタ関数のいくつかは、次のように評価することが可能な整数型を返します。
 
-```cpp
+{% highlight C++ %}
+
 BOOST_STATIC_ASSERT(is_planar<rgb8_planar_view_t>::value == true);
-```
+
+{% endhighlight %}
 
 GILは、次に示す命名規則に従う、型解析を行うメタ関数についてもサポートしています。
 
@@ -208,11 +226,13 @@ GILは、次に示す命名規則に従う、型解析を行うメタ関数に�
 
 例を挙げます。
 
-```cpp
+{% highlight C++ %}
+
 if (view_is_mutable<View>::value) {
    ...
 }
-```
+
+{% endhighlight %}
 
 基本的なGILコンストラクトは、ビルトインGILクラスを用いたメモリベースコンストラクトであり、間接参照に対して実行されるいかなる関数オブジェクトももちません。
 例を挙げると、単純なプラナーまたはインタリーブ形式でstepまたはnon-stepなRGB Image Viewは基本的なGILコンストラクトですが、Color Converted ViewやVirtual Viewはそうではありません。
