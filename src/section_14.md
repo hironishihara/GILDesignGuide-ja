@@ -31,7 +31,8 @@ layout: default
 
 Pixelの値、ポインタ、参照を用いる処理を、ここにいくつか示します。
 
-```cpp
+{% highlight C++ %}
+
 rgb8_pixel_t p1(255,0,0);     // make a red RGB pixel
 bgr8_pixel_t p2 = p1;         // RGB and BGR are compatible and the channels will be properly mapped.
 assert(p1==p2);               // p2 will also be red.
@@ -54,11 +55,13 @@ p2=ref; p2=p1; p2=ptr[7]; p2=rgb8_pixel_t(1,2,3);    // planar/interleaved refer
 //p1 = pixel<float, rgb_layout_t>();// compile error: Incompatible channel depth
 //p1 = pixel<bits8, rgb_layout_t>();// compile error: Incompatible color space (even though it has the same number of channels)
 //p1 = pixel<bits8,rgba_layout_t>();// compile error: Incompatible color space (even though it contains red, green and blue channels)
-```
+
+{% endhighlight %}
 
 続いては、Pixelをgeneric codeの中でどのように使うのかを示します。
 
-```cpp
+{% highlight C++ %}
+
 template <typename GrayPixel, typename RGBPixel>
 void gray_to_rgb(const GrayPixel& src, RGBPixel& dst) {
     gil_function_requires<PixelConcept<GrayPixel> >();
@@ -87,7 +90,8 @@ gray_to_rgb(gray8_pixel_t(33), b16(5,5));
 rgb32f_planar_view_t rpv32;
 gray8_view_t gv8(...);
 gray_to_rgb(*gv8.begin(), rpv32[5]);
-```
+
+{% endhighlight %}
 
 この例が示すように、入力と出力が共に`PixelConcept`と`MutablePixelConcept`に各々基づいたModelである限りにおいて、それらは、参照であっても値であっても構いませんし、プラナー形式であってもインタリーブ形式であっても構いません。
 
@@ -97,7 +101,8 @@ gray_to_rgb(*gv8.begin(), rpv32[5]);
 そのような場合には、画像の境界線の外側にK個のPixel分のマージンを作ってみるのはどうでしょうか。
 次のように作成します。
 
-```cpp
+{% highlight C++ %}
+
 template <typename SrcView,   // Models ImageViewConcept (the source view)
           typename DstImage>  // Models ImageConcept     (the returned image)
 void create_with_margin(const SrcView& src, int k, DstImage& result) {
@@ -109,19 +114,22 @@ void create_with_margin(const SrcView& src, int k, DstImage& result) {
     typename DstImage::view_t centerImg=subimage_view(view(result), k,k,src.width(),src.height());
     std::copy(src.begin(), src.end(), centerImg.begin());
 }
-```
+
+{% endhighlight %}
 
 十分な大きさのImageを確保し、`subimage_view`を使って(k,k)を始点とする`src`と同じサイズの中心領域を指定する浅いImage(すなわち、View)を作成し、`src`をその中心領域へコピーします。
 もしマージンに初期化が必要であれば、`fill_pixels`を実行しておくこともできるでしょう。
 `copy_pixels`アルゴリズムを使って、このコードをいかにシンプルにするかを示します。
 
-```cpp
+{% highlight C++ %}
+
 template <typename SrcView, typename DstImage>
 void create_with_margin(const SrcView& src, int k, DstImage& result) {
     result.recreate(src.width()+2*k, src.height()+2*k);
     copy_pixels(src, subimage_view(view(result), k,k,src.width(),src.height()));
 }
-```
+
+{% endhighlight %}
 
 (`image::recreate`は、`operator=`が不必要なコピーコンストラクションを行う分、効率的であることにも注意してください。)
 上記のサンプルはColor Spece、Pixel深度、プラナー形式であるかインタリーブ形式であるかを問わずに動作するだけではありません。
@@ -137,46 +145,56 @@ staticなパラメータと実行時に型が決まるパラメータの両方�
 ヒストグラムは、各瓶に振り分けられたPixel値の数をカウントすることで得られます。
 グレイスケールPixelは整数型に変換可能なので、次に示すメソッドはグレイスケール(単要素の)Image Viewを取ります。
 
-```cpp
+{% highlight C++ %}
+
 template <typename GrayView, typename R>
 void grayimage_histogram(const GrayView& img, R& hist) {
     for (typename GrayView::iterator it=img.begin(); it!=img.end(); ++it)
         ++hist[*it];
 }
-```
+
+{% endhighlight %}
 
 `boost::lambda`とGILの`for_each_pixel`アルゴリズムを用いると、もっとコンパクトに書くことができます。
 
-```cpp
+{% highlight C++ %}
+
 template <typename GrayView, typename R>
 void grayimage_histogram(const GrayView& v, R& hist) {
     for_each_pixel(v, ++var(hist)[_1]);
 }
-```
+
+{% endhighlight %}
 
 ここの`for_each_pixel`は`std::for_each`を呼び出しており、`var`と`_1`は`boost::lambda`コンストラクトです。
 明度のヒストグラムを算出するには、ImageのグレイスケールViewを使って上記のメソッドを呼び出します。
 
-```cpp
+{% highlight C++ %}
+
 template <typename View, typename R>
 void luminosity_histogram(const View& v, R& hist) {
     grayimage_histogram(color_converted_view<gray8_pixel_t>(v),hist);
 }
-```
+
+{% endhighlight %}
 
 これは、次のように呼び出します。
 
-```cpp
+{% highlight C++ %}
+
 unsigned char hist[256];
 std::fill(hist,hist+256,0);
 luminosity_histogram(my_view,hist);
-```
+
+{% endhighlight %}
 
 また、画像の2番目のChannelの左上100x100についてのヒストグラムが見たい場合には、次のように呼びます：
 
-```cpp
+{% highlight C++ %}
+
 grayimage_histogram(nth_channel_view(subimage_view(img,0,0,100,100),1),hist);
-```
+
+{% endhighlight %}
 
 Pixelがコピーされることもなければ、余計なメモリが確保されることもありません。
 すなわち、サポートされたColor SpaceとChannel深度であれば、このコードは入力Pixelの上で直接実行されます。
@@ -187,7 +205,8 @@ Pixelがコピーされることもなければ、余計なメモリが確保さ
 The following code illustrates the power of using image views:
 次のコードは、Image Viewを使うことの威力を説明します。
 
-```cpp
+{% highlight C++ %}
+
 jpeg_read_image("monkey.jpg", img);
 step1=view(img);
 step2=subimage_view(step1, 200,300, 150,150);
@@ -195,7 +214,8 @@ step3=color_converted_view<rgb8_view_t,gray8_pixel_t>(step2);
 step4=rotated180_view(step3);
 step5=subsampled_view(step4, 2,1);
 jpeg_write_view("monkey_transform.jpg", step5);
-```
+
+{% endhighlight %}
 
 途中経過の画像をここに示します。
 
