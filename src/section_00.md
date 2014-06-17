@@ -22,7 +22,7 @@
 -->
 
 
-# Generic Image Libraryデザインガイド
+# Generic Image Library デザインガイド
 
 #### 著者:
 Lubomir Bourdev (<bourdev@adobe.com>)  
@@ -93,8 +93,8 @@ You can find a quick, jump-start GIL tutorial on the main GIL page at http://ope
     * 基本となるIterator
     * Iteratorアダプタ
     * Pixel間接参照アダプタ
-    * Step Iterator
-    * Pixelロケータ
+    * ステップIterator
+    * Pixel Locator
     * 2次元画像上のIterator  
 9. Image View  
     * メモリ上のPixel生データからのImage View作成
@@ -111,8 +111,9 @@ You can find a quick, jump-start GIL tutorial on the main GIL page at http://ope
     * Image Viewの使用  
 15. Generic Image Libraryの拡張  
     * 独自のColor Space定義  
-    * Color Conversionの多重定義  
     * 独自のChannel Type定義  
+    * 色変換のオーバーロード
     * 独自のImage View定義  
-16. より専門的な事項
-17. まとめ
+16. より専門的な事項  
+    * 参照Proxyの作成
+17. 結び
