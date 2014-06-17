@@ -43,11 +43,13 @@ GILでは、独自のPixel Iterator、Locator、Image View、Image、Channel型�
 ほとんどの場合、新しいChannel型を使用する際に特別なことをする必要はありません。
 それをただ使うだけです。
 
-```cpp
+{% highlight C++ %}
+
 typedef pixel<double,rgb_layout_t>   rgb64_pixel_t;    // 64 bit RGB pixel
 typedef rgb64_pixel*                 rgb64_pixel_ptr_t;// pointer to 64-bit interleaved data
 typedef image_type<double,rgb_layout_t>::type rgb64_image_t;    // 64-bit interleaved image
-```
+
+{% endhighlight %}
 
 もし独自のChannel型を使いたいと考えたときには、そのChannel型のための`channel_traits`の実装を提供する必要があるでしょう(`channel.hpp`を参照ください)。
 もし、独自のChannel型と既存のChannel型の変換を行いたいと考えたときには、`channel_convert`のオーバーロードを提供する必要があるでしょう。
@@ -59,7 +61,8 @@ typedef image_type<double,rgb_layout_t>::type rgb64_image_t;    // 64-bit interl
 いつものように、特定の組み合わせにおける色変換だけを再定義して、その他の組み合わせについては既存のGILが用意する色変換を使いたいと考えているかもしれません。
 例として、反転したグレイスケール画像を結果として受け取るという色変換でオーバーロードする方法について示します。
 
-```cpp
+{% highlight C++ %}
+
 // make the default use GIL's default
 template <typename SrcColorSpace, typename DstColorSpace>
 struct my_color_converter_impl
@@ -85,14 +88,17 @@ struct my_color_converter {
         my_color_converter_impl<SrcColorSpace,DstColorSpace>()(src,dst);
     }
 };
-```
+
+{% endhighlight %}
 
 GILの色変換関数はオプションのパラメータとしてカラーコンバータをとります。
 独自のカラーコンバータを渡すこともできます。
 
-```cpp
+{% highlight C++ %}
+
 color_converted_view<gray8_pixel_t>(img_view,my_color_converter());
-```
+
+{% endhighlight %}
 
 ### 独自のImage View定義
 あるPixelから他のPixelを得るメカニズムか間接参照に対して任意のPixel変換を行うメカニズムかをオーバーロードすることで、独自のPixel IteratorやLocatorやViewを提供することが出来ます。
@@ -100,7 +106,8 @@ color_converted_view<gray8_pixel_t>(img_view,my_color_converter());
 まずは、Pixel Iteratorから間接参照するときに呼ばれる関数オブジェクトである、`PixelDereferenceAdaptorConcept`のModelを定義する必要があります。
 これは、目的のPixel型へ変換するために`color_convert`を呼びます。
 
-```cpp
+{% highlight C++ %}
+
 template <typename SrcConstRefP,  // const reference to the source pixel
           typename DstP>          // Destination pixel value (models PixelValueConcept)
 class color_convert_deref_fn {
@@ -119,12 +126,14 @@ public:
         return dstP;
     }
 };
-```
+
+{% endhighlight %}
 
 そのとき、間接参照の上で与えられた関数オブジェクト(`deref_t`)を実行するView型を構築する、Image Viewのメンバstructである`add_deref`を使用します。
 このケースでは、色変換を実行します。
 
-```cpp
+{% highlight C++ %}
+
 template <typename SrcView, typename DstP>
 struct color_converted_view_type {
 private:
@@ -135,16 +144,19 @@ public:
     typedef typename add_ref_t::type type; // the color converted view type
     static type make(const SrcView& sv) { return add_ref_t::make(sv, deref_t()); }
 };
-```
+
+{% endhighlight %}
 
 最終的に、`color_converted_view`のコードは、元となるViewから簡単に`color-converted view`を作成します。
 
-```cpp
+{% highlight C++ %}
+
 template <typename DstP, typename View> inline
 typename color_converted_view_type<View,DstP>::type color_convert_view(const View& src) {
     return color_converted_view_type<View,DstP>::make(src);
 }
-```
+
+{% endhighlight %}
 
 (実際の色変換Viewによる変換は、ユーザ独自の色変換メソッドの記述を許可する追加の色変換オブジェクトを取るなど、少し複雑です。)
 マンデルブロ集合を定義するVirtual Image Viewを作成する例については、GILチュートリアルを見てください。
