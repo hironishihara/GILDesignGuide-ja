@@ -114,21 +114,19 @@ concept PixelConvertibleConcept {
 `PixelConcept`と`PixelValueConcept`の違いは、ChannelとColor Baseの違いと似ています。
 Pixel参照Proxyは両方のConceptに基づいたModelですが、Pixelは後者のConceptだけに基づいたModelです。
 
-##### 関連するConcept:
+#### 関連するConcept:
 
-```cpp
-PixelBasedConcept<P>
-PixelConcept<Pixel>
-MutablePixelConcept<Pixel>
-PixelValueConcept<Pixel>
-HomogeneousPixelConcept<Pixel>
-MutableHomogeneousPixelConcept<Pixel>
-HomogeneousPixelValueConcept<Pixel>
-PixelsCompatibleConcept<Pixel1,Pixel2>
-PixelConvertibleConcept<SrcPixel,DstPixel>
-```
+- `PixelBasedConcept<P>`
+- `PixelConcept<Pixel>`
+- `MutablePixelConcept<Pixel>`
+- `PixelValueConcept<Pixel>`
+- `HomogeneousPixelConcept<Pixel>`
+- `MutableHomogeneousPixelConcept<Pixel>`
+- `HomogeneousPixelValueConcept<Pixel>`
+- `PixelsCompatibleConcept<Pixel1,Pixel2>`
+- `PixelConvertibleConcept<SrcPixel,DstPixel>`
 
-##### Model:
+#### Model:
 
 最もよく用いられるPixelは、メモリ上でひとまとまりになったホモジーニアスPixelです。
 このために、GILはChannelに関連づけられた型とLayoutでテンプレート化した`struct pixel`を提供しています。
@@ -225,7 +223,7 @@ for (int i=0; i<8; ++i) {
 // Result: 0x60 0x30 0x11 0x0C 0x06 0x83 0xC1
 ```
 
-##### Algorithm:
+#### Algorithm:
 
 Pixelは`ColorBaseConcept`と`PixelBaseConcept`に基づいたModelなので、Pixel上でも全てのColor Baseアルゴリズムとメタ関数は問題なく動作します。
 

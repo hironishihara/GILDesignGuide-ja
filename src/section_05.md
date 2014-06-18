@@ -69,15 +69,13 @@ Color Spaceは、Pixelを構成するChannelに関して、それらの組み合
 Color Spaceは、そのColor Spaceがもつ全ての要素の型を包含したMPLランダムアクセスシークエンスです。
 ふたつのColor Spaceが等しい(同じ色のセットを同じ順序でもつ)とき、それらのColor Space間には互換性があると見なされます。
 
-##### 関連するConcept:
+#### 関連するConcept:
 
-```cpp
-ColorSpaceConcept<ColorSpace>
-ColorSpacesCompatibleConcept<ColorSpace1,ColorSpace2>
-ChannelMappingConcept<Mapping>
-```
+- `ColorSpaceConcept<ColorSpace>`
+- `ColorSpacesCompatibleConcept<ColorSpace1,ColorSpace2>`
+- `ChannelMappingConcept<Mapping>`
 
-##### Model:
+#### Model:
 
 GILは`gray_t`, `rgb_t`, `rgba_t`, `cmyk_t`を提供しています。
 また、2〜5個までのChannelをもった無名のN-Channel Color Spaceである、`devicen_t<2>`, `devicen_t<3>`, `devicen_t<4>`, `devicen_t<5>`も提供しています。

@@ -94,13 +94,11 @@ concept Point2DConcept<typename T> : PointNDConcept<T> {
 };
 ```
 
-##### 関連するConcept:
+#### 関連するConcept:
 
-```cpp
-PointNDConcept<T>
-Point2DConcept<T>
-```
+- `PointNDConcept<T>`
+- `Point2DConcept<T>`
 
-##### Model:
+#### Model:
 
 GILは、`Point2DConcept`に基づいたModelである`point2<T>`を提供します。この`T`は座標の型を表しています。

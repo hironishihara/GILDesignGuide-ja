@@ -80,13 +80,13 @@ concept ImageConcept<RandomAccess2DImageConcept Img> {
 
 LocatorやImage Viewと異なり、immutableなImageはそもそも不便であるため、わざわざ'mutable'を指定したConceptのセットはもちません。
 
-##### 関連するConcept:
+#### 関連するConcept:
 
 - `RandomAccessNDImageConcept<Image>`
 - `RandomAccess2DImageConcept<Image>`
 - `ImageConcept<Image>`
 
-##### Model:
+#### Model:
 
 GILは、Value型(すなわち、Pixel)をパラメータにもつテンプレートであり、ImageConceptに基づいたModelである、Imageクラスを提供します。
 

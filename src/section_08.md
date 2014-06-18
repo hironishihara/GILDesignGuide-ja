@@ -41,13 +41,12 @@ template <typename Iterator>
 concept MutablePixelIteratorConcept : PixelIteratorConcept<Iterator>, MutableRandomAccessIteratorConcept<Iterator> {};
 ```
 
-##### 関連するConcept:
-
+#### 関連するConcept:
 
 - `PixelIteratorConcept<Iterator>`
 - `MutablePixelIteratorConcept<Iterator>`
 
-##### Model:
+#### Model:
 
 Pixelのビルトインポインタ`pixel<ChannelValue,Layout>*`は、インタリーブ形式ホモジーニアスPixelを対象とするPixel IteratorのためのGILのModelです。
 同様に、`packed_pixel<PixelData,ChannelRefVec,Layout>*`は、インタリーブ形式バイト単位Pixelを対象とするIteratorのためのGILのModelです。
@@ -111,12 +110,12 @@ template <boost_concepts::Mutable_ForwardIteratorConcept Iterator>
 concept MutableIteratorAdaptorConcept : IteratorAdaptorConcept<Iterator> {};
 ```
 
-##### 関連するConcept:
+#### 関連するConcept:
 
 - `IteratorAdaptorConcept<Iterator>`
 - `MutableIteratorAdaptorConcept<Iterator>`
 
-##### Model:
+#### Model:
 
 GILは`IteratorAdaptorConcept`のModelをいくつか提供しています。
 
@@ -144,7 +143,7 @@ concept PixelDereferenceAdaptorConcept : DefaultConstructibleConcept<D>, CopyCon
 };
 ```
 
-##### Model:
+#### Model:
 
 GILは`PixelDereferenceAdaptorConcept`のModelをいくつか提供します。
 
@@ -211,14 +210,14 @@ concept HasDynamicXStepTypeConcept<typename T> {
 
 GILが提供する全てのPixel Iterator、Locator、Image ViewのModelは、`HasDynamicXStepConcept`をサポートしています。
 
-##### 関連するConcept:
+#### 関連するConcept:
 
 - `StepIteratorConcept<Iterator>`
 - `MutableStepIteratorConcept<Iterator>`
 - `MemoryBasedIteratorConcept<Iterator>`
 - `HasDynamicXStepTypeConcept<T>`
 
-##### Model:
+#### Model:
 
 現在GILが提供している基本的なメモリベースIteratorは、全て`MemoryBasedIteratorConcept`に基づいたModelです。
 GILは`PixelIteratorConcept`、`StepIteratorConcept`、`MemoryBasedIteratorConcept`に基づいたModelである`memory_based_step_iterator`クラスを提供しています。
@@ -375,7 +374,7 @@ concept PixelLocatorConcept<RandomAccess2DLocatorConcept Loc> {
 concept MutablePixelLocatorConcept<PixelLocatorConcept Loc> : MutableRandomAccess2DLocatorConcept<Loc> {};
 ```
 
-##### 関連するConcept:
+#### 関連するConcept:
 
 - `HasDynamicYStepTypeConcept<T>`
 - `HasTransposedTypeConcept<T>`
@@ -387,7 +386,7 @@ concept MutablePixelLocatorConcept<PixelLocatorConcept Loc> : MutableRandomAcces
 - `MutablePixelLocatorConcept<Locator>`
 
 
-##### Model:
+#### Model:
 
 GILは2種類の`PixelLocatorConcept`のModelを提供します。
 メモリベースLocatorである`memory_based_2d_locator`と、Virtual Locatorである`virtual_2d_locator`です。
@@ -459,7 +458,7 @@ GILの`itarator_from_2d`は、画像中の全Pixelを左から右、上から下
 これは、ひとつのLocatorと画像の幅と現在のX座標をもっています。
 これは"キャリッジリターン"のタイミングを決定するために十分な情報です。
 
-##### Synopsis:
+#### Synopsis:
 
 ```cpp
 template <typename Locator>  // Models PixelLocatorConcept
