@@ -77,7 +77,7 @@ GILの`variant`は`boost::variant`と考え方は似ています(だからこそ
 おそらく、最大の違いは、許可する型を列挙するMPLランダムアクセスシークエンスをGILの`variant`が引数として常に1個とることです。
 インタフェイスをひとつにしたことで、GILの`variant`はジェネリックコードの中で使いやすくなっています。
 
-##### Synopsis:
+#### Synopsis:
 
 {% highlight C++ %}
 

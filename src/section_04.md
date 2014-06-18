@@ -210,19 +210,15 @@ Algorithms:
 なぜなら、このようなChannelは、C++における参照のように、デフォルトコンストラクタをもたない可能性があるからです。
 また、アルゴリズムが、算術演算子のサポートなど、追加の要件を課すかもしれないことにも注意が必要です。
 
-##### 関連するConcept:
+#### 関連するConcept:
 
-{% highlight C++ %}
+- `ChannelConcept<T>`
+- `ChannelValueConcept<T>`
+- `MutableChannelConcept<T>`
+- `ChannelsCompatibleConcept<T1,T2>`
+- `ChannelConvertibleConcept<SrcChannel,DstChannel>`
 
-ChannelConcept<T>
-ChannelValueConcept<T>
-MutableChannelConcept<T>
-ChannelsCompatibleConcept<T1,T2>
-ChannelConvertibleConcept<SrcChannel,DstChannel>
-
-{% endhighlight %}
-
-##### Model:
+#### Model:
 
 組み込みの整数型と浮動小数点型は、全て、有効なChannelです。
 GILは、いくつかの整数型について、標準のtypedefを提供しています。
@@ -277,7 +273,7 @@ class packed_dynamic_channel_reference;
 前者は軽快かつコンパクトなModelであり、後者はより適応性のあるModelです。
 例を挙げると、後者のModelはビット単位のレンジをもつChannel上で動作するIteratorを構築することができます。
 
-##### Algorithms:
+#### Algorithms:
 
 "565"のビットパターンをもつ16bit Pixelを構築し、各Channelに最大値を代入する方法を示します。
 

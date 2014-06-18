@@ -374,18 +374,15 @@ concept Point2DConcept<typename T> : PointNDConcept<T> {
 
 {% endhighlight %}
 
-##### 関連するConcept:
+#### 関連するConcept:
 
-{% highlight C++ %}
+- `PointNDConcept<T>`
+- `Point2DConcept<T>`
 
-PointNDConcept<T>
-Point2DConcept<T>
-
-{% endhighlight %}
-
-##### Model:
+#### Model:
 
 GILは、`Point2DConcept`に基づいたModelである`point2<T>`を提供します。この`T`は座標の型を表しています。
+
 
 <!--
 A channel indicates the intensity of a color component (for example, the red channel in an RGB pixel).
@@ -571,19 +568,15 @@ Algorithms:
 なぜなら、このようなChannelは、C++における参照のように、デフォルトコンストラクタをもたない可能性があるからです。
 また、アルゴリズムが、算術演算子のサポートなど、追加の要件を課すかもしれないことにも注意が必要です。
 
-##### 関連するConcept:
+#### 関連するConcept:
 
-{% highlight C++ %}
+- `ChannelConcept<T>`
+- `ChannelValueConcept<T>`
+- `MutableChannelConcept<T>`
+- `ChannelsCompatibleConcept<T1,T2>`
+- `ChannelConvertibleConcept<SrcChannel,DstChannel>`
 
-ChannelConcept<T>
-ChannelValueConcept<T>
-MutableChannelConcept<T>
-ChannelsCompatibleConcept<T1,T2>
-ChannelConvertibleConcept<SrcChannel,DstChannel>
-
-{% endhighlight %}
-
-##### Model:
+#### Model:
 
 組み込みの整数型と浮動小数点型は、全て、有効なChannelです。
 GILは、いくつかの整数型について、標準のtypedefを提供しています。
@@ -638,7 +631,7 @@ class packed_dynamic_channel_reference;
 前者は軽快かつコンパクトなModelであり、後者はより適応性のあるModelです。
 例を挙げると、後者のModelはビット単位のレンジをもつChannel上で動作するIteratorを構築することができます。
 
-##### Algorithms:
+#### Algorithms:
 
 "565"のビットパターンをもつ16bit Pixelを構築し、各Channelに最大値を代入する方法を示します。
 
@@ -757,17 +750,13 @@ Color Spaceは、Pixelを構成するChannelに関して、それらの組み合
 Color Spaceは、そのColor Spaceがもつ全ての要素の型を包含したMPLランダムアクセスシークエンスです。
 ふたつのColor Spaceが等しい(同じ色のセットを同じ順序でもつ)とき、それらのColor Space間には互換性があると見なされます。
 
-##### 関連するConcept:
+#### 関連するConcept:
 
-{% highlight C++ %}
+- `ColorSpaceConcept<ColorSpace>`
+- `ColorSpacesCompatibleConcept<ColorSpace1,ColorSpace2>`
+- `ChannelMappingConcept<Mapping>`
 
-ColorSpaceConcept<ColorSpace>
-ColorSpacesCompatibleConcept<ColorSpace1,ColorSpace2>
-ChannelMappingConcept<Mapping>
-
-{% endhighlight %}
-
-##### Model:
+#### Model:
 
 GILは`gray_t`, `rgb_t`, `rgba_t`, `cmyk_t`を提供しています。
 また、2〜5個までのChannelをもった無名のN-Channel Color Spaceである、`devicen_t<2>`, `devicen_t<3>`, `devicen_t<4>`, `devicen_t<5>`も提供しています。
@@ -813,6 +802,7 @@ typedef layout<rgba_t, mpl::vector4_c<int,1,2,3,0> > argb_layout_t;
 typedef layout<rgba_t, mpl::vector4_c<int,3,2,1,0> > abgr_layout_t;
 
 {% endhighlight %}
+
 
 ## 6. Color Base
 Color Baseは色要素のコンテナです。
@@ -892,7 +882,7 @@ Color BaseがBGR Layoutをもつなら、フィジカルな順序でみると最
 GILは、あらゆる`ColorBaseConcept`のModel上で動作し、セマンティックに要素を返す関数`semantic_at_c<K>(ColorBase)` (あとで述べます)を提供します。
 ふたつのColor Baseは、同じColor Spaceをもち、セマンティックに対をなす各要素が互いに変換可能であるとき、互換性をもちます。
 
-##### Model:
+#### Model:
 
 GILは、ホモジーニアスなColor Base(各要素が全て同じ型のColor Base)のためのModelを提供します。
 
@@ -908,7 +898,7 @@ namespace detail {
 もうひとつの`ColorBaseConcept`のModelは`packed_pixel`であり、ビット単位のレンジをもつChannelに基づいたPixelです。
 詳しくは、第7章を参照ください。
 
-##### Algorithm:
+#### Algorithm:
 
 GILは、次に示す、Color Base上で動作する関数とメタ関数を提供します。
 
@@ -1122,23 +1112,19 @@ concept PixelConvertibleConcept {
 `PixelConcept`と`PixelValueConcept`の違いは、ChannelとColor Baseの違いと似ています。
 Pixel参照Proxyは両方のConceptに基づいたModelですが、Pixelは後者のConceptだけに基づいたModelです。
 
-##### 関連するConcept:
+#### 関連するConcept:
 
-{% highlight C++ %}
+- `PixelBasedConcept<P>`
+- `PixelConcept<Pixel>`
+- `MutablePixelConcept<Pixel>`
+- `PixelValueConcept<Pixel>`
+- `HomogeneousPixelConcept<Pixel>`
+- `MutableHomogeneousPixelConcept<Pixel>`
+- `HomogeneousPixelValueConcept<Pixel>`
+- `PixelsCompatibleConcept<Pixel1,Pixel2>`
+- `PixelConvertibleConcept<SrcPixel,DstPixel>`
 
-PixelBasedConcept<P>
-PixelConcept<Pixel>
-MutablePixelConcept<Pixel>
-PixelValueConcept<Pixel>
-HomogeneousPixelConcept<Pixel>
-MutableHomogeneousPixelConcept<Pixel>
-HomogeneousPixelValueConcept<Pixel>
-PixelsCompatibleConcept<Pixel1,Pixel2>
-PixelConvertibleConcept<SrcPixel,DstPixel>
-
-{% endhighlight %}
-
-##### Model:
+#### Model:
 
 最もよく用いられるPixelは、メモリ上でひとまとまりになったホモジーニアスPixelです。
 このために、GILはChannelに関連づけられた型とLayoutでテンプレート化した`struct pixel`を提供しています。
@@ -1243,7 +1229,7 @@ for (int i=0; i<8; ++i) {
 
 {% endhighlight %}
 
-##### Algorithm:
+#### Algorithm:
 
 Pixelは`ColorBaseConcept`と`PixelBaseConcept`に基づいたModelなので、Pixel上でも全てのColor Baseアルゴリズムとメタ関数は問題なく動作します。
 
@@ -1294,6 +1280,7 @@ color_convert(red_in_rgb8,red_in_cmyk16);
 
 {% endhighlight %}
 
+
 ## 8. Pixel Iterator
 
 ### 基本となるIterator
@@ -1315,13 +1302,12 @@ concept MutablePixelIteratorConcept : PixelIteratorConcept<Iterator>, MutableRan
 
 {% endhighlight %}
 
-##### 関連するConcept:
-
+#### 関連するConcept:
 
 - `PixelIteratorConcept<Iterator>`
 - `MutablePixelIteratorConcept<Iterator>`
 
-##### Model:
+#### Model:
 
 Pixelのビルトインポインタ`pixel<ChannelValue,Layout>*`は、インタリーブ形式ホモジーニアスPixelを対象とするPixel IteratorのためのGILのModelです。
 同様に、`packed_pixel<PixelData,ChannelRefVec,Layout>*`は、インタリーブ形式バイト単位Pixelを対象とするIteratorのためのGILのModelです。
@@ -1391,12 +1377,12 @@ concept MutableIteratorAdaptorConcept : IteratorAdaptorConcept<Iterator> {};
 
 {% endhighlight %}
 
-##### 関連するConcept:
+#### 関連するConcept:
 
 - `IteratorAdaptorConcept<Iterator>`
 - `MutableIteratorAdaptorConcept<Iterator>`
 
-##### Model:
+#### Model:
 
 GILは`IteratorAdaptorConcept`のModelをいくつか提供しています。
 
@@ -1426,7 +1412,7 @@ concept PixelDereferenceAdaptorConcept : DefaultConstructibleConcept<D>, CopyCon
 
 {% endhighlight %}
 
-##### Model:
+#### Model:
 
 GILは`PixelDereferenceAdaptorConcept`のModelをいくつか提供します。
 
@@ -1499,14 +1485,14 @@ concept HasDynamicXStepTypeConcept<typename T> {
 
 GILが提供する全てのPixel Iterator、Locator、Image ViewのModelは、`HasDynamicXStepConcept`をサポートしています。
 
-##### 関連するConcept:
+#### 関連するConcept:
 
 - `StepIteratorConcept<Iterator>`
 - `MutableStepIteratorConcept<Iterator>`
 - `MemoryBasedIteratorConcept<Iterator>`
 - `HasDynamicXStepTypeConcept<T>`
 
-##### Model:
+#### Model:
 
 現在GILが提供している基本的なメモリベースIteratorは、全て`MemoryBasedIteratorConcept`に基づいたModelです。
 GILは`PixelIteratorConcept`、`StepIteratorConcept`、`MemoryBasedIteratorConcept`に基づいたModelである`memory_based_step_iterator`クラスを提供しています。
@@ -1675,7 +1661,7 @@ concept MutablePixelLocatorConcept<PixelLocatorConcept Loc> : MutableRandomAcces
 
 {% endhighlight %}
 
-##### 関連するConcept:
+#### 関連するConcept:
 
 - `HasDynamicYStepTypeConcept<T>`
 - `HasTransposedTypeConcept<T>`
@@ -1687,7 +1673,7 @@ concept MutablePixelLocatorConcept<PixelLocatorConcept Loc> : MutableRandomAcces
 - `MutablePixelLocatorConcept<Locator>`
 
 
-##### Model:
+#### Model:
 
 GILは2種類の`PixelLocatorConcept`のModelを提供します。
 メモリベースLocatorである`memory_based_2d_locator`と、Virtual Locatorである`virtual_2d_locator`です。
@@ -1763,7 +1749,7 @@ GILの`itarator_from_2d`は、画像中の全Pixelを左から右、上から下
 これは、ひとつのLocatorと画像の幅と現在のX座標をもっています。
 これは"キャリッジリターン"のタイミングを決定するために十分な情報です。
 
-##### Synopsis:
+#### Synopsis:
 
 {% highlight C++ %}
 
@@ -2251,13 +2237,13 @@ concept ImageConcept<RandomAccess2DImageConcept Img> {
 
 LocatorやImage Viewと異なり、immutableなImageはそもそも不便であるため、わざわざ'mutable'を指定したConceptのセットはもちません。
 
-##### 関連するConcept:
+#### 関連するConcept:
 
 - `RandomAccessNDImageConcept<Image>`
 - `RandomAccess2DImageConcept<Image>`
 - `ImageConcept<Image>`
 
-##### Model:
+#### Model:
 
 GILは、Value型(すなわち、Pixel)をパラメータにもつテンプレートであり、ImageConceptに基づいたModelである、Imageクラスを提供します。
 
@@ -2328,7 +2314,7 @@ GILの`variant`は`boost::variant`と考え方は似ています(だからこそ
 おそらく、最大の違いは、許可する型を列挙するMPLランダムアクセスシークエンスをGILの`variant`が引数として常に1個とることです。
 インタフェイスをひとつにしたことで、GILの`variant`はジェネリックコードの中で使いやすくなっています。
 
-##### Synopsis:
+#### Synopsis:
 
 {% highlight C++ %}
 
@@ -2935,7 +2921,7 @@ GILは`std::copy`をオーバーライドします。
 Imageがパディングをもっていない場合、(行の末尾をチェックが必要な少々複雑な1次元Iteratorではなく、)軽量な水平方向Iteratorを使うでしょう。
 staticなパラメータと実行時に型が決まるパラメータの両方を考慮して、最速の方法を選択します。
 
-### Histogram
+### ヒストグラム
 ヒストグラムは、各瓶に振り分けられたPixel値の数をカウントすることで得られます。
 グレイスケールPixelは整数型に変換可能なので、次に示すメソッドはグレイスケール(単要素の)Image Viewを取ります。
 
@@ -3157,7 +3143,7 @@ typename color_converted_view_type<View,DstP>::type color_convert_view(const Vie
 
 ## 16. より専門的な事項
 
-#### 参照Proxyの作成
+### 参照Proxyの作成
 与えられたオブジェクトへの参照となるProxy型の作成が必要となる場合があります。
 これらの例として、GILのプラナー形式Pixelへの参照やGILのサブバイトChannelへの参照が挙げられます。
 参照Proxy型の記述に際しては、注意が必要です。

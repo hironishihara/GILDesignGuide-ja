@@ -104,7 +104,7 @@ Color BaseがBGR Layoutをもつなら、フィジカルな順序でみると最
 GILは、あらゆる`ColorBaseConcept`のModel上で動作し、セマンティックに要素を返す関数`semantic_at_c<K>(ColorBase)` (あとで述べます)を提供します。
 ふたつのColor Baseは、同じColor Spaceをもち、セマンティックに対をなす各要素が互いに変換可能であるとき、互換性をもちます。
 
-##### Model:
+#### Model:
 
 GILは、ホモジーニアスなColor Base(各要素が全て同じ型のColor Base)のためのModelを提供します。
 
@@ -120,7 +120,7 @@ namespace detail {
 もうひとつの`ColorBaseConcept`のModelは`packed_pixel`であり、ビット単位のレンジをもつChannelに基づいたPixelです。
 詳しくは、第7章を参照ください。
 
-##### Algorithm:
+#### Algorithm:
 
 GILは、次に示す、Color Base上で動作する関数とメタ関数を提供します。
 
