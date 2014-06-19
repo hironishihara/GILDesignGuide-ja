@@ -2,11 +2,11 @@
 layout: default
 ---
 
-<!--
-          Copyright 2014 Hiroaki Nishihara
- Distributed under the Boost Software License, Version 1.0.
-    (See accompanying file LICENSE_1_0.txt or copy at
-          http://www.boost.org/LICENSE_1_0.txt)
+<!-- Copyright 2014 Hiroaki Nishihara
+
+     Distributed under the Boost Software License, Version 1.0.
+     (See accompanying file LICENSE_1_0.txt or copy at
+     http://www.boost.org/LICENSE_1_0.txt)
 -->
 
 <!-- Copyright 2008 Lubomir Bourdev and Hailin Jin
@@ -53,7 +53,6 @@ Boost Software License, Version 1.0
 2014年6月6日〜2014年6月17日
 
 ***
-
 
 
 # Generic Image Library デザインガイド
@@ -226,7 +225,6 @@ GILは、画像に適用されるアルゴリズムから画像の形式を抽�
 先頭の章から順に読み進めることを推奨します。
 
 
-
 <!--
 2. About Concepts
 
@@ -303,7 +301,6 @@ auto concept Metafunction<typename T> {
 };
 
 {% endhighlight %}
-
 
 
 <!--
@@ -390,7 +387,6 @@ concept Point2DConcept<typename T> : PointNDConcept<T> {
 #### Model:
 
 GILは、`Point2DConcept`に基づいたModelである`point2<T>`を提供します。この`T`は座標の型を表しています。
-
 
 
 <!--
@@ -711,7 +707,6 @@ typename channel_traits<Channel>::value_type channel_multiply(Channel a, Channel
 
 {% endhighlight %}
 
-
 <!--
 
 A color space captures the set and interpretation of channels comprising a pixel.
@@ -812,7 +807,6 @@ typedef layout<rgba_t, mpl::vector4_c<int,1,2,3,0> > argb_layout_t;
 typedef layout<rgba_t, mpl::vector4_c<int,3,2,1,0> > abgr_layout_t;
 
 {% endhighlight %}
-
 
 
 ## 6. Color Base
@@ -1023,7 +1017,6 @@ bool static_equal(const P1& p1, const P2& p2) {
 このアルゴリズムは、例えば、ふたつのPixel間の`operator==`を実行するときに用います。
 セマンティックなアクセサを使うことで、RGB PixelとBGR Pixelを適切に比較できます。
 また、上記の2個以上のColor Baseを引数にとる全てのアルゴリズムは、全てのColorBaseが同じColor Spaceをもつよう要求することに注意しましょう。
-
 
 ## 7. Pixel
 Pixelは、ある画像中のある1点に対応する、色が定義されたChannelのセットです。
@@ -1293,7 +1286,6 @@ color_convert(red_in_rgb8,red_in_cmyk16);
 {% endhighlight %}
 
 
-
 ## 8. Pixel Iterator
 
 ### 基本となるIterator
@@ -1510,7 +1502,6 @@ GILが提供する全てのPixel Iterator、Locator、Image ViewのModelは、`H
 現在GILが提供している基本的なメモリベースIteratorは、全て`MemoryBasedIteratorConcept`に基づいたModelです。
 GILは`PixelIteratorConcept`、`StepIteratorConcept`、`MemoryBasedIteratorConcept`に基づいたModelである`memory_based_step_iterator`クラスを提供しています。
 これは、テンプレートのパラメータとしてBase Iterator(`PixelIteratorConcept`と`MemoryBasedIteratorConcept`に基づいたModelでなければなりません)をとり、ステップを動的に変更することを許可します。
-GIL's implementation contains the base iterator and a ptrdiff_t denoting the number of memory units (bytes or bits) to skip for a unit step.
 GILの実装では、Base Iteratorと、1ステップで進む数をメモリ単位に基づいて示す`ptrdiff_t`を含みます。
 `ptrdiff_t`には負の数を使うこともできます。
 GILは、Base Iteratorとステップを指定することでステップIteratorを作成する関数を提供しています。
@@ -1786,7 +1777,6 @@ private:
 Pixelのコピーのような高速な処理では、この2個目の判定は約15%の遅延の原因となります(Intelプラットホーム上にて、インタリーブ画像で計測)。
 GILは`std::copy`や`std::fill`といったいくつかのSTLアルゴリズムをオーバーライドしており、実行時`iterator_from_2d`が渡された場合には、各行に対してBase Iteratorである水平方向Iteratorを用います。
 また、画像にパディングがない(例：`iterator_from_2d::is_1d_traversable()`が`true`を返す)場合には、シンプルな水平方向Iteratorを直接使用します。
-
 
 ## 9. Image View
 Image Viewは、STLのRangeというConceptを複数次元に一般化したものです。
@@ -2186,7 +2176,6 @@ GILは、リサンプリングや畳み込みなど、いくつかの画像処�
 それらは、<http://opensource.adobe.com/gil/download.html> のnumerics extensionからダウンロードできます。
 これらのコードは開発の初期段階にあり、速度の最適化はなされていません。
 
-
 ## 10. Image
 Imageは、あるImage Viewが扱うPixel配列を所有するコンテナです。
 Imageは、コンストラクタでPixel配列を確保し、デストラクタでそのPixel配列を解放します。
@@ -2276,7 +2265,6 @@ class image;
 Imageのコンストラクタは、ワードアラインメントや8バイトアラインメントといったImageの生成を可能にする、`alignment`パラメータを取ります。
 この`alignment`パラメータが、必ずしもバイトであると限らない、メモリ単位によって指定されることに注意してください。
 特に、ビットアラインメントImageのメモリ単位は、1ビットです。
-
 
 ## 11. 実行時に型を指定するImageとImage View
 Color Space、Channel深度、Channel順、インタリーブ形式/プラナー形式といったImageの構造は、コンパイル時に結びつけられる、テンプレートパラメータの型によって定義されます。
@@ -2521,7 +2509,6 @@ typename dynamic_xy_step_type<any_image_view<ViewTypes> >::type rotated180_view(
 これらのような欠点もありますが、`variant`はコンパイル時の型解決によるスピードと実行時の型解決による柔軟性を組み合わせることを可能にする強力な手法です。
 `variant`は、パラメータが異なる複数の画像をひとつのコレクションとして扱い、それらを同じコンテナに収めることを可能にします。
 
-
 ## 12. メタ関数とtypedef
 柔軟性は高くつきます。
 GILの型はとても長くて読みづらいものになりがちです。
@@ -2734,7 +2721,6 @@ if (view_is_mutable<View>::value) {
 基本的なGILコンストラクトは、ビルトインGILクラスを用いたメモリベースコンストラクトであり、間接参照に対して実行されるいかなる関数オブジェクトももちません。
 例を挙げると、単純なプラナーまたはインタリーブ形式でstepまたはnon-stepなRGB Image Viewは基本的なGILコンストラクトですが、Color Converted ViewやVirtual Viewはそうではありません。
 
-
 ## 13. I/O Extension
 
 GILのI/O Extensionは、ローレベルの画像I/Oユーティリティを提供します。
@@ -2822,7 +2808,6 @@ template <typename Views>  void jpeg_write_view(const char*, any_image_view<View
 {% endhighlight %}
 
 上記の全てのメソッドは、`const char*`の代わりに`std::string`を取るオーバーロードをもちます。
-
 
 ## 14. サンプルコード
 
@@ -3023,7 +3008,6 @@ Pixelは全くコピーされていません。
 全ての作業は`jpeg_write_view`のなかで行われます。
 さきほどの`luminosity_histgram`をstep5で呼べば、うまく動作するはずです。
 
-
 ## 15. Generic Image Libraryの拡張
 
 GILでは、独自のPixel Iterator、Locator、Image View、Image、Channel型、Color Space、アルゴリズムを定義することができます。
@@ -3160,7 +3144,6 @@ typename color_converted_view_type<View,DstP>::type color_convert_view(const Vie
 (実際の色変換Viewによる変換は、ユーザ独自の色変換メソッドの記述を許可する追加の色変換オブジェクトを取るなど、少し複雑です。)
 マンデルブロ集合を定義するVirtual Image Viewを作成する例については、GILチュートリアルを見てください。
 
-
 ## 16. より専門的な事項
 
 ### 参照Proxyの作成
@@ -3239,7 +3222,6 @@ namespace std {
 
 最後に、Proxy参照のコンストラクタやコピーコンストラクタは常に浅く、代入演算子は常に深いことを覚えておいてください。
 上記の解決策を提案してくれたDave Abrahams、Sean Parent、Alex Stepanovに感謝します。
-
 
 ## 17. 結び
 Generic Image Libraryは次に示す5個の目標を念頭にデザインされています。
