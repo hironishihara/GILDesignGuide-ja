@@ -38,7 +38,7 @@ Const性、メモリ上での配置、参照であるか値であるかは無視
 例を挙げると、8bitのRGBプラナー形式Pixelの参照は、8bitのBGRインタリーブ形式Pixelと互換性があります。
 ほとんどのPixelの2項演算(コピーコンストラクタ, 代入、等号など)は互換性をもつPixel間でだけ定義されています。
 
-Pixelは、(Pixelに基づいて構築されるIterator、Locator、View、Imageなどといった他のGILクラスと同様、)そのColor Space、Channelマッピング、Channel数、(そのPixelがホモジニアスであるなら)Channel型にアクセスするためのメタ関数を提供しなければなりません。
+Pixelは、(Pixelに基づいて構築されるIterator、Locator、View、Imageなどといった他のGILコンストラクトと同様、)そのColor Space、Channelマッピング、Channel数、(そのPixelがホモジニアスであるなら)Channel型にアクセスするためのメタ関数を提供しなければなりません。
 
 {% highlight C++ %}
 
@@ -107,10 +107,10 @@ concept PixelsCompatibleConcept<PixelConcept P1, PixelConcept P2> : ColorBasesCo
 
 {% endhighlight %}
 
-あるPixelが、自身の色をもう一方のPixelの形式に近似できるとき、もう一方のPixelと変換可能です。
+あるPixelが自身の色をもう一方のPixelの形式に近似できるとき、もう一方のPixelと変換可能です。
 変換は、数学的に陽であり、非対称であり、ほとんどの場合は(ChannelとColor Space両方の近似が原因で)不可逆変換です。
 
-交換可能性は、次のConceptに基づいた実装を要求します。
+交換可能性は次のConceptに基づいた実装を要求します。
 
 {% highlight C++ %}
 
@@ -179,10 +179,10 @@ typedef planar_pixel_reference<const bits8&,rgb_t> rgb8c_planar_ref_t;
 {% endhighlight %}
 
 `struct planar_pixel_reference`は、Layoutでテンプレート化されている`struct pixel`とは異なり、Color Spaceでテンプレート化されていることに注意してください。
-これらは、常に標準化されたChannel順を用います。
+これらは常に標準化されたChannel順を用います。
 各要素は各Channelから参照されるため、要素の順序に関する情報は不要なのです。
 
-Pixelの各Channelはバイト境界と一致していない可能性もあります。
+Pixelの各Channelの境界がバイト境界と一致していない可能性もあります。
 例えば、'556' RGB Pixelは赤(Red)、緑(Green)、青(Blue)の各Channelが[0..4]、[5..9]、[10..15]bitを占める16bitのPixelです。
 GILは上記のようなPaced Pixel形式のためのModelを提供しています。
 
@@ -204,15 +204,15 @@ function_requires<PixelsCompatibleConcept<rgb565_pixel_t,bgr556_pixel_t> >();
 
 {% endhighlight %}
 
-ある場合には、Pixel自体がバイト単位にならないかもしれません。
+ある場合には、Pixel全体の長さがバイト単位にならないかもしれません。
 例として、'232' RGB Pixelを考えてみましょう。
 このサイズは7bitです。
-GILはこのようなPixel、Pixel Iterator、Imageを"ビット単位"と呼びます。
-ビット単位Pixel (とImage)は、Channel長の合計がバイト単位になるものより複雑です。
+GILはこのようなPixel、Pixel Iterator、Imageを"Bit-aligned"と呼びます。
+Bit-aligned Pixel (とImage)は、Channel長の合計がバイト単位になるものより複雑です。
 Packed Pixelはバイト単位なので、そのPixel参照にはC++の参照を使用できますし、Packed Pixelの行に対する`x_iterator`にはCのポインタを使用できます。
-ビット単位の場合には、特別な参照Proxyクラス(`bit_aligned_pixel_reference`)とIteratorクラス(`bit_aligned_pixel_iterator`)を必要とします。
-ビット単位Pixelの値の型は`packed_pixel`です。
-ここで、ビット単位のPixelとIteratorの使い方を示します。
+Bit-alignedの場合には、特別な参照Proxyクラス(`bit_aligned_pixel_reference`)とIteratorクラス(`bit_aligned_pixel_iterator`)を必要とします。
+Bit-aligned Pixelの値の型は`packed_pixel`です。
+ここで、Bit-aligned PixelとIteratorの使い方を示します。
 
 {% highlight C++ %}
 
@@ -243,7 +243,7 @@ for (int i=0; i<8; ++i) {
 
 #### Algorithm:
 
-Pixelは`ColorBaseConcept`と`PixelBaseConcept`に基づいたModelなので、Pixel上でも全てのColor Baseアルゴリズムとメタ関数は問題なく動作します。
+Pixelは`ColorBaseConcept`と`PixelBaseConcept`に基づいたModelなので、全てのColor Baseアルゴリズムとメタ関数はPixel上でも問題なく動作します。
 
 {% highlight C++ %}
 

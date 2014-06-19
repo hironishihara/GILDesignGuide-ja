@@ -3,7 +3,7 @@ layout: default
 ---
 
 <!--
-          Copyright Hiroaki Nishihara 2014.
+          Copyright 2014 Hiroaki Nishihara
  Distributed under the Boost Software License, Version 1.0.
     (See accompanying file LICENSE_1_0.txt or copy at
           http://www.boost.org/LICENSE_1_0.txt)
@@ -55,6 +55,7 @@ Boost Software License, Version 1.0
 ***
 
 
+
 # Generic Image Library デザインガイド
 
 #### 著者:
@@ -76,8 +77,8 @@ You can find a quick, jump-start GIL tutorial on the main GIL page at http://ope
 -->
 
 本文書は、画像に適用するアルゴリズムから画像形式を抽象化するC++画像処理ライブラリのひとつである、Generic Image Libraryの設計について記述しています。
-この文章では、GILを使う際に必要となる範囲外の知識まで網羅されています。
-手早く使用方法を知りたい場合に役立つGILのチュートリアルについては <http://opensource.adobe.com/gil> を参照ください。
+この文章には、GILをカジュアルに使用する場合には必要ない知識まで網羅されています。
+使用方法を手早く知りたい場合には、GILのチュートリアル <http://opensource.adobe.com/gil> を参照ください。
 
 <!--
 1. Overview
@@ -136,7 +137,7 @@ You can find a quick, jump-start GIL tutorial on the main GIL page at http://ope
 10. Image
 11. 実行時に型を指定するImageとImage View
 12. メタ関数とTypedef
-13. I/O拡張
+13. I/O Extension
 14. サンプルコード
     * Pixelレベルの処理
     * 安全のためのバッファを備えた、Imageのコピー
@@ -150,32 +151,6 @@ You can find a quick, jump-start GIL tutorial on the main GIL page at http://ope
 16. より専門的な事項  
     * 参照Proxyの作成
 17. 結び
----
-layout: default
----
-
-<!-- Copyright 2014 Hiroaki Nishihara
-
-     Distributed under the Boost Software License, Version 1.0.
-     (See accompanying file LICENSE_1_0.txt or copy at
-     http://www.boost.org/LICENSE_1_0.txt)
--->
-
-<!-- Copyright 2008 Lubomir Bourdev and Hailin Jin
-
-     Distributed under the Boost Software License, Version 1.0.
-     (See accompanying file LICENSE_1_0.txt or copy at
-     http://www.boost.org/LICENSE_1_0.txt)
--->
-
-<!--
-    Copyright 2005-2007 Adobe Systems Incorporated
-    Distributed under the MIT License (see accompanying file LICENSE_1_0_0.txt
-    or a copy at http://stlab.adobe.com/licenses.html)
-
-    Some files are held under additional license.
-    Please see "http://stlab.adobe.com/licenses.html" for more information.
--->
 
 
 <!--
@@ -198,13 +173,13 @@ Note also that rows may optionally be aligned resulting in a potential padding a
 ## 1. 概要
 
 画像処理、ヴィジョン、動画のいずれの研究課題においても画像は最も重要な要素ですが、画像の形式の多様さは、汎用的かつ効率的な画像処理アルゴリズムを記述する際の障害となっています。
-この章では、私たちがこれから取り組もうとしている課題について記述したいと思います。
+この章では、私たちがこれから取り組む課題について記述します。
 
 以降の議論では、画像はPixelの2次元配列であるものとします。
 また、Pixelは画像中のある点における色を表現する色Channelのセットとします。
 各々の色Channelはひとつの色成分の値を表現するものとします。
 
-よく用いられる画像のメモリ構造は、2種類あります。
+画像のメモリ構造は、よく用いられる2種類があります。
 各Pixelの色Channelが順番に連続で配置され、なおかつ、全Pixelがメモリ上でひとつにまとめられているインタリーブ画像と、
 各色Channelの値がそれぞれ個別の色平面として配置されているプラナー画像です。
 第1行目の左から2番目のPixelを赤で印をつけた4x3のRGB画像は、インタリーブ画像では次のように配置されます。
@@ -247,8 +222,8 @@ GILは、画像に適用されるアルゴリズムから画像の形式を抽�
 また同時に、特定の形式の画像に特化したアルゴリズムに匹敵する速度で動作するコードの生成も実現します。
 
 この文章はボトムアップ設計に従っています。
-各章では、それ以前の章で定義したConceptに基づいて、新たなConceptを定義します。
-先頭から順に読み進めることを推奨します。
+各章では、それより前の章で定義したConceptに基づいて、新たなConceptを定義します。
+先頭の章から順に読み進めることを推奨します。
 
 
 
@@ -272,11 +247,11 @@ Here are some additional basic concepts that GIL needs:
 -->
 
 ## 2. Conceptについて
-GILで定義される全てのものは、GILが指定するConceptに基づいたModelです。
+GILで用いられる全ての構成概念(コンストラクト)は、GILが定めるConceptに基づいたModelです。
 Conceptとは、型(もしくは、関連する型のセット)がジェネリックアルゴリズム内で正しく利用されるために満たさなければならない要件のセットです。
 これらの要件には、構文的な保証とアルゴリズム的な保証が含まれます。
-例えば、GILのPixelクラスはGILの`PixelConcept`に基づいたModelです。
-`PixelConcept`に示された要件を満たす限りにおいて、ユーザはPixelクラスを自前のPixelクラスに置き換えることができ、他のGILクラスやアルゴリズムはその自前のPixelクラスと共に動作することが可能です。
+例えば、GILコンストラクトのひとつであるPixelクラスは、GILの`PixelConcept`に基づいたModelです。
+`PixelConcept`に示された要件を満たす限りにおいて、ユーザはPixelクラスを独自のPixelクラスに置き換えることができ、その独自のPixelクラスを他のGILクラスやアルゴリズムと共に使用することができます。
 Conceptに関する詳細は、次のURLを参照ください。  
 <http://www.generic-programming.org/languages/conceptcpp/>  
 
@@ -518,7 +493,7 @@ struct channel_traits {
 
 {% endhighlight %}
 
-ふたつのChannelが同じ型の値をもつ場合、そのふたつのChannelには互換性があります。
+ふたつのChannelが同じ`value_type`をもつ場合、そのふたつのChannelには互換性があります。
 
 {% highlight C++ %}
 
@@ -626,7 +601,7 @@ typedef boost::int32_t  bits32s;
 
 {% endhighlight %}
 
-組み込み型を用いたChannelにおける最小値と最大値は、その型の`std::numeric_limits`で定められている、組み込み型のフィジカルレンジに由来する最小値と最大値に対応しています。
+組み込み型を用いたChannelの最小値と最大値は、その型の`std::numeric_limits`で定められている、組み込み型のフィジカルレンジに由来する最小値と最大値に対応しています。
 しかし、状況によってはフィジカルレンジが適切でない場合もあります。
 GILは、特別なレンジを定めるためのChannelアダプタのModelである、`scoped_channel_value`を提供します。
 私たちは、[0..1]の浮動小数点を定義するために、`scoped_channel_value`を次のように用います。
@@ -1063,7 +1038,7 @@ Const性、メモリ上での配置、参照であるか値であるかは無視
 例を挙げると、8bitのRGBプラナー形式Pixelの参照は、8bitのBGRインタリーブ形式Pixelと互換性があります。
 ほとんどのPixelの2項演算(コピーコンストラクタ, 代入、等号など)は互換性をもつPixel間でだけ定義されています。
 
-Pixelは、(Pixelに基づいて構築されるIterator、Locator、View、Imageなどといった他のGILクラスと同様、)そのColor Space、Channelマッピング、Channel数、(そのPixelがホモジニアスであるなら)Channel型にアクセスするためのメタ関数を提供しなければなりません。
+Pixelは、(Pixelに基づいて構築されるIterator、Locator、View、Imageなどといった他のGILコンストラクトと同様、)そのColor Space、Channelマッピング、Channel数、(そのPixelがホモジニアスであるなら)Channel型にアクセスするためのメタ関数を提供しなければなりません。
 
 {% highlight C++ %}
 
@@ -1132,10 +1107,10 @@ concept PixelsCompatibleConcept<PixelConcept P1, PixelConcept P2> : ColorBasesCo
 
 {% endhighlight %}
 
-あるPixelが、自身の色をもう一方のPixelの形式に近似できるとき、もう一方のPixelと変換可能です。
+あるPixelが自身の色をもう一方のPixelの形式に近似できるとき、もう一方のPixelと変換可能です。
 変換は、数学的に陽であり、非対称であり、ほとんどの場合は(ChannelとColor Space両方の近似が原因で)不可逆変換です。
 
-交換可能性は、次のConceptに基づいた実装を要求します。
+交換可能性は次のConceptに基づいた実装を要求します。
 
 {% highlight C++ %}
 
@@ -1204,10 +1179,10 @@ typedef planar_pixel_reference<const bits8&,rgb_t> rgb8c_planar_ref_t;
 {% endhighlight %}
 
 `struct planar_pixel_reference`は、Layoutでテンプレート化されている`struct pixel`とは異なり、Color Spaceでテンプレート化されていることに注意してください。
-これらは、常に標準化されたChannel順を用います。
+これらは常に標準化されたChannel順を用います。
 各要素は各Channelから参照されるため、要素の順序に関する情報は不要なのです。
 
-Pixelの各Channelはバイト境界と一致していない可能性もあります。
+Pixelの各Channelの境界がバイト境界と一致していない可能性もあります。
 例えば、'556' RGB Pixelは赤(Red)、緑(Green)、青(Blue)の各Channelが[0..4]、[5..9]、[10..15]bitを占める16bitのPixelです。
 GILは上記のようなPaced Pixel形式のためのModelを提供しています。
 
@@ -1229,15 +1204,15 @@ function_requires<PixelsCompatibleConcept<rgb565_pixel_t,bgr556_pixel_t> >();
 
 {% endhighlight %}
 
-ある場合には、Pixel自体がバイト単位にならないかもしれません。
+ある場合には、Pixel全体の長さがバイト単位にならないかもしれません。
 例として、'232' RGB Pixelを考えてみましょう。
 このサイズは7bitです。
-GILはこのようなPixel、Pixel Iterator、Imageを"ビット単位"と呼びます。
-ビット単位Pixel (とImage)は、Channel長の合計がバイト単位になるものより複雑です。
+GILはこのようなPixel、Pixel Iterator、Imageを"Bit-aligned"と呼びます。
+Bit-aligned Pixel (とImage)は、Channel長の合計がバイト単位になるものより複雑です。
 Packed Pixelはバイト単位なので、そのPixel参照にはC++の参照を使用できますし、Packed Pixelの行に対する`x_iterator`にはCのポインタを使用できます。
-ビット単位の場合には、特別な参照Proxyクラス(`bit_aligned_pixel_reference`)とIteratorクラス(`bit_aligned_pixel_iterator`)を必要とします。
-ビット単位Pixelの値の型は`packed_pixel`です。
-ここで、ビット単位のPixelとIteratorの使い方を示します。
+Bit-alignedの場合には、特別な参照Proxyクラス(`bit_aligned_pixel_reference`)とIteratorクラス(`bit_aligned_pixel_iterator`)を必要とします。
+Bit-aligned Pixelの値の型は`packed_pixel`です。
+ここで、Bit-aligned PixelとIteratorの使い方を示します。
 
 {% highlight C++ %}
 
@@ -1268,7 +1243,7 @@ for (int i=0; i<8; ++i) {
 
 #### Algorithm:
 
-Pixelは`ColorBaseConcept`と`PixelBaseConcept`に基づいたModelなので、Pixel上でも全てのColor Baseアルゴリズムとメタ関数は問題なく動作します。
+Pixelは`ColorBaseConcept`と`PixelBaseConcept`に基づいたModelなので、全てのColor Baseアルゴリズムとメタ関数はPixel上でも問題なく動作します。
 
 {% highlight C++ %}
 
@@ -2289,8 +2264,8 @@ GILは、Value型(すなわち、Pixel)をパラメータにもつテンプレ�
 
 {% highlight C++ %}
 
-template <typename Pixel, \\ Models PixelValueConcept
-          bool IsPlanar,  \\ planar or interleaved image
+template <typename Pixel, // Models PixelValueConcept
+          bool IsPlanar,  // planar or interleaved image
           typename A=std::allocator<unsigned char> >
 class image;
 
@@ -2882,7 +2857,7 @@ p2=ref; p2=p1; p2=ptr[7]; p2=rgb8_pixel_t(1,2,3);    // planar/interleaved refer
 
 {% endhighlight %}
 
-続いては、Pixelをgeneric codeの中でどのように使うのかを示します。
+続いては、Pixelをジェネリックコードの中でどのように使うのかを示します。
 
 {% highlight C++ %}
 
@@ -3026,8 +3001,7 @@ Pixelがコピーされることもなければ、余計なメモリが確保さ
 
 ### Image Viewの使用
 
-The following code illustrates the power of using image views:
-次のコードは、Image Viewを使うことの威力を説明します。
+次のコードで、Image Viewの威力を説明したいと思います。
 
 {% highlight C++ %}
 

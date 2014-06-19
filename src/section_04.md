@@ -126,7 +126,7 @@ struct channel_traits {
 
 {% endhighlight %}
 
-ふたつのChannelが同じ型の値をもつ場合、そのふたつのChannelには互換性があります。
+ふたつのChannelが同じ`value_type`をもつ場合、そのふたつのChannelには互換性があります。
 
 {% highlight C++ %}
 
@@ -234,7 +234,7 @@ typedef boost::int32_t  bits32s;
 
 {% endhighlight %}
 
-組み込み型を用いたChannelにおける最小値と最大値は、その型の`std::numeric_limits`で定められている、組み込み型のフィジカルレンジに由来する最小値と最大値に対応しています。
+組み込み型を用いたChannelの最小値と最大値は、その型の`std::numeric_limits`で定められている、組み込み型のフィジカルレンジに由来する最小値と最大値に対応しています。
 しかし、状況によってはフィジカルレンジが適切でない場合もあります。
 GILは、特別なレンジを定めるためのChannelアダプタのModelである、`scoped_channel_value`を提供します。
 私たちは、[0..1]の浮動小数点を定義するために、`scoped_channel_value`を次のように用います。

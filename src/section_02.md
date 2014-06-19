@@ -46,11 +46,11 @@ Here are some additional basic concepts that GIL needs:
 -->
 
 ## 2. Conceptについて
-GILで定義される全てのものは、GILが指定するConceptに基づいたModelです。
+GILで用いられる全ての構成概念(コンストラクト)は、GILが定めるConceptに基づいたModelです。
 Conceptとは、型(もしくは、関連する型のセット)がジェネリックアルゴリズム内で正しく利用されるために満たさなければならない要件のセットです。
 これらの要件には、構文的な保証とアルゴリズム的な保証が含まれます。
-例えば、GILのPixelクラスはGILの`PixelConcept`に基づいたModelです。
-`PixelConcept`に示された要件を満たす限りにおいて、ユーザはPixelクラスを自前のPixelクラスに置き換えることができ、他のGILクラスやアルゴリズムはその自前のPixelクラスと共に動作することが可能です。
+例えば、GILコンストラクトのひとつであるPixelクラスは、GILの`PixelConcept`に基づいたModelです。
+`PixelConcept`に示された要件を満たす限りにおいて、ユーザはPixelクラスを独自のPixelクラスに置き換えることができ、その独自のPixelクラスを他のGILクラスやアルゴリズムと共に使用することができます。
 Conceptに関する詳細は、次のURLを参照ください。  
 <http://www.generic-programming.org/languages/conceptcpp/>  
 

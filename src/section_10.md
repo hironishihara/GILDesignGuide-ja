@@ -102,8 +102,8 @@ GILは、Value型(すなわち、Pixel)をパラメータにもつテンプレ�
 
 {% highlight C++ %}
 
-template <typename Pixel, \\ Models PixelValueConcept
-          bool IsPlanar,  \\ planar or interleaved image
+template <typename Pixel, // Models PixelValueConcept
+          bool IsPlanar,  // planar or interleaved image
           typename A=std::allocator<unsigned char> >
 class image;
 

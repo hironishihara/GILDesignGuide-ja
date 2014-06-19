@@ -47,8 +47,8 @@ You can find a quick, jump-start GIL tutorial on the main GIL page at http://ope
 -->
 
 本文書は、画像に適用するアルゴリズムから画像形式を抽象化するC++画像処理ライブラリのひとつである、Generic Image Libraryの設計について記述しています。
-この文章では、GILを使う際に必要となる範囲外の知識まで網羅されています。
-手早く使用方法を知りたい場合に役立つGILのチュートリアルについては <http://opensource.adobe.com/gil> を参照ください。
+この文章には、GILをカジュアルに使用する場合には必要ない知識まで網羅されています。
+使用方法を手早く知りたい場合には、GILのチュートリアル <http://opensource.adobe.com/gil> を参照ください。
 
 <!--
 1. Overview
@@ -107,7 +107,7 @@ You can find a quick, jump-start GIL tutorial on the main GIL page at http://ope
 10. Image
 11. 実行時に型を指定するImageとImage View
 12. メタ関数とTypedef
-13. I/O拡張
+13. I/O Extension
 14. サンプルコード
     * Pixelレベルの処理
     * 安全のためのバッファを備えた、Imageのコピー

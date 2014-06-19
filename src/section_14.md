@@ -58,7 +58,7 @@ p2=ref; p2=p1; p2=ptr[7]; p2=rgb8_pixel_t(1,2,3);    // planar/interleaved refer
 
 {% endhighlight %}
 
-続いては、Pixelをgeneric codeの中でどのように使うのかを示します。
+続いては、Pixelをジェネリックコードの中でどのように使うのかを示します。
 
 {% highlight C++ %}
 
@@ -202,8 +202,7 @@ Pixelがコピーされることもなければ、余計なメモリが確保さ
 
 ### Image Viewの使用
 
-The following code illustrates the power of using image views:
-次のコードは、Image Viewを使うことの威力を説明します。
+次のコードで、Image Viewの威力を説明したいと思います。
 
 {% highlight C++ %}
 
