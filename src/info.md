@@ -47,3 +47,5 @@ Boost Software License, Version 1.0
 
 #### 翻訳日時:
 2014年6月6日〜2014年6月17日
+
+***
