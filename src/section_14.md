@@ -52,7 +52,7 @@ p2=ref; p2=p1; p2=ptr[7]; p2=rgb8_pixel_t(1,2,3);    // planar/interleaved refer
 //p1 = pixel<bits8,rgba_layout_t>();// compile error: Incompatible color space (even though it contains red, green and blue channels)
 ```
 
-続いては、Pixelをgeneric codeの中でどのように使うのかを示します。
+続いては、Pixelをジェネリックコードの中でどのように使うのかを示します。
 
 ```cpp
 template <typename GrayPixel, typename RGBPixel>
@@ -180,8 +180,7 @@ Pixelがコピーされることもなければ、余計なメモリが確保さ
 
 ### Image Viewの使用
 
-The following code illustrates the power of using image views:
-次のコードは、Image Viewを使うことの威力を説明します。
+次のコードで、Image Viewの威力を説明したいと思います。
 
 ```cpp
 jpeg_read_image("monkey.jpg", img);

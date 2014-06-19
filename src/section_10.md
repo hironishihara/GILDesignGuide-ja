@@ -91,8 +91,8 @@ LocatorやImage Viewと異なり、immutableなImageはそもそも不便であ�
 GILは、Value型(すなわち、Pixel)をパラメータにもつテンプレートであり、ImageConceptに基づいたModelである、Imageクラスを提供します。
 
 ```cpp
-template <typename Pixel, \\ Models PixelValueConcept
-          bool IsPlanar,  \\ planar or interleaved image
+template <typename Pixel, // Models PixelValueConcept
+          bool IsPlanar,  // planar or interleaved image
           typename A=std::allocator<unsigned char> >
 class image;
 ```
