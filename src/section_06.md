@@ -26,7 +26,7 @@ layout: default
 -->
 
 
-## 6. Color Base
+## <a name="section_06"> 6. Color Base
 Color Baseは色要素のコンテナです。
 Color BaseはPixelの実装のなかで、すなわち色要素がChannelの値になっている場合に、よく用いられます。
 しかし、Color BaseのConceptは他の用途に用いられる場合もあります。

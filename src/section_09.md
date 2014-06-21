@@ -25,7 +25,7 @@ layout: default
     Please see "http://stlab.adobe.com/licenses.html" for more information.
 -->
 
-## 9. Image View
+## <a name="section_09"> 9. Image View
 Image Viewは、STLのRangeというConceptを複数次元に一般化したものです。
 Renge (と、そのIterator)と同様、Image Viewは浅く、自身でデータをもたず、自身のconst性をデータにまで伝えません。
 例を挙げると、constantなImage Viewはサイズを変更できませんが、Pixelの値を変更することは可能かもしれません。
@@ -201,7 +201,7 @@ Image Viewは軽量なオブジェクトです。
 
 #### Algorithm:
 
-### メモリ上のPixel生データからのImage View作成
+### <a name="section_09_1"> メモリ上のPixel生データからのImage View作成
 
 一般的なImage Viewは、サポートされているどのようなColor Space、Channel深度、Channel順、プラナー形式またはインタリーブ形式の生データからでも構成することができます。
 インタリーブ形式Viewは、画像のDimensionsと1行あたりのバイト数と最初のPixelを指すポインタを指定した`interleaved_view`を使って構成されます。
@@ -226,7 +226,7 @@ image_view<...> planar_rgb_view(ptrdiff_t width, ptrdiff_t height,
 
 戻り値のViewが値がconstantな(immutableな)Viewである場合、提供されるPixel/Channel Iteratorがconstant (read-only)になることに注意してください。
 
-### 他のImage ViewからのImage View作成
+### <a name="section_09_2"> 他のImage ViewからのImage View作成
 
 画像データがどのように解釈されるのかを示したいくつかのポリシーを変更することで、あるImage Viewから他のImage Viewを構築することが可能です。
 その結果は、元となる型から派生した型のViewになっている可能性もあります。
@@ -328,7 +328,7 @@ gray16_step_view_t ud_fud=flipped_up_down_view(subsampled_view(green,2,2));
 上記のコードではひとつのPixelもコピーされていません。
 すなわち、ViewはImageが作られたときに確保されたPixelデータを操作するのです。
 
-### Image View上で動作するSTL-Styleアルゴリズム
+### <a name="section_09_3"> Image View上で動作するSTL-Styleアルゴリズム
 
 Image Viewは`begin()`メソッドと`end()`メソッドを通じて1次元走査を提供しており、Image Viewを対象にSTLアルゴリズムを使うことを可能にしています。
 しかしながら、多くの場合、XとYでネストされたループを使う方がより効果的です。

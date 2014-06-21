@@ -64,7 +64,7 @@ GIL provides a model of Point2DConcept, point2<T> where T is the coordinate type
 
 -->
 
-## 3. Point
+## <a name="section_03"> 3. Point
 Pointは、Pixelの画像上における位置を定義します。
 また、画像の次元数を表現するためにも用いられます。
 一般に、PointはN次元であり、次に示すConceptに基づいたModelです。

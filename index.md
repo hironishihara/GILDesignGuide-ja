@@ -118,41 +118,76 @@ You can find a quick, jump-start GIL tutorial on the main GIL page at http://ope
 17. Conclusion
 -->
 
-1. 概要
-2. Conceptについて
-3. Point
-4. Channel
-5. Color SpaceとLayout
-6. Color Base
-7. Pixel
-8. Pixel Iterator  
-    * 基本となるIterator
-    * Iteratorアダプタ
-    * Pixel間接参照アダプタ
-    * ステップIterator
-    * Pixel Locator
-    * 2次元画像上のIterator  
-9. Image View  
-    * メモリ上のPixel生データからのImage View作成
-    * 他のImage ViewからのImage View作成
-    * Image View上で動作するSTL-Styleアルゴリズム
-10. Image
-11. 実行時に型を指定するImageとImage View
-12. メタ関数とTypedef
-13. I/O Extension
-14. サンプルコード
-    * Pixelレベルの処理
-    * 安全のためのバッファを備えた、Imageのコピー
-    * ヒストグラム
-    * Image Viewの使用  
-15. Generic Image Libraryの拡張  
-    * 独自のColor Space定義  
-    * 独自のChannel Type定義  
-    * 色変換のオーバーロード
-    * 独自のImage View定義  
-16. より専門的な事項  
-    * 参照Proxyの作成
-17. 結び
+1. [概要](#section_01)
+2. [Conceptについて](#section_02)
+3. [Point](#section_03)
+4. [Channel](#section_04)
+5. [Color SpaceとLayout](#section_05)
+6. [Color Base](#section_06)
+7. [Pixel](#section_07)
+8. [Pixel Iterator](#section_08)
+    * [基本となるIterator](#section_08_1)
+    * [Iteratorアダプタ](#section_08_2)
+    * [Pixel間接参照アダプタ](#section_08_3)
+    * [ステップIterator](#section_08_4)
+    * [Pixel Locator](#section_08_5)
+    * [2次元画像上のIterator](#section_08_6)
+9. [Image View](#section_09)
+    * [メモリ上のPixel生データからのImage View作成](#section_09_1)
+    * [他のImage ViewからのImage View作成](#section_09_2)
+    * [Image View上で動作するSTL-Styleアルゴリズム](#section_09_3)
+10. [Image](#section_10)
+11. [実行時に型を指定するImageとImage View](#section_11)
+12. [メタ関数とTypedef](#section_12)
+13. [I/O Extension](#section_13)
+14. [サンプルコード](#section_14)
+    * [Pixelレベルの処理](#section_14_1)
+    * [安全のためのバッファを備えた、Imageのコピー](#section_14_2)
+    * [ヒストグラム](#section_14_3)
+    * [Image Viewの使用](#section_14_4)
+15. [Generic Image Libraryの拡張](#section_15)
+    * [独自のColor Space定義](#section_15_1)
+    * [独自のChannel Type定義](#section_15_2)
+    * [色変換のオーバーロード](#section_15_3)
+    * [独自のImage View定義](#section_15_4)
+16. [より専門的な事項](#section_16)
+    * [参照Proxyの作成](#section_16_1)
+17. [結び](#section_17)
+
+[section_01]: index.md#section_01 "section_01"
+[section_02]: index.md#section_02 "section_02"
+[section_03]: index.md#section_03 "section_03"
+[section_04]: index.md#section_04 "section_04"
+[section_05]: index.md#section_05 "section_05"
+[section_06]: index.md#section_06 "section_06"
+[section_07]: index.md#section_07 "section_07"
+[section_08]: index.md#section_08 "section_08"
+[section_08_1]: index.md#section_08_1 "section_08_1"
+[section_08_2]: index.md#section_08_2 "section_08_2"
+[section_08_3]: index.md#section_08_3 "section_08_3"
+[section_08_4]: index.md#section_08_4 "section_08_4"
+[section_08_5]: index.md#section_08_5 "section_08_5"
+[section_09]: index.md#section_09 "section_09"
+[section_09_1]: index.md#section_09_1 "section_09_1"
+[section_09_2]: index.md#section_09_2 "section_09_2"
+[section_09_3]: index.md#section_09_3 "section_09_3"
+[section_10]: index.md#section_10 "section_10"
+[section_11]: index.md#section_11 "section_11"
+[section_12]: index.md#section_12 "section_12"
+[section_13]: index.md#section_13 "section_13"
+[section_14]: index.md#section_14 "section_14"
+[section_14_1]: index.md#section_14_1 "section_14_1"
+[section_14_2]: index.md#section_14_2 "section_14_2"
+[section_14_3]: index.md#section_14_3 "section_14_3"
+[section_14_4]: index.md#section_14_4 "section_14_4"
+[section_15]: index.md#section_15 "section_15"
+[section_15_1]: index.md#section_15_1 "section_15_1"
+[section_15_2]: index.md#section_15_2 "section_15_2"
+[section_15_3]: index.md#section_15_3 "section_15_3"
+[section_15_4]: index.md#section_15_4 "section_15_4"
+[section_16]: index.md#section_16 "section_16"
+[section_16_1]: index.md#section_16_1 "section_16_1"
+[section_17]: index.md#section_17 "section_17"
 
 
 <!--
@@ -172,7 +207,7 @@ and in planar form:
 Note also that rows may optionally be aligned resulting in a potential padding at the end of rows.
 -->
 
-## 1. 概要
+## <a name="section_01"> 1. 概要
 
 画像処理、ヴィジョン、動画のいずれの研究課題においても画像は最も重要な要素ですが、画像の形式の多様さは、汎用的かつ効率的な画像処理アルゴリズムを記述する際の障害となっています。
 この章では、私たちがこれから取り組む課題について記述します。
@@ -247,7 +282,7 @@ Most of them are defined here: http://www.generic-programming.org/languages/conc
 Here are some additional basic concepts that GIL needs:
 -->
 
-## 2. Conceptについて
+## <a name="section_02"> 2. Conceptについて
 GILで用いられる全ての構成概念(コンストラクト)は、GILが定めるConceptに基づいたModelです。
 Conceptとは、型(もしくは、関連する型のセット)がジェネリックアルゴリズム内で正しく利用されるために満たさなければならない要件のセットです。
 これらの要件には、構文的な保証とアルゴリズム的な保証が含まれます。
@@ -344,7 +379,7 @@ GIL provides a model of Point2DConcept, point2<T> where T is the coordinate type
 
 -->
 
-## 3. Point
+## <a name="section_03"> 3. Point
 Pointは、Pixelの画像上における位置を定義します。
 また、画像の次元数を表現するためにも用いられます。
 一般に、PointはN次元であり、次に示すConceptに基づいたModelです。
@@ -417,7 +452,7 @@ concept ChannelValueConcept<ChannelConcept T> : Regular<T> {};
 
 -->
 
-## 4. Channel
+## <a name="section_04"> 4. Channel
 Channelは、色成分の強度を示します (例: RGB Pixelの赤Channel)。
 基本的なChannel操作として、値の取得(get)や比較(compare)や代入(set)があります。
 また、Channelには最小値と最大値が設定されています。
@@ -753,7 +788,7 @@ typedef layout<rgba_t, mpl::vector4_c<int,3,2,1,0> > abgr_layout_t;
 
 -->
 
-## 5. Color SpaceとLayout
+## <a name="section_05"> 5. Color SpaceとLayout
 Color Spaceは、Pixelを構成するChannelに関して、それらの組み合わせと解釈を保持します。
 Color Spaceは、そのColor Spaceがもつ全ての要素の型を包含したMPLランダムアクセスシークエンスです。
 ふたつのColor Spaceが等しい(同じ色のセットを同じ順序でもつ)とき、それらのColor Space間には互換性があると見なされます。
@@ -812,7 +847,7 @@ typedef layout<rgba_t, mpl::vector4_c<int,3,2,1,0> > abgr_layout_t;
 {% endhighlight %}
 
 
-## 6. Color Base
+## <a name="section_06"> 6. Color Base
 Color Baseは色要素のコンテナです。
 Color BaseはPixelの実装のなかで、すなわち色要素がChannelの値になっている場合に、よく用いられます。
 しかし、Color BaseのConceptは他の用途に用いられる場合もあります。
@@ -1021,7 +1056,7 @@ bool static_equal(const P1& p1, const P2& p2) {
 セマンティックなアクセサを使うことで、RGB PixelとBGR Pixelを適切に比較できます。
 また、上記の2個以上のColor Baseを引数にとる全てのアルゴリズムは、全てのColorBaseが同じColor Spaceをもつよう要求することに注意しましょう。
 
-## 7. Pixel
+## <a name="section_07"> 7. Pixel
 Pixelは、ある画像中のある1点に対応する、色が定義されたChannelのセットです。
 概念的に言えば、Pixelと`ChannelConcept`に基づいた要素をもったColor Baseはほとんど同じようなものです。
 Pixelの全てのプロパティはColor Baseから受け継いだものです。
@@ -1289,9 +1324,9 @@ color_convert(red_in_rgb8,red_in_cmyk16);
 {% endhighlight %}
 
 
-## 8. Pixel Iterator
+## <a name="section_08"> 8. Pixel Iterator
 
-### 基本となるIterator
+### <a name="section_08_1"> 基本となるIterator
 Pixel Iteratorは、`PixelValueConcept`に基づいたModelである`value_type`のランダム走査Iteratorです。
 Pixel Iteratorは、mutableであるか否か(すなわち、指し示すPixelが変更可能か否か)を判定するメタ関数、immutable (read-only)なIteratorを取得するメタ関数、素のIteratorかアダプタをまとった他のIteratorなのかを判定するメタ関数を提供します。
 
@@ -1358,7 +1393,7 @@ planar_pixel_iterator<ChannelPtr,ColorSpace>::operator++() {
 また、GILは、ビット単位Pixelを走査するPixel IteratorのModelとして、`bit_aligned_pixel_iterator`クラスを用います。
 内部的には、各時点でのバイト位置とビットオフセットを記録しています。
 
-### Iteratorアダプタ
+### <a name="section_08_2"> Iteratorアダプタ
 Iteratorアダプタは他のIteratorをラップしたIteratorです。
 その`is_iterator_adaptor`というメタ関数は`true`でなければなりません。
 また、Base Iteratorを返すメンバ関数、型を取得するメタ関数、他のBase Iteratorに再結合するメタ関数を提供する必要があります。
@@ -1401,7 +1436,7 @@ GILは`IteratorAdaptorConcept`のModelをいくつか提供しています。
 詳細は、"ほかのImage ViewからImage Viewを作成する"をみてください。
 ひとつの引数をとる関数`Fn`は`PixelDereferenceAdaptorConcept`(次を見てください)に基づいたModelでなければなりません。
 
-### Pixel間接参照アダプタ
+### <a name="section_08_3"> Pixel間接参照アダプタ
 Pixel間接参照アダプタは、Pixel Iteratorから間接参照した値を受け取る、ひとつの引数をもつ関数です。
 この引数の型はどんなものでも構いません(よくあるのは`PixelConcept`です)。また、戻り値の型は`PixelConcept`に変換可能でなければなりません。
 
@@ -1432,7 +1467,7 @@ GILは、間接参照した値に色変換を実行するImage ViewやPixelのN�
 これらのPixel間接参照アダプタは、間接参照した値に任意関数を実行するVirtual Image View (例えば、マンデルブロ集合を表すViewなど)を実装する際に使用されます。
 `dereference_iterator_adaptor<Iterator,Fn>`は、`Iterator`で間接参照した値を引数にして与えられた間接参照Iteratorアダプタ`Fn`を実行する、Pixel Iteratorである`Iterator`を包むIteratorラッパです。
 
-### ステップIterator
+### <a name="section_08_4"> ステップIterator
 基本的なPixel Iteratorによって提供される1ステップ以上のまとまったステップ数でPixelの走査を行いたい場合があります。
 例えば、次のような場合です。
 
@@ -1520,7 +1555,7 @@ GILは、`position_iterator`という、仮想的なPixel配列に対するItera
 これは、Pixelの位置情報を保持し、その位置にあるPixelの値を間接参照で取得する関数オブジェクトを実行するステップIteratorです。
 これは、`PixelIteratorConcept`と`StepIteratorConcept`に基づいたModelですが、`MemoryBasedIteratorConcept`に基づいたModelではありません。
 
-### Pixel Locator
+### <a name="section_08_5"> Pixel Locator
 Locatorは2次元もしくはそれ以上の次元でのナビゲーションを可能にします。
 Locatorは、本来であればN次元Iteratorと呼ぶべきですが、Iteratorが満たすべき要件を完全には満たしていないため、このように違う名前を使っています。
 例を挙げると、Locatorは、どの軸にそって移動するべきか明確でないために、インクリメントやデクリメントを行う演算子を提供しません。
@@ -1749,7 +1784,7 @@ loc-=point2<std::ptrdiff_t>(1,1);// move to (10,24)
 例えば、フィルタ処理では画像中の各Pixelにおいて同じ位置関係にある隣接Pixelへのアクセスが必要ですが、そのような場合に、相対的な位置は`cache_location`を利用して差分を表す整数のなかにキャッシュできます。
 上記の例で言うと、インタリーブ画像の`loc[above]`は生配列のインデクス演算子と等価です。
 
-### 2次元画像上でのIterator
+### <a name="section_08_6"> 2次元画像上でのIterator
 ときには、画像中の全Pixelに対して位置に依存しない一律の処理を実行したいといった場合も考えられます。
 このようなとき、一律に扱うPixel全てを一次元配列のように扱うことができれば便利です。
 GILの`itarator_from_2d`は、画像中の全Pixelを左から右、上から下というメモリフレンドリな順序で走査するランダムアクセスIteratorです。
@@ -1781,7 +1816,7 @@ Pixelのコピーのような高速な処理では、この2個目の判定は�
 GILは`std::copy`や`std::fill`といったいくつかのSTLアルゴリズムをオーバーライドしており、実行時`iterator_from_2d`が渡された場合には、各行に対してBase Iteratorである水平方向Iteratorを用います。
 また、画像にパディングがない(例：`iterator_from_2d::is_1d_traversable()`が`true`を返す)場合には、シンプルな水平方向Iteratorを直接使用します。
 
-## 9. Image View
+## <a name="section_09"> 9. Image View
 Image Viewは、STLのRangeというConceptを複数次元に一般化したものです。
 Renge (と、そのIterator)と同様、Image Viewは浅く、自身でデータをもたず、自身のconst性をデータにまで伝えません。
 例を挙げると、constantなImage Viewはサイズを変更できませんが、Pixelの値を変更することは可能かもしれません。
@@ -1957,7 +1992,7 @@ Image Viewは軽量なオブジェクトです。
 
 #### Algorithm:
 
-### メモリ上のPixel生データからのImage View作成
+### <a name="section_09_1"> メモリ上のPixel生データからのImage View作成
 
 一般的なImage Viewは、サポートされているどのようなColor Space、Channel深度、Channel順、プラナー形式またはインタリーブ形式の生データからでも構成することができます。
 インタリーブ形式Viewは、画像のDimensionsと1行あたりのバイト数と最初のPixelを指すポインタを指定した`interleaved_view`を使って構成されます。
@@ -1982,7 +2017,7 @@ image_view<...> planar_rgb_view(ptrdiff_t width, ptrdiff_t height,
 
 戻り値のViewが値がconstantな(immutableな)Viewである場合、提供されるPixel/Channel Iteratorがconstant (read-only)になることに注意してください。
 
-### 他のImage ViewからのImage View作成
+### <a name="section_09_2"> 他のImage ViewからのImage View作成
 
 画像データがどのように解釈されるのかを示したいくつかのポリシーを変更することで、あるImage Viewから他のImage Viewを構築することが可能です。
 その結果は、元となる型から派生した型のViewになっている可能性もあります。
@@ -2084,7 +2119,7 @@ gray16_step_view_t ud_fud=flipped_up_down_view(subsampled_view(green,2,2));
 上記のコードではひとつのPixelもコピーされていません。
 すなわち、ViewはImageが作られたときに確保されたPixelデータを操作するのです。
 
-### Image View上で動作するSTL-Styleアルゴリズム
+### <a name="section_09_3"> Image View上で動作するSTL-Styleアルゴリズム
 
 Image Viewは`begin()`メソッドと`end()`メソッドを通じて1次元走査を提供しており、Image Viewを対象にSTLアルゴリズムを使うことを可能にしています。
 しかしながら、多くの場合、XとYでネストされたループを使う方がより効果的です。
@@ -2179,7 +2214,7 @@ GILは、リサンプリングや畳み込みなど、いくつかの画像処�
 それらは、<http://opensource.adobe.com/gil/download.html> のnumerics extensionからダウンロードできます。
 これらのコードは開発の初期段階にあり、速度の最適化はなされていません。
 
-## 10. Image
+## <a name="section_10"> 10. Image
 Imageは、あるImage Viewが扱うPixel配列を所有するコンテナです。
 Imageは、コンストラクタでPixel配列を確保し、デストラクタでそのPixel配列を解放します。
 Imageは、深い代入演算子とコピーコンストラクタをもちます。
@@ -2269,7 +2304,7 @@ Imageのコンストラクタは、ワードアラインメントや8バイト�
 この`alignment`パラメータが、必ずしもバイトであると限らない、メモリ単位によって指定されることに注意してください。
 特に、ビットアラインメントImageのメモリ単位は、1ビットです。
 
-## 11. 実行時に型を指定するImageとImage View
+## <a name="section_11"> 11. 実行時に型を指定するImageとImage View
 Color Space、Channel深度、Channel順、インタリーブ形式/プラナー形式といったImageの構造は、コンパイル時に結びつけられる、テンプレートパラメータの型によって定義されます。
 それらのパラメータのいくつかが実行時になって初めて決まるといった場合もしばしば存在します。
 例として、与えられたパスにある画像を開き、くるりと回転させ、画像オリジナルのColor SpaceとChannel深度で保存する、というモジュールを書く場合を考えましょう。
@@ -2512,7 +2547,7 @@ typename dynamic_xy_step_type<any_image_view<ViewTypes> >::type rotated180_view(
 これらのような欠点もありますが、`variant`はコンパイル時の型解決によるスピードと実行時の型解決による柔軟性を組み合わせることを可能にする強力な手法です。
 `variant`は、パラメータが異なる複数の画像をひとつのコレクションとして扱い、それらを同じコンテナに収めることを可能にします。
 
-## 12. メタ関数とtypedef
+## <a name="section_12"> 12. メタ関数とtypedef
 柔軟性は高くつきます。
 GILの型はとても長くて読みづらいものになりがちです。
 この問題に取り組むために、GILは基本的なImage、Pixel Iterator、Pixel Locator、Pixel参照、Pixel値を参照する`typedef`を提供しています。
@@ -2724,7 +2759,7 @@ if (view_is_mutable<View>::value) {
 基本的なGILコンストラクトは、ビルトインGILクラスを用いたメモリベースコンストラクトであり、間接参照に対して実行されるいかなる関数オブジェクトももちません。
 例を挙げると、単純なプラナーまたはインタリーブ形式でstepまたはnon-stepなRGB Image Viewは基本的なGILコンストラクトですが、Color Converted ViewやVirtual Viewはそうではありません。
 
-## 13. I/O Extension
+## <a name="section_13"> 13. I/O Extension
 
 GILのI/O Extensionは、ローレベルの画像I/Oユーティリティを提供します。
 このI/O Extensionは、対応するライブラリとのリンクが必要な各種画像フォーマットについての読み込みや保存をサポートしています。
@@ -2812,9 +2847,9 @@ template <typename Views>  void jpeg_write_view(const char*, any_image_view<View
 
 上記の全てのメソッドは、`const char*`の代わりに`std::string`を取るオーバーロードをもちます。
 
-## 14. サンプルコード
+## <a name="section_14"> 14. サンプルコード
 
-### Pixelレベルの処理
+### <a name="section_14_1"> Pixelレベルの処理
 
 Pixelの値、ポインタ、参照を用いる処理を、ここにいくつか示します。
 
@@ -2882,7 +2917,7 @@ gray_to_rgb(*gv8.begin(), rpv32[5]);
 
 この例が示すように、入力と出力が共に`PixelConcept`と`MutablePixelConcept`に各々基づいたModelである限りにおいて、それらは、参照であっても値であっても構いませんし、プラナー形式であってもインタリーブ形式であっても構いません。
 
-### 安全のためのバッファを備えた、Imageのコピー
+### <a name="section_14_2"> 安全のためのバッファを備えた、Imageのコピー
 
 最大で2K+1×2K+1の2次元カーネルを用いて画像のコンボリュージョンを行いたい場合を想定します。
 そのような場合には、画像の境界線の外側にK個のPixel分のマージンを作ってみるのはどうでしょうか。
@@ -2928,7 +2963,7 @@ GILは`std::copy`をオーバーライドします。
 Imageがパディングをもっていない場合、(行の末尾をチェックが必要な少々複雑な1次元Iteratorではなく、)軽量な水平方向Iteratorを使うでしょう。
 staticなパラメータと実行時に型が決まるパラメータの両方を考慮して、最速の方法を選択します。
 
-### ヒストグラム
+### <a name="section_14_3"> ヒストグラム
 ヒストグラムは、各瓶に振り分けられたPixel値の数をカウントすることで得られます。
 グレイスケールPixelは整数型に変換可能なので、次に示すメソッドはグレイスケール(単要素の)Image Viewを取ります。
 
@@ -2987,7 +3022,7 @@ Pixelがコピーされることもなければ、余計なメモリが確保さ
 すなわち、サポートされたColor SpaceとChannel深度であれば、このコードは入力Pixelの上で直接実行されます。
 プラナー形式でもインタリーブ形式でも問題ありません。
 
-### Image Viewの使用
+### <a name="section_14_4"> Image Viewの使用
 
 次のコードで、Image Viewの威力を説明したいと思います。
 
@@ -3011,7 +3046,7 @@ Pixelは全くコピーされていません。
 全ての作業は`jpeg_write_view`のなかで行われます。
 さきほどの`luminosity_histgram`をstep5で呼べば、うまく動作するはずです。
 
-## 15. Generic Image Libraryの拡張
+## <a name="section_15"> 15. Generic Image Libraryの拡張
 
 GILでは、独自のPixel Iterator、Locator、Image View、Image、Channel型、Color Space、アルゴリズムを定義することができます。
 ディスク上の画像やjpegファイルに保存された画像やインターネット上にある画像のVirtual Imageをつくることもできますし、マンデルブロ集合といった完全な合成画像までもつくることができます。
@@ -3019,13 +3054,13 @@ GILでは、独自のPixel Iterator、Locator、Image View、Image、Channel型�
 
 このような拡張のほとんどはライブラリに変更を求めませんし、だからこそ、これらの拡張を他のモジュールへ提供することが可能なのです。
 
-### 独自のColor Space定義
+### <a name="section_15_1"> 独自のColor Space定義
 それぞれのColor Spaceは個別のファイルに記述されています。
 新しいColor Spaceを追加するには、あるColor Space(たとえば、`rgb.hpp`)をコピーして、適当に編集するだけです。
 もし色変換をサポートしたいと思ったら、新しいColor Spaceと既存のColor Spaceの変換を行うメソッドを提供しなければならないでしょう(`color_convert.hpp`を参照してください)。
 利便性を考えて、Pixel、ポインタ、参照、Imageについての`typedef`を提供したくなるかもしれません(`typedefs.h`を参照してください)。
 
-### 独自のChannel型定義
+### <a name="section_15_2"> 独自のChannel型定義
 ほとんどの場合、新しいChannel型を使用する際に特別なことをする必要はありません。
 それをただ使うだけです。
 
@@ -3040,7 +3075,7 @@ typedef image_type<double,rgb_layout_t>::type rgb64_image_t;    // 64-bit interl
 もし独自のChannel型を使いたいと考えたときには、そのChannel型のための`channel_traits`の実装を提供する必要があるでしょう(`channel.hpp`を参照ください)。
 もし、独自のChannel型と既存のChannel型の変換を行いたいと考えたときには、`channel_convert`のオーバーロードを提供する必要があるでしょう。
 
-### 色変換のオーバーロード
+### <a name="section_15_3"> 色変換のオーバーロード
 
 独自の色変換を提供したい場合について考えてみましょう。
 例えば、カラープロファイルを使った高品質な色変換を実装したいと考えている場合などが考えられます。
@@ -3086,7 +3121,7 @@ color_converted_view<gray8_pixel_t>(img_view,my_color_converter());
 
 {% endhighlight %}
 
-### 独自のImage View定義
+### <a name="section_15_4"> 独自のImage View定義
 あるPixelから他のPixelを得るメカニズムか間接参照に対して任意のPixel変換を行うメカニズムかをオーバーロードすることで、独自のPixel IteratorやLocatorやViewを提供することが出来ます。
 例として、`color_converted_view` (あるImage Viewが与えられたとき、Pixelの色変換が実行される以外は全くそっくりの新しいViewを作成するfactoryメソッド)の実装をみてみましょう。
 まずは、Pixel Iteratorから間接参照するときに呼ばれる関数オブジェクトである、`PixelDereferenceAdaptorConcept`のModelを定義する必要があります。
@@ -3147,9 +3182,9 @@ typename color_converted_view_type<View,DstP>::type color_convert_view(const Vie
 (実際の色変換Viewによる変換は、ユーザ独自の色変換メソッドの記述を許可する追加の色変換オブジェクトを取るなど、少し複雑です。)
 マンデルブロ集合を定義するVirtual Image Viewを作成する例については、GILチュートリアルを見てください。
 
-## 16. より専門的な事項
+## <a name="section_16"> 16. より専門的な事項
 
-### 参照Proxyの作成
+### <a name="section_16_1"> 参照Proxyの作成
 与えられたオブジェクトへの参照となるProxy型の作成が必要となる場合があります。
 これらの例として、GILのプラナー形式Pixelへの参照やGILのサブバイトChannelへの参照が挙げられます。
 参照Proxy型の記述に際しては、注意が必要です。
@@ -3226,7 +3261,7 @@ namespace std {
 最後に、Proxy参照のコンストラクタやコピーコンストラクタは常に浅く、代入演算子は常に深いことを覚えておいてください。
 上記の解決策を提案してくれたDave Abrahams、Sean Parent、Alex Stepanovに感謝します。
 
-## 17. 結び
+## <a name="section_17"> 17. 結び
 Generic Image Libraryは次に示す5個の目標を念頭にデザインされています。
 
 - 一般性: 画像処理アルゴリズムから画像の形式を抽象化し、記述したコードがどのような形式の画像でも動作できるにします。

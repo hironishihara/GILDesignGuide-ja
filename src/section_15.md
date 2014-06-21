@@ -25,7 +25,7 @@ layout: default
     Please see "http://stlab.adobe.com/licenses.html" for more information.
 -->
 
-## 15. Generic Image Libraryの拡張
+## <a name="section_15"> 15. Generic Image Libraryの拡張
 
 GILでは、独自のPixel Iterator、Locator、Image View、Image、Channel型、Color Space、アルゴリズムを定義することができます。
 ディスク上の画像やjpegファイルに保存された画像やインターネット上にある画像のVirtual Imageをつくることもできますし、マンデルブロ集合といった完全な合成画像までもつくることができます。
@@ -33,13 +33,13 @@ GILでは、独自のPixel Iterator、Locator、Image View、Image、Channel型�
 
 このような拡張のほとんどはライブラリに変更を求めませんし、だからこそ、これらの拡張を他のモジュールへ提供することが可能なのです。
 
-### 独自のColor Space定義
+### <a name="section_15_1"> 独自のColor Space定義
 それぞれのColor Spaceは個別のファイルに記述されています。
 新しいColor Spaceを追加するには、あるColor Space(たとえば、`rgb.hpp`)をコピーして、適当に編集するだけです。
 もし色変換をサポートしたいと思ったら、新しいColor Spaceと既存のColor Spaceの変換を行うメソッドを提供しなければならないでしょう(`color_convert.hpp`を参照してください)。
 利便性を考えて、Pixel、ポインタ、参照、Imageについての`typedef`を提供したくなるかもしれません(`typedefs.h`を参照してください)。
 
-### 独自のChannel型定義
+### <a name="section_15_2"> 独自のChannel型定義
 ほとんどの場合、新しいChannel型を使用する際に特別なことをする必要はありません。
 それをただ使うだけです。
 
@@ -54,7 +54,7 @@ typedef image_type<double,rgb_layout_t>::type rgb64_image_t;    // 64-bit interl
 もし独自のChannel型を使いたいと考えたときには、そのChannel型のための`channel_traits`の実装を提供する必要があるでしょう(`channel.hpp`を参照ください)。
 もし、独自のChannel型と既存のChannel型の変換を行いたいと考えたときには、`channel_convert`のオーバーロードを提供する必要があるでしょう。
 
-### 色変換のオーバーロード
+### <a name="section_15_3"> 色変換のオーバーロード
 
 独自の色変換を提供したい場合について考えてみましょう。
 例えば、カラープロファイルを使った高品質な色変換を実装したいと考えている場合などが考えられます。
@@ -100,7 +100,7 @@ color_converted_view<gray8_pixel_t>(img_view,my_color_converter());
 
 {% endhighlight %}
 
-### 独自のImage View定義
+### <a name="section_15_4"> 独自のImage View定義
 あるPixelから他のPixelを得るメカニズムか間接参照に対して任意のPixel変換を行うメカニズムかをオーバーロードすることで、独自のPixel IteratorやLocatorやViewを提供することが出来ます。
 例として、`color_converted_view` (あるImage Viewが与えられたとき、Pixelの色変換が実行される以外は全くそっくりの新しいViewを作成するfactoryメソッド)の実装をみてみましょう。
 まずは、Pixel Iteratorから間接参照するときに呼ばれる関数オブジェクトである、`PixelDereferenceAdaptorConcept`のModelを定義する必要があります。

@@ -45,7 +45,7 @@ Most of them are defined here: http://www.generic-programming.org/languages/conc
 Here are some additional basic concepts that GIL needs:
 -->
 
-## 2. Conceptについて
+## <a name="section_02"> 2. Conceptについて
 GILで用いられる全ての構成概念(コンストラクト)は、GILが定めるConceptに基づいたModelです。
 Conceptとは、型(もしくは、関連する型のセット)がジェネリックアルゴリズム内で正しく利用されるために満たさなければならない要件のセットです。
 これらの要件には、構文的な保証とアルゴリズム的な保証が含まれます。

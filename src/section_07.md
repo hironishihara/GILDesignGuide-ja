@@ -25,7 +25,7 @@ layout: default
     Please see "http://stlab.adobe.com/licenses.html" for more information.
 -->
 
-## 7. Pixel
+## <a name="section_07"> 7. Pixel
 Pixelは、ある画像中のある1点に対応する、色が定義されたChannelのセットです。
 概念的に言えば、Pixelと`ChannelConcept`に基づいた要素をもったColor Baseはほとんど同じようなものです。
 Pixelの全てのプロパティはColor Baseから受け継いだものです。

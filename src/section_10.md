@@ -25,7 +25,7 @@ layout: default
     Please see "http://stlab.adobe.com/licenses.html" for more information.
 -->
 
-## 10. Image
+## <a name="section_10"> 10. Image
 Imageは、あるImage Viewが扱うPixel配列を所有するコンテナです。
 Imageは、コンストラクタでPixel配列を確保し、デストラクタでそのPixel配列を解放します。
 Imageは、深い代入演算子とコピーコンストラクタをもちます。

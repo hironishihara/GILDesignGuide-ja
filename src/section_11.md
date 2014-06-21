@@ -25,7 +25,7 @@ layout: default
     Please see "http://stlab.adobe.com/licenses.html" for more information.
 -->
 
-## 11. 実行時に型を指定するImageとImage View
+## <a name="section_11"> 11. 実行時に型を指定するImageとImage View
 Color Space、Channel深度、Channel順、インタリーブ形式/プラナー形式といったImageの構造は、コンパイル時に結びつけられる、テンプレートパラメータの型によって定義されます。
 それらのパラメータのいくつかが実行時になって初めて決まるといった場合もしばしば存在します。
 例として、与えられたパスにある画像を開き、くるりと回転させ、画像オリジナルのColor SpaceとChannel深度で保存する、というモジュールを書く場合を考えましょう。

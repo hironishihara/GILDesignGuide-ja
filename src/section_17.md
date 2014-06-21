@@ -25,7 +25,7 @@ layout: default
     Please see "http://stlab.adobe.com/licenses.html" for more information.
 -->
 
-## 17. 結び
+## <a name="section_17"> 17. 結び
 Generic Image Libraryは次に示す5個の目標を念頭にデザインされています。
 
 - 一般性: 画像処理アルゴリズムから画像の形式を抽象化し、記述したコードがどのような形式の画像でも動作できるにします。
@@ -33,3 +33,6 @@ Generic Image Libraryは次に示す5個の目標を念頭にデザインされ�
 - 柔軟性: コンパイル時の型解決は高速なコードをもたらしますが、コードの柔軟性に重大な制限が課せられます。このライブラリは、わずかなパフォーマンスコストと引き換えに、あらゆる画像パラメータについて実行時の型指定を可能にしています。
 - 拡張性: 関連するGILコンセプトに基づいたModelにすることで、Channel型、Color Space、Layout、Iterator、Locator、Image View、Imageといった、実質的にあらゆるGILコンストラクトが拡張可能です。
 - 互換性: このライブラリはSTLを補完するものとしてデザインされています。Pixel操作にはSTLアルゴリズムが用いられており、そのSTLアルゴリズムは特に最適化の対象となっています。このライブラリは、他のライブラリからの生Pixelデータでも動作します。
+
+
+  

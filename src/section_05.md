@@ -68,7 +68,7 @@ typedef layout<rgba_t, mpl::vector4_c<int,3,2,1,0> > abgr_layout_t;
 
 -->
 
-## 5. Color SpaceとLayout
+## <a name="section_05"> 5. Color SpaceとLayout
 Color Spaceは、Pixelを構成するChannelに関して、それらの組み合わせと解釈を保持します。
 Color Spaceは、そのColor Spaceがもつ全ての要素の型を包含したMPLランダムアクセスシークエンスです。
 ふたつのColor Spaceが等しい(同じ色のセットを同じ順序でもつ)とき、それらのColor Space間には互換性があると見なされます。

@@ -51,7 +51,7 @@ concept ChannelValueConcept<ChannelConcept T> : Regular<T> {};
 
 -->
 
-## 4. Channel
+## <a name="section_04"> 4. Channel
 Channelは、色成分の強度を示します (例: RGB Pixelの赤Channel)。
 基本的なChannel操作として、値の取得(get)や比較(compare)や代入(set)があります。
 また、Channelには最小値と最大値が設定されています。

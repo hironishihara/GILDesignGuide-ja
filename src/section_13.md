@@ -25,7 +25,7 @@ layout: default
     Please see "http://stlab.adobe.com/licenses.html" for more information.
 -->
 
-## 13. I/O Extension
+## <a name="section_13"> 13. I/O Extension
 
 GILのI/O Extensionは、ローレベルの画像I/Oユーティリティを提供します。
 このI/O Extensionは、対応するライブラリとのリンクが必要な各種画像フォーマットについての読み込みや保存をサポートしています。

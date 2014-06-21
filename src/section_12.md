@@ -25,7 +25,7 @@ layout: default
     Please see "http://stlab.adobe.com/licenses.html" for more information.
 -->
 
-## 12. メタ関数とtypedef
+## <a name="section_12"> 12. メタ関数とtypedef
 柔軟性は高くつきます。
 GILの型はとても長くて読みづらいものになりがちです。
 この問題に取り組むために、GILは基本的なImage、Pixel Iterator、Pixel Locator、Pixel参照、Pixel値を参照する`typedef`を提供しています。

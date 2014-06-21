@@ -25,9 +25,9 @@ layout: default
     Please see "http://stlab.adobe.com/licenses.html" for more information.
 -->
 
-## 16. より専門的な事項
+## <a name="section_16"> 16. より専門的な事項
 
-### 参照Proxyの作成
+### <a name="section_16_1"> 参照Proxyの作成
 与えられたオブジェクトへの参照となるProxy型の作成が必要となる場合があります。
 これらの例として、GILのプラナー形式Pixelへの参照やGILのサブバイトChannelへの参照が挙げられます。
 参照Proxy型の記述に際しては、注意が必要です。

@@ -26,9 +26,9 @@ layout: default
 -->
 
 
-## 8. Pixel Iterator
+## <a name="section_08"> 8. Pixel Iterator
 
-### 基本となるIterator
+### <a name="section_08_1"> 基本となるIterator
 Pixel Iteratorは、`PixelValueConcept`に基づいたModelである`value_type`のランダム走査Iteratorです。
 Pixel Iteratorは、mutableであるか否か(すなわち、指し示すPixelが変更可能か否か)を判定するメタ関数、immutable (read-only)なIteratorを取得するメタ関数、素のIteratorかアダプタをまとった他のIteratorなのかを判定するメタ関数を提供します。
 
@@ -95,7 +95,7 @@ planar_pixel_iterator<ChannelPtr,ColorSpace>::operator++() {
 また、GILは、ビット単位Pixelを走査するPixel IteratorのModelとして、`bit_aligned_pixel_iterator`クラスを用います。
 内部的には、各時点でのバイト位置とビットオフセットを記録しています。
 
-### Iteratorアダプタ
+### <a name="section_08_2"> Iteratorアダプタ
 Iteratorアダプタは他のIteratorをラップしたIteratorです。
 その`is_iterator_adaptor`というメタ関数は`true`でなければなりません。
 また、Base Iteratorを返すメンバ関数、型を取得するメタ関数、他のBase Iteratorに再結合するメタ関数を提供する必要があります。
@@ -138,7 +138,7 @@ GILは`IteratorAdaptorConcept`のModelをいくつか提供しています。
 詳細は、"ほかのImage ViewからImage Viewを作成する"をみてください。
 ひとつの引数をとる関数`Fn`は`PixelDereferenceAdaptorConcept`(次を見てください)に基づいたModelでなければなりません。
 
-### Pixel間接参照アダプタ
+### <a name="section_08_3"> Pixel間接参照アダプタ
 Pixel間接参照アダプタは、Pixel Iteratorから間接参照した値を受け取る、ひとつの引数をもつ関数です。
 この引数の型はどんなものでも構いません(よくあるのは`PixelConcept`です)。また、戻り値の型は`PixelConcept`に変換可能でなければなりません。
 
@@ -169,7 +169,7 @@ GILは、間接参照した値に色変換を実行するImage ViewやPixelのN�
 これらのPixel間接参照アダプタは、間接参照した値に任意関数を実行するVirtual Image View (例えば、マンデルブロ集合を表すViewなど)を実装する際に使用されます。
 `dereference_iterator_adaptor<Iterator,Fn>`は、`Iterator`で間接参照した値を引数にして与えられた間接参照Iteratorアダプタ`Fn`を実行する、Pixel Iteratorである`Iterator`を包むIteratorラッパです。
 
-### ステップIterator
+### <a name="section_08_4"> ステップIterator
 基本的なPixel Iteratorによって提供される1ステップ以上のまとまったステップ数でPixelの走査を行いたい場合があります。
 例えば、次のような場合です。
 
@@ -257,7 +257,7 @@ GILは、`position_iterator`という、仮想的なPixel配列に対するItera
 これは、Pixelの位置情報を保持し、その位置にあるPixelの値を間接参照で取得する関数オブジェクトを実行するステップIteratorです。
 これは、`PixelIteratorConcept`と`StepIteratorConcept`に基づいたModelですが、`MemoryBasedIteratorConcept`に基づいたModelではありません。
 
-### Pixel Locator
+### <a name="section_08_5"> Pixel Locator
 Locatorは2次元もしくはそれ以上の次元でのナビゲーションを可能にします。
 Locatorは、本来であればN次元Iteratorと呼ぶべきですが、Iteratorが満たすべき要件を完全には満たしていないため、このように違う名前を使っています。
 例を挙げると、Locatorは、どの軸にそって移動するべきか明確でないために、インクリメントやデクリメントを行う演算子を提供しません。
@@ -486,7 +486,7 @@ loc-=point2<std::ptrdiff_t>(1,1);// move to (10,24)
 例えば、フィルタ処理では画像中の各Pixelにおいて同じ位置関係にある隣接Pixelへのアクセスが必要ですが、そのような場合に、相対的な位置は`cache_location`を利用して差分を表す整数のなかにキャッシュできます。
 上記の例で言うと、インタリーブ画像の`loc[above]`は生配列のインデクス演算子と等価です。
 
-### 2次元画像上でのIterator
+### <a name="section_08_6"> 2次元画像上でのIterator
 ときには、画像中の全Pixelに対して位置に依存しない一律の処理を実行したいといった場合も考えられます。
 このようなとき、一律に扱うPixel全てを一次元配列のように扱うことができれば便利です。
 GILの`itarator_from_2d`は、画像中の全Pixelを左から右、上から下というメモリフレンドリな順序で走査するランダムアクセスIteratorです。
