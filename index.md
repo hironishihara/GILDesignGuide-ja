@@ -622,7 +622,7 @@ Algorithms:
 #### Model:
 
 組み込みの整数型と浮動小数点型は、全て、有効なChannelです。
-GILは、いくつかの整数型について、標準のtypedefを提供しています。
+GILは、いくつかの整数型について、標準の`typedef`を提供しています。
 
 {% highlight C++ %}
 
@@ -758,7 +758,9 @@ ColorSpacesCompatibleConcept<ColorSpace1,ColorSpace2>
 ChannelMappingConcept<Mapping>
 Models:
 
-GIL currently provides the following color spaces: gray_t, rgb_t, rgba_t, and cmyk_t. It also provides unnamed N-channel color spaces of two to five channels, devicen_t<2>, devicen_t<3>, devicen_t<4>, devicen_t<5>. Besides the standard layouts, it provides bgr_layout_t, bgra_layout_t, abgr_layout_t and argb_layout_t.
+GIL currently provides the following color spaces: gray_t, rgb_t, rgba_t, and cmyk_t.
+It also provides unnamed N-channel color spaces of two to five channels, devicen_t<2>, devicen_t<3>, devicen_t<4>, devicen_t<5>.
+Besides the standard layouts, it provides bgr_layout_t, bgra_layout_t, abgr_layout_t and argb_layout_t.
 
 As an example, here is how GIL defines the RGBA color space:
 
@@ -791,7 +793,7 @@ typedef layout<rgba_t, mpl::vector4_c<int,3,2,1,0> > abgr_layout_t;
 ## <a name="section_05"> 5. Color SpaceとLayout
 Color Spaceは、Pixelを構成するChannelに関して、それらの組み合わせと解釈を保持します。
 Color Spaceは、そのColor Spaceがもつ全ての要素の型を包含したMPLランダムアクセスシークエンスです。
-ふたつのColor Spaceが等しい(同じ色のセットを同じ順序でもつ)とき、それらのColor Space間には互換性があると見なされます。
+ふたつのColor Spaceが等しい(同じ色のセットを同じ順序でもつ)場合に限って、それらのColor Space間には互換性があると見なされます。
 
 #### 関連するConcept:
 
@@ -801,9 +803,9 @@ Color Spaceは、そのColor Spaceがもつ全ての要素の型を包含したM
 
 #### Model:
 
-GILは`gray_t`, `rgb_t`, `rgba_t`, `cmyk_t`を提供しています。
+現在のところ、GILは`gray_t`, `rgb_t`, `rgba_t`, `cmyk_t`といったColor Spaceを提供しています。
 また、2〜5個までのChannelをもった無名のN-Channel Color Spaceである、`devicen_t<2>`, `devicen_t<3>`, `devicen_t<4>`, `devicen_t<5>`も提供しています。
-Layoutについて言えば、スタンダードなLayoutはもちろんのこと、GILでは`bgr_layout_t`, `bgra_layout_t`, `abgr_layout_t`, `argb_layout_t`も提供しています。
+Layoutについて言えば、GILはスタンダードなLayout以外に`bgr_layout_t`, `bgra_layout_t`, `abgr_layout_t`, `argb_layout_t`などのLayoutを提供しています。
 
 ひとつの例として、GILがどのようにしてRGBA Color Spaceを定義しているか示します。
 
@@ -821,7 +823,7 @@ Color Spaceの定義におけるChannelの順序は、Channelのセマンテッ�
 例を挙げると、`red_t`は`rgba_t`のセマンティックな順序における最初のChannelです。
 あるColor Spaceにおいて、セマンティックなChannel順序は一意に決まる一方、メモリ上でのフィジカルなChannel順序は異なっている可能性があります。
 Channelのマッピングは、整数型のMPLランダムアクセスシークエンスである、`ChannelMappingConcept`によって規定されています。
-Color Spaceとその中のChannelのマッピングはよく一緒に使用されます。
+Color Spaceとその中のChannelのマッピングはしばしば一緒に使用されます。
 そのため、このふたつはGILのLayoutとしてまとめられています。
 
 {% highlight C++ %}
@@ -2553,17 +2555,17 @@ GILの型はとても長くて読みづらいものになりがちです。
 この問題に取り組むために、GILは基本的なImage、Pixel Iterator、Pixel Locator、Pixel参照、Pixel値を参照する`typedef`を提供しています。
 それらの`typedef`は、次のようなパターンに従います。
 
-ColorSpace + BitDepth + ["s|f"] + ["c"] + ["_planar"] + ["_step"] + ClassType + "_t"
+ColorSpace + BitDepth + [`s` \| `f`] + [`c`] + [`_planar`] + [`_step`] + ClassType + `_t`
 
 ここでのColorSpaceは、色要素とその順序を示します。
-例えば、rgb、bgr、cmyk、rgbaです。
-BitDepthは、例えば、8、16、32をとることができます。
+例えば、`rgb`、`bgr`、`cmyk`、`rgba`です。
+BitDepthは、例えば、`8`、`16`、`32`をとることができます。
 デフォルトでは、これらのビット数は符号なし整数型です。
-BitDepthに続くsは符号つき整数型であることを示し、また、fは浮動小数点型であることを示します。
-cは、オブジェクトに結びつけられたPixel参照がimmutableであることを示します。
-_planarは、(インタリーブ形式ではなく、)プラナー形式であることを示しています。
-_stepは、その型がdynamicなステップをもつことを示します。
-ClassTypeは、(一般的なアロケータを用いるImageであることを示す)_image、(Image Viewであることを示す)_view、(Pixel Locatorであることを示す)_loc、(Pixel Iteratorであることを示す)_ptr、(Pixel参照であることを示す)_ref、(Pixel値であることを示す)_pixelをとります。
+BitDepthに続く`s`は符号つき整数型であることを示し、また、`f`は浮動小数点型であることを示します。
+`c`は、オブジェクトに結びつけられたPixel参照がimmutableであることを示します。
+`_planar`は、(インタリーブ形式ではなく)プラナー形式であることを示しています。
+`_step`は、その型がdynamicなステップをもつことを示します。
+ClassTypeは、(一般的なアロケータを用いるImageであることを示す)`_image`、(Image Viewであることを示す)`_view`、(Pixel Locatorであることを示す)`_loc`、(Pixel Iteratorであることを示す)`_ptr`、(Pixel参照であることを示す)`_ref`、(Pixel値であることを示す)`_pixel`をとります。
 
 いくつか例を挙げます。
 
@@ -2653,7 +2655,7 @@ struct bit_aligned_image5_type { typedef ... type; };
 {% endhighlight %}
 
 この`ChannelValue`は`ChannelValueConcept`に基づいたModelです。
-GILのメモリベースLocatorとViewでは、垂直方向ステップを動的に指定することが可能なので、IsYStepは必要ありません。
+GILのメモリベースLocatorとViewでは、垂直方向ステップを動的に指定することが可能なので`IsYStep`は必要ありません。
 IteratorとViewについては、Pixel型から構築することができます。
 
 {% highlight C++ %}
@@ -2744,7 +2746,7 @@ BOOST_STATIC_ASSERT(is_planar<rgb8_planar_view_t>::value == true);
 
 GILは、次に示す命名規則に従う、型解析を行うメタ関数についてもサポートしています。
 
-[pixel\_reference/iterator/locator/view/image] + "\_is_" + [basic/mutable/step].
+[`pixel_reference` \| `iterator` \| `locator` \| `view` \| `image`] + `_is_` + [`basic` \| `mutable` \| `step`]
 
 例を挙げます。
 
