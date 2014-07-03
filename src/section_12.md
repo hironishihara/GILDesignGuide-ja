@@ -31,17 +31,17 @@ GILの型はとても長くて読みづらいものになりがちです。
 この問題に取り組むために、GILは基本的なImage、Pixel Iterator、Pixel Locator、Pixel参照、Pixel値を参照する`typedef`を提供しています。
 それらの`typedef`は、次のようなパターンに従います。
 
-ColorSpace + BitDepth + ["s|f"] + ["c"] + ["_planar"] + ["_step"] + ClassType + "_t"
+ColorSpace + BitDepth + [`s` \| `f`] + [`c`] + [`_planar`] + [`_step`] + ClassType + `_t`
 
 ここでのColorSpaceは、色要素とその順序を示します。
-例えば、rgb、bgr、cmyk、rgbaです。
-BitDepthは、例えば、8、16、32をとることができます。
+例えば、`rgb`、`bgr`、`cmyk`、`rgba`です。
+BitDepthは、例えば、`8`、`16`、`32`をとることができます。
 デフォルトでは、これらのビット数は符号なし整数型です。
-BitDepthに続くsは符号つき整数型であることを示し、また、fは浮動小数点型であることを示します。
-cは、オブジェクトに結びつけられたPixel参照がimmutableであることを示します。
-_planarは、(インタリーブ形式ではなく、)プラナー形式であることを示しています。
-_stepは、その型がdynamicなステップをもつことを示します。
-ClassTypeは、(一般的なアロケータを用いるImageであることを示す)_image、(Image Viewであることを示す)_view、(Pixel Locatorであることを示す)_loc、(Pixel Iteratorであることを示す)_ptr、(Pixel参照であることを示す)_ref、(Pixel値であることを示す)_pixelをとります。
+BitDepthに続く`s`は符号つき整数型であることを示し、また、`f`は浮動小数点型であることを示します。
+`c`は、オブジェクトに結びつけられたPixel参照がimmutableであることを示します。
+`_planar`は、(インタリーブ形式ではなく)プラナー形式であることを示しています。
+`_step`は、その型がdynamicなステップをもつことを示します。
+ClassTypeは、(一般的なアロケータを用いるImageであることを示す)`_image`、(Image Viewであることを示す)`_view`、(Pixel Locatorであることを示す)`_loc`、(Pixel Iteratorであることを示す)`_ptr`、(Pixel参照であることを示す)`_ref`、(Pixel値であることを示す)`_pixel`をとります。
 
 いくつか例を挙げます。
 
@@ -131,7 +131,7 @@ struct bit_aligned_image5_type { typedef ... type; };
 {% endhighlight %}
 
 この`ChannelValue`は`ChannelValueConcept`に基づいたModelです。
-GILのメモリベースLocatorとViewでは、垂直方向ステップを動的に指定することが可能なので、IsYStepは必要ありません。
+GILのメモリベースLocatorとViewでは、垂直方向ステップを動的に指定することが可能なので`IsYStep`は必要ありません。
 IteratorとViewについては、Pixel型から構築することができます。
 
 {% highlight C++ %}
@@ -222,7 +222,7 @@ BOOST_STATIC_ASSERT(is_planar<rgb8_planar_view_t>::value == true);
 
 GILは、次に示す命名規則に従う、型解析を行うメタ関数についてもサポートしています。
 
-[pixel\_reference/iterator/locator/view/image] + "\_is_" + [basic/mutable/step].
+[`pixel_reference` \| `iterator` \| `locator` \| `view` \| `image`] + `_is_` + [`basic` \| `mutable` \| `step`]
 
 例を挙げます。
 
