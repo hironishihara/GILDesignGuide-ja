@@ -192,29 +192,34 @@ You can find a quick, jump-start GIL tutorial on the main GIL page at http://ope
 
 <!--
 1. Overview
-Images are essential in any image processing, vision and video project,
-and yet the variability in image representations makes it difficult to write imaging algorithms that are both generic and efficient.
-In this section we will describe some of the challenges that we would like to address.
-
-In the following discussion an image is a 2D array of pixels.
-A pixel is a set of color channels that represents the color at a given point in an image.
-Each channel represents the value of a color component.
-
-There are two common memory structures for an image.
-Interleaved images are represented by grouping the pixels together in memory and interleaving all channels together, whereas planar images keep the channels in separate color planes.
-Here is a 4x3 RGB image in which the second pixel of the first row is marked in red, in interleaved form:
-and in planar form:
-Note also that rows may optionally be aligned resulting in a potential padding at the end of rows.
 -->
 
 ## <a name="section_01"> 1. 概要
 
+<!--
+Images are essential in any image processing, vision and video project,
+and yet the variability in image representations makes it difficult to write imaging algorithms that are both generic and efficient.
+In this section we will describe some of the challenges that we would like to address.
+-->
+
 画像処理、ヴィジョン、動画のいずれの研究課題においても画像は最も重要な要素ですが、画像の形式の多様さは、汎用的かつ効率的な画像処理アルゴリズムを記述する際の障害となっています。
 この章では、私たちがこれから取り組む課題について記述します。
+
+<!--
+In the following discussion an image is a 2D array of pixels.
+A pixel is a set of color channels that represents the color at a given point in an image.
+Each channel represents the value of a color component.
+-->
 
 以降の議論では、画像はPixelの2次元配列であるものとします。
 また、Pixelは画像中のある点における色を表現する色Channelのセットとします。
 各々の色Channelはひとつの色成分の値を表現するものとします。
+
+<!--
+There are two common memory structures for an image.
+Interleaved images are represented by grouping the pixels together in memory and interleaving all channels together, whereas planar images keep the channels in separate color planes.
+Here is a 4x3 RGB image in which the second pixel of the first row is marked in red, in interleaved form:
+-->
 
 画像のメモリ構造は、よく用いられる2種類があります。
 各Pixelの色Channelが順番に連続で配置され、なおかつ、全Pixelがメモリ上でひとつにまとめられているインタリーブ画像と、
@@ -223,27 +228,28 @@ Note also that rows may optionally be aligned resulting in a potential padding a
 
 ![インタリーブ画像](http://hironishihara.github.com/GILDesignGuide-ja/src/img/interleaved.jpg "インタリーブ画像")
 
+<!--
+and in planar form:
+-->
+
 プラナー画像では次のように配置されます。
 
 ![プラナー画像](http://hironishihara.github.com/GILDesignGuide-ja/src/img/planar.jpg "プラナー画像")
 
+<!--
+Note also that rows may optionally be aligned resulting in a potential padding at the end of rows.
+-->
+
 各行の末尾には、アラインメントを施した結果として、パディングが配置されているかもしれないことに注意してください。
 
 <!--
-Note also that rows may optionally be aligned resulting in a potential padding at the end of rows.
 The Generic Image Library (GIL) provides models for images that vary in:
-* Structure (planar vs. interleaved)
-* Color space and presence of alpha (RGB, RGBA, CMYK, etc.)
-* Channel depth (8-bit, 16-bit, etc.)
-* Order of channels (RGB vs. BGR, etc.)
-* Row alignment policy (no alignment, word-alignment, etc.)
-It also supports user-defined models of images, and images whose parameters are specified at run-time.
-GIL abstracts image representation from algorithms applied on images and allows us to write the algorithm once and
-have it work on any of the above image variations while generating code that is comparable in speed to that
-of hand-writing the algorithm for a specific image type.
 
-This document follows bottom-up design. Each section defines concepts that build on top of concepts defined in previous sections.
-It is recommended to read the sections in order.
+Structure (planar vs. interleaved)
+Color space and presence of alpha (RGB, RGBA, CMYK, etc.)
+Channel depth (8-bit, 16-bit, etc.)
+Order of channels (RGB vs. BGR, etc.)
+Row alignment policy (no alignment, word-alignment, etc.)
 -->
 
 Generic Image Library (GIL)は、次に挙げるような特徴をもつ画像のためのModelを提供します。
@@ -255,34 +261,42 @@ Generic Image Library (GIL)は、次に挙げるような特徴をもつ画像�
 * アライメント (アラインメント無し, ワードアラインメントなど)
 * ユーザ定義の画像、実行時にパラメータが指定される画像
 
+<!--
+It also supports user-defined models of images, and images whose parameters are specified at run-time.
+GIL abstracts image representation from algorithms applied on images and allows us to write the algorithm once and
+have it work on any of the above image variations while generating code that is comparable in speed to that
+of hand-writing the algorithm for a specific image type.
+-->
+
+また、ユーザ定義の画像Modelや実行時にパラメータが決まる画像もサポートしています。
 GILは、画像に適用されるアルゴリズムから画像の形式を抽象化することで、書き上げたアルゴリズムが上に挙げたいずれの形式の画像でも動作することを可能にします。
 また同時に、特定の形式の画像に特化したアルゴリズムに匹敵する速度で動作するコードの生成も実現します。
 
+<!--
+This document follows bottom-up design. Each section defines concepts that build on top of concepts defined in previous sections.
+It is recommended to read the sections in order.
+-->
+
 この文章はボトムアップ設計に従っています。
-各章では、それより前の章で定義したConceptに基づいて、新たなConceptを定義します。
+各章では、それより前の章で定義したConceptに基づいて、新たなConceptを定義していきます。
 先頭の章から順に読み進めることを推奨します。
 
 
 <!--
 2. About Concepts
+-->
 
+## <a name="section_02"> 2. Conceptについて
+
+<!--
 All constructs in GIL are models of GIL concepts.
 A concept is a set of requirements that a type (or a set of related types) must fulfill to be used correctly in generic algorithms.
 The requirements include syntactic and algorithming guarantees.
 For example, GIL's class pixel is a model of GIL's PixelConcept.
 The user may substitute the pixel class with one of their own, and, as long as it satisfies the requirements of PixelConcept, all other GIL classes and algorithms can be used with it.
 See more about concepts here: http://www.generic-programming.org/languages/conceptcpp/
-
-In this document we will use a syntax for defining concepts that is described in a proposal
-for a Concepts extension to C++0x specified here: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2081.pdf
-
-Here are some common concepts that will be used in GIL.
-Most of them are defined here: http://www.generic-programming.org/languages/conceptcpp/concept_web.php
-
-Here are some additional basic concepts that GIL needs:
 -->
 
-## <a name="section_02"> 2. Conceptについて
 GILで用いられる全ての構成概念(コンストラクト)は、GILが定めるConceptに基づいたModelです。
 Conceptとは、型(もしくは、関連する型のセット)がジェネリックアルゴリズム内で正しく利用されるために満たさなければならない要件のセットです。
 これらの要件には、構文的な保証とアルゴリズム的な保証が含まれます。
@@ -291,8 +305,18 @@ Conceptとは、型(もしくは、関連する型のセット)がジェネリ�
 Conceptに関する詳細は、次のURLを参照ください。  
 <http://www.generic-programming.org/languages/conceptcpp/>  
 
+<!--
+In this document we will use a syntax for defining concepts that is described in a proposal
+for a Concepts extension to C++0x specified here: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2081.pdf
+-->
+
 この文章では、次のURLにあるC++0xのConcept拡張の提案書に記述されている、Concept定義のための構文を使用します。  
 <http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2081.pdf>
+
+<!--
+Here are some common concepts that will be used in GIL.
+Most of them are defined here: http://www.generic-programming.org/languages/conceptcpp/concept_web.php
+-->
 
 ここで、GILでよく用いられるいくつかのConceptを紹介します。
 そのほとんどは、次のサイトで定義されています。  
@@ -328,6 +352,10 @@ auto concept Swappable<typename T> {
 
 {% endhighlight %}
 
+<!--
+Here are some additional basic concepts that GIL needs:
+-->
+
 また、GILが必要とする基本的なConceptを追加でいくつか挙げておきます。
 
 {% highlight C++ %}
@@ -342,44 +370,17 @@ auto concept Metafunction<typename T> {
 
 
 <!--
-
-A point defines the location of a pixel inside an image.
-It can also be used to describe the dimensions of an image.
-In most general terms, points are N-dimensional and model the following concept:
-concept PointNDConcept<typename T> : Regular<T> {
-    // the type of a coordinate along each axis
-    template <size_t K> struct axis; where Metafunction<axis>;
-
-    const size_t num_dimensions;
-
-    // accessor/modifier of the value of each axis.
-    template <size_t K> const typename axis<K>::type& T::axis_value() const;
-    template <size_t K>       typename axis<K>::type& T::axis_value();
-};
-GIL uses a two-dimensional point, which is a refinement of PointNDConcept in which both dimensions are of the same type:
-
-concept Point2DConcept<typename T> : PointNDConcept<T> {
-    where num_dimensions == 2;
-    where SameType<axis<0>::type, axis<1>::type>;
-
-    typename value_type = axis<0>::type;
-
-    const value_type& operator[](const T&, size_t i);
-          value_type& operator[](      T&, size_t i);
-
-    value_type x,y;
-};
-Related Concepts:
-
-PointNDConcept<T>
-Point2DConcept<T>
-Models:
-
-GIL provides a model of Point2DConcept, point2<T> where T is the coordinate type.
-
+3. Point
 -->
 
 ## <a name="section_03"> 3. Point
+
+<!--
+A point defines the location of a pixel inside an image.
+It can also be used to describe the dimensions of an image.
+In most general terms, points are N-dimensional and model the following concept:
+-->
+
 Pointは、Pixelの画像上における位置を定義します。
 また、画像の次元数を表現するためにも用いられます。
 一般に、PointはN次元であり、次に示すConceptに基づいたModelです。
@@ -399,6 +400,10 @@ concept PointNDConcept<typename T> : Regular<T> {
 
 {% endhighlight %}
 
+<!--
+GIL uses a two-dimensional point, which is a refinement of PointNDConcept in which both dimensions are of the same type:
+-->
+
 GILは、2つの次元の座標の型が同じになるように改良した`PointNDConcept`である、2次元のPointを用います。
 
 {% highlight C++ %}
@@ -417,10 +422,23 @@ concept Point2DConcept<typename T> : PointNDConcept<T> {
 
 {% endhighlight %}
 
+<!--
+Related Concepts:
+
+PointNDConcept<T>
+Point2DConcept<T>
+-->
+
 #### 関連するConcept:
 
 - `PointNDConcept<T>`
 - `Point2DConcept<T>`
+
+<!--
+Models:
+
+GIL provides a model of Point2DConcept, point2<T> where T is the coordinate type.
+-->
 
 #### Model:
 
