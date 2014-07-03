@@ -28,24 +28,19 @@ layout: default
 
 <!--
 2. About Concepts
+-->
 
+## <a name="section_02"> 2. Conceptについて
+
+<!--
 All constructs in GIL are models of GIL concepts.
 A concept is a set of requirements that a type (or a set of related types) must fulfill to be used correctly in generic algorithms.
 The requirements include syntactic and algorithming guarantees.
 For example, GIL's class pixel is a model of GIL's PixelConcept.
 The user may substitute the pixel class with one of their own, and, as long as it satisfies the requirements of PixelConcept, all other GIL classes and algorithms can be used with it.
 See more about concepts here: http://www.generic-programming.org/languages/conceptcpp/
-
-In this document we will use a syntax for defining concepts that is described in a proposal
-for a Concepts extension to C++0x specified here: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2081.pdf
-
-Here are some common concepts that will be used in GIL.
-Most of them are defined here: http://www.generic-programming.org/languages/conceptcpp/concept_web.php
-
-Here are some additional basic concepts that GIL needs:
 -->
 
-## <a name="section_02"> 2. Conceptについて
 GILで用いられる全ての構成概念(コンストラクト)は、GILが定めるConceptに基づいたModelです。
 Conceptとは、型(もしくは、関連する型のセット)がジェネリックアルゴリズム内で正しく利用されるために満たさなければならない要件のセットです。
 これらの要件には、構文的な保証とアルゴリズム的な保証が含まれます。
@@ -54,8 +49,18 @@ Conceptとは、型(もしくは、関連する型のセット)がジェネリ�
 Conceptに関する詳細は、次のURLを参照ください。  
 <http://www.generic-programming.org/languages/conceptcpp/>  
 
+<!--
+In this document we will use a syntax for defining concepts that is described in a proposal
+for a Concepts extension to C++0x specified here: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2081.pdf
+-->
+
 この文章では、次のURLにあるC++0xのConcept拡張の提案書に記述されている、Concept定義のための構文を使用します。  
 <http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2081.pdf>
+
+<!--
+Here are some common concepts that will be used in GIL.
+Most of them are defined here: http://www.generic-programming.org/languages/conceptcpp/concept_web.php
+-->
 
 ここで、GILでよく用いられるいくつかのConceptを紹介します。
 そのほとんどは、次のサイトで定義されています。  
@@ -90,6 +95,10 @@ auto concept Swappable<typename T> {
 };
 
 {% endhighlight %}
+
+<!--
+Here are some additional basic concepts that GIL needs:
+-->
 
 また、GILが必要とする基本的なConceptを追加でいくつか挙げておきます。
 
