@@ -209,7 +209,7 @@ Algorithms:
 #### Model:
 
 組み込みの整数型と浮動小数点型は、全て、有効なChannelです。
-GILは、いくつかの整数型について、標準のtypedefを提供しています。
+GILは、いくつかの整数型について、標準の`typedef`を提供しています。
 
 ```cpp
 typedef boost::uint8_t  bits8;

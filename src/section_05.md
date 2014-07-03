@@ -34,7 +34,9 @@ ColorSpacesCompatibleConcept<ColorSpace1,ColorSpace2>
 ChannelMappingConcept<Mapping>
 Models:
 
-GIL currently provides the following color spaces: gray_t, rgb_t, rgba_t, and cmyk_t. It also provides unnamed N-channel color spaces of two to five channels, devicen_t<2>, devicen_t<3>, devicen_t<4>, devicen_t<5>. Besides the standard layouts, it provides bgr_layout_t, bgra_layout_t, abgr_layout_t and argb_layout_t.
+GIL currently provides the following color spaces: gray_t, rgb_t, rgba_t, and cmyk_t.
+It also provides unnamed N-channel color spaces of two to five channels, devicen_t<2>, devicen_t<3>, devicen_t<4>, devicen_t<5>.
+Besides the standard layouts, it provides bgr_layout_t, bgra_layout_t, abgr_layout_t and argb_layout_t.
 
 As an example, here is how GIL defines the RGBA color space:
 
@@ -67,7 +69,7 @@ typedef layout<rgba_t, mpl::vector4_c<int,3,2,1,0> > abgr_layout_t;
 ## 5. Color SpaceとLayout
 Color Spaceは、Pixelを構成するChannelに関して、それらの組み合わせと解釈を保持します。
 Color Spaceは、そのColor Spaceがもつ全ての要素の型を包含したMPLランダムアクセスシークエンスです。
-ふたつのColor Spaceが等しい(同じ色のセットを同じ順序でもつ)とき、それらのColor Space間には互換性があると見なされます。
+ふたつのColor Spaceが等しい(同じ色のセットを同じ順序でもつ)場合に限って、それらのColor Space間には互換性があると見なされます。
 
 #### 関連するConcept:
 
@@ -77,9 +79,9 @@ Color Spaceは、そのColor Spaceがもつ全ての要素の型を包含したM
 
 #### Model:
 
-GILは`gray_t`, `rgb_t`, `rgba_t`, `cmyk_t`を提供しています。
+現在のところ、GILは`gray_t`, `rgb_t`, `rgba_t`, `cmyk_t`といったColor Spaceを提供しています。
 また、2〜5個までのChannelをもった無名のN-Channel Color Spaceである、`devicen_t<2>`, `devicen_t<3>`, `devicen_t<4>`, `devicen_t<5>`も提供しています。
-Layoutについて言えば、スタンダードなLayoutはもちろんのこと、GILでは`bgr_layout_t`, `bgra_layout_t`, `abgr_layout_t`, `argb_layout_t`も提供しています。
+Layoutについて言えば、GILはスタンダードなLayout以外に`bgr_layout_t`, `bgra_layout_t`, `abgr_layout_t`, `argb_layout_t`などのLayoutを提供しています。
 
 ひとつの例として、GILがどのようにしてRGBA Color Spaceを定義しているか示します。
 
@@ -95,7 +97,7 @@ Color Spaceの定義におけるChannelの順序は、Channelのセマンテッ�
 例を挙げると、`red_t`は`rgba_t`のセマンティックな順序における最初のChannelです。
 あるColor Spaceにおいて、セマンティックなChannel順序は一意に決まる一方、メモリ上でのフィジカルなChannel順序は異なっている可能性があります。
 Channelのマッピングは、整数型のMPLランダムアクセスシークエンスである、`ChannelMappingConcept`によって規定されています。
-Color Spaceとその中のChannelのマッピングはよく一緒に使用されます。
+Color Spaceとその中のChannelのマッピングはしばしば一緒に使用されます。
 そのため、このふたつはGILのLayoutとしてまとめられています。
 
 ```cpp
