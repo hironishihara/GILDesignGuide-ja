@@ -21,7 +21,24 @@
     Please see "http://stlab.adobe.com/licenses.html" for more information.
 -->
 
+
+<!--
+7. Pixel
+-->
+
 ## 7. Pixel
+
+<!--
+A pixel is a set of channels defining the color at a given point in an image.
+Conceptually, a pixel is little more than a color base whose elements model ChannelConcept.
+All properties of pixels inherit from color bases: pixels may be homogeneous if all of their channels have the same type; otherwise they are called heterogeneous.
+The channels of a pixel may be addressed using semantic or physical indexing, or by color; all color-base algorithms work on pixels as well.
+Two pixels are compatible if their color spaces are the same and their channels, paired semantically, are compatible.
+Note that constness, memory organization and reference/value are ignored.
+For example, an 8-bit RGB planar reference is compatible to a constant 8-bit BGR interleaved pixel value.
+Most pairwise pixel operations (copy construction, assignment, equality, etc.) are only defined for compatible pixels.
+-->
+
 Pixelは、ある画像中のある1点に対応する、色が定義されたChannelのセットです。
 概念的に言えば、Pixelと`ChannelConcept`に基づいた要素をもったColor Baseはほとんど同じようなものです。
 Pixelの全てのプロパティはColor Baseから受け継いだものです。
@@ -32,7 +49,11 @@ PixelのChannelは、セマンティックなインデクス、フィジカル�
 同じColor Spaceをもち、その各Channelがセマンティックなペアに対して互換性をもつとき、そのふたつのPixel間には互換性があります。
 Const性、メモリ上での配置、参照であるか値であるかは無視されることに注意してください。
 例を挙げると、8bitのRGBプラナー形式Pixelの参照は、8bitのBGRインタリーブ形式Pixelと互換性があります。
-ほとんどのPixelの2項演算(コピーコンストラクタ, 代入、等号など)は互換性をもつPixel間でだけ定義されています。
+ほとんどのPixelの2項演算(コピーコンストラクション, 代入、等価など)は互換性をもつPixel間でだけ定義されています。
+
+<!--
+Pixels (as well as other GIL constructs built on pixels, such as iterators, locators, views and images) must provide metafunctions to access their color space, channel mapping, number of channels, and (for homogeneous pixels) the channel type:
+-->
 
 Pixelは、(Pixelに基づいて構築されるIterator、Locator、View、Imageなどといった他のGILコンストラクトと同様、)そのColor Space、Channelマッピング、Channel数、(そのPixelがホモジニアスであるなら)Channel型にアクセスするためのメタ関数を提供しなければなりません。
 
@@ -55,6 +76,10 @@ concept HomogeneousPixelBasedConcept<PixelBasedConcept T> {
         where ChannelConcept<channel_type<T>::type>;
 };
 ```
+
+<!--
+Pixels model the following concepts:
+-->
 
 Pixelは次のConceptに基づいたModelです。
 
@@ -99,9 +124,14 @@ concept PixelsCompatibleConcept<PixelConcept P1, PixelConcept P2> : ColorBasesCo
 };
 ```
 
+<!--
+A pixel is convertible to a second pixel if it is possible to approximate its color in the form of the second pixel.
+Conversion is an explicit, non-symmetric and often lossy operation (due to both channel and color space approximation).
+Convertability requires modeling the following concept:
+-->
+
 あるPixelが自身の色をもう一方のPixelの形式に近似できるとき、もう一方のPixelと変換可能です。
 変換は、数学的に陽であり、非対称であり、ほとんどの場合は(ChannelとColor Space両方の近似が原因で)不可逆変換です。
-
 交換可能性は次のConceptに基づいた実装を要求します。
 
 ```cpp
@@ -111,8 +141,26 @@ concept PixelConvertibleConcept {
 };
 ```
 
+<!--
+The distinction between PixelConcept and PixelValueConcept is analogous to that for channels and color bases - pixel reference proxies model both, but only pixel values model the latter.
+-->
+
 `PixelConcept`と`PixelValueConcept`の違いは、ChannelとColor Baseの違いと似ています。
 Pixel参照Proxyは両方のConceptに基づいたModelですが、Pixelは後者のConceptだけに基づいたModelです。
+
+<!--
+Related Concepts:
+
+PixelBasedConcept<P>
+PixelConcept<Pixel>
+MutablePixelConcept<Pixel>
+PixelValueConcept<Pixel>
+HomogeneousPixelConcept<Pixel>
+MutableHomogeneousPixelConcept<Pixel>
+HomogeneousPixelValueConcept<Pixel>
+PixelsCompatibleConcept<Pixel1,Pixel2>
+PixelConvertibleConcept<SrcPixel,DstPixel>
+-->
 
 #### 関連するConcept:
 
@@ -125,6 +173,13 @@ Pixel参照Proxyは両方のConceptに基づいたModelですが、Pixelは後�
 - `HomogeneousPixelValueConcept<Pixel>`
 - `PixelsCompatibleConcept<Pixel1,Pixel2>`
 - `PixelConvertibleConcept<SrcPixel,DstPixel>`
+
+<!--
+Models:
+
+The most commonly used pixel is a homogeneous pixel whose values are together in memory.
+For this purpose GIL provides the struct pixel, templated over the channel value and layout:
+-->
 
 #### Model:
 
@@ -151,6 +206,12 @@ assert(dynamic_at_c(bgr8,0) != dynamic_at_c(rgb8,0));
 assert(rgb8[0] != bgr8[0]); // same as above (but operator[] is defined for pixels only)
 ```
 
+<!--
+Planar pixels have their channels distributed in memory.
+While they share the same value type (pixel) with interleaved pixels, their reference type is a proxy class containing references to each of the channels.
+This is implemented with the struct planar_pixel_reference:
+-->
+
 プラナーPixelは、メモリ上の離れた地点に配置されたChannelをもちます。
 Channelに関連づけられた型についてインタリーブPixelと同じ型を共有している場合、その参照型は各Channelの参照をもつProxyクラスになっています。
 これは`struct planar_pixel_reference`で実装されています。
@@ -164,9 +225,21 @@ typedef planar_pixel_reference<      bits8&,rgb_t> rgb8_planar_ref_t;
 typedef planar_pixel_reference<const bits8&,rgb_t> rgb8c_planar_ref_t;
 ```
 
+<!--
+Note that, unlike the pixel struct, planar pixel references are templated over the color space, not over the pixel layout.
+They always use a cannonical channel ordering.
+Ordering of their elements is unnecessary because their elements are references to the channels.
+-->
+
 `struct planar_pixel_reference`は、Layoutでテンプレート化されている`struct pixel`とは異なり、Color Spaceでテンプレート化されていることに注意してください。
 これらは常に標準化されたChannel順を用います。
 各要素は各Channelから参照されるため、要素の順序に関する情報は不要なのです。
+
+<!--
+Sometimes the channels of a pixel may not be byte-aligned.
+For example an RGB pixel in '5-5-6' format is a 16-bit pixel whose red, green and blue channels occupy bits [0..4],[5..9] and [10..15] respectively.
+GIL provides a model for such packed pixel formats:
+-->
 
 Pixelの各Channelの境界がバイト境界と一致していない可能性もあります。
 例えば、'556' RGB Pixelは赤(Red)、緑(Green)、青(Blue)の各Channelが[0..4]、[5..9]、[10..15]bitを占める16bitのPixelです。
@@ -187,6 +260,18 @@ function_requires<PixelValueConcept<bgr556_pixel_t> >();
 // rgb565 is compatible with bgr556.
 function_requires<PixelsCompatibleConcept<rgb565_pixel_t,bgr556_pixel_t> >();
 ```
+
+<!--
+In some cases, the pixel itself may not be byte aligned.
+For example, consider an RGB pixel in '2-3-2' format.
+Its size is 7 bits.
+GIL refers to such pixels, pixel iterators and images as "bit-aligned".
+Bit-aligned pixels (and images) are more complex than packed ones.
+Since packed pixels are byte-aligned, we can use a C++ reference as the reference type to a packed pixel, and a C pointer as an x_iterator over a row of packed pixels.
+For bit-aligned constructs we need a special reference proxy class (bit_aligned_pixel_reference) and iterator class (bit_aligned_pixel_iterator).
+The value type of bit-aligned pixels is a packed_pixel.
+Here is how to use bit_aligned pixels and pixel iterators:
+-->
 
 ある場合には、Pixel全体の長さがバイト単位にならないかもしれません。
 例として、'232' RGB Pixelを考えてみましょう。
@@ -222,6 +307,12 @@ for (int i=0; i<8; ++i) {
 }
 // Result: 0x60 0x30 0x11 0x0C 0x06 0x83 0xC1
 ```
+
+<!--
+Algorithms:
+
+Since pixels model ColorBaseConcept and PixelBasedConcept all algorithms and metafunctions of color bases can work with them as well:
+-->
 
 #### Algorithm:
 
@@ -261,6 +352,10 @@ get_color(r565,green_t()) = channel_convert<rgb565_channel1_t>(get_color(rgb_ful
 get_color(r565,blue_t())  = channel_convert<rgb565_channel2_t>(get_color(rgb_full,blue_t()));
 assert(r565 == rgb565_pixel_t((uint16_t)65535));
 ```
+
+<!--
+GIL also provides the color_convert algorithm to convert between pixels of different color spaces and channel types:
+-->
 
 また、GILはColor SpaceとChannel型が異なるPixel間の変換を行う`color_convert`アルゴリズムを提供します。
 

@@ -22,13 +22,31 @@
 -->
 
 
+<!--
+6. Color Base
+-->
+
 ## 6. Color Base
+
+<!--
+A color base is a container of color elements.
+The most common use of color base is in the implementation of a pixel, in which case the color elements are channel values.
+The color base concept, however, can be used in other scenarios. For example, a planar pixel has channels that are not contiguous in memory.
+Its reference is a proxy class that uses a color base whose elements are channel references.
+Its iterator uses a color base whose elements are channel iterators.
+-->
+
 Color Baseは色要素のコンテナです。
 Color BaseはPixelの実装のなかで、すなわち色要素がChannelの値になっている場合に、よく用いられます。
 しかし、Color BaseのConceptは他の用途に用いられる場合もあります。
 例えば、プラナー画像のPixelはメモリ上で不連続なChannelをもっています。
 その参照は、各Channelの参照を要素とする、Color Baseを用いたProxyクラスです。
 そのIteratorは、各ChannelのIteratorを要素とするColor Baseを使用します。
+
+<!--
+Color base models must satisfy the following concepts:
+-->
+
 Color BaseのModelは、次に示すConceptを満たさなければなりません。
 
 ```cpp
@@ -89,6 +107,15 @@ concept ColorBasesCompatibleConcept<ColorBaseConcept C1, ColorBaseConcept C2> {
 };
 ```
 
+<!--
+A color base must have an associated layout (which consists of a color space, as well as an ordering of the channels).
+There are two ways to index the elements of a color base: A physical index corresponds to the way they are ordered in memory, and a semantic index corresponds to the way the elements are ordered in their color space.
+For example, in the RGB color space the elements are ordered as {red_t, green_t, blue_t}.
+For a color base with a BGR layout, the first element in physical ordering is the blue element, whereas the first semantic element is the red one.
+Models of ColorBaseConcept are required to provide the at_c<K>(ColorBase) function, which allows for accessing the elements based on their physical order.
+GIL provides a semantic_at_c<K>(ColorBase) function (described later) which can operate on any model of ColorBaseConcept and returns the corresponding semantic element.
+-->
+
 Color Baseは、Layoutを必ず1個もっていなければなりません (そのLayoutはColor SpaceとChannelの順序から構成されています)。
 Color Baseの各要素へのインデクシングには2種類の方法があります。
 メモリ上での各要素の配置に対応したフィジカルインデクスと、Color Spaceが示す順序に対応したセマンティックインデクスです。
@@ -96,7 +123,19 @@ Color Baseの各要素へのインデクシングには2種類の方法があり
 Color BaseがBGR Layoutをもつなら、フィジカルな順序でみると最初の要素は青(blue)ですが、一方、セマンティックな順序でみると最初の要素は赤(red)となります。
 `ColorBaseConcept`のModelは、フィジカルな順序に基づいて各要素にアクセスする関数`at_c<K>(ColorBase)`を提供することが求められます。
 GILは、あらゆる`ColorBaseConcept`のModel上で動作し、セマンティックに要素を返す関数`semantic_at_c<K>(ColorBase)` (あとで述べます)を提供します。
+
+<!--
+Two color bases are compatible if they have the same color space and their elements (paired semantically) are convertible to each other.
+-->
+
 ふたつのColor Baseは、同じColor Spaceをもち、セマンティックに対をなす各要素が互いに変換可能であるとき、互換性をもちます。
+
+
+<!--
+Models:
+
+GIL provides a model for a homogeneous color base (a color base whose elements all have the same type).
+-->
 
 #### Model:
 
@@ -108,9 +147,21 @@ namespace detail {
 }
 ```
 
+<!--
+It is used in the implementation of GIL's pixel, planar pixel reference and planar pixel iterator.
+Another model of ColorBaseConcept is packed_pixel - it is a pixel whose channels are bit ranges.
+See the 7. Pixel section for more.
+-->
+
 このModelは、GILのPixel、Planar Pixelの参照、Planar PixelのIteratorの実装に使われています。
 もうひとつの`ColorBaseConcept`のModelは`packed_pixel`であり、ビット単位のレンジをもつChannelに基づいたPixelです。
 詳しくは、第7章を参照ください。
+
+<!--
+Algorithms:
+
+GIL provides the following functions and metafunctions operating on color bases:
+-->
 
 #### Algorithm:
 
@@ -145,6 +196,11 @@ template <typename ColorBase> struct element_type;
 template <typename ColorBase> struct element_reference_type;
 template <typename ColorBase> struct element_const_reference_type;
 ```
+
+<!--
+GIL also provides the following algorithms which operate on color bases.
+Note that they all pair the elements semantically:
+-->
 
 GILは、Color Baseで動作する、次のようなアルゴリズムも提供しています。
 これらのアルゴリズムが各要素をセマンティックなペアで扱うことに注意してください。
@@ -190,6 +246,13 @@ template <typename HCB> typename element_const_reference_type<HCB>::type static_
 template <typename HCB> typename element_reference_type<HCB>::type       static_max(      HCB&);
 ```
 
+<!--
+These algorithms are designed after the corresponding STL algorithms, except that instead of ranges they take color bases and operate on their elements.
+In addition, they are implemented with a compile-time recursion (thus the prefix "static_").
+Finally, they pair the elements semantically instead of based on their physical order in memory.
+For example, here is the implementation of static_equal:
+-->
+
 これらのアルゴリズムは、レンジのかわりにColor Baseを使って各要素のオペレーションを行うという点を除いて、STLアルゴリズムに対応するようにデザインされています。
 さらに、コンパイル時の再帰を用いる実装になっています (そのため、prefixに`static_`がついてます)。
 そして、これらのアルゴリズムは、メモリ上のフィジカルな順序ではなく、セマンテックな順序に基づいて要素のペアを作ります。
@@ -216,6 +279,12 @@ bool static_equal(const P1& p1, const P2& p2) {
     return detail::element_recursion<size<P1>::value>::static_equal(p1,p2);
 }
 ```
+
+<!--
+This algorithm is used when invoking operator== on two pixels, for example.
+By using semantic accessors we are properly comparing an RGB pixel to a BGR pixel. 
+Notice also that all of the above algorithms taking more than one color base require that they all have the same color space.
+-->
 
 このアルゴリズムは、例えば、ふたつのPixel間の`operator==`を実行するときに用います。
 セマンティックなアクセサを使うことで、RGB PixelとBGR Pixelを適切に比較できます。
