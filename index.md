@@ -446,31 +446,18 @@ GILは、`Point2DConcept`に基づいたModelである`point2<T>`を提供しま
 
 
 <!--
+4. Channel
+-->
+
+## <a name="section_04"> 4. Channel
+
+<!--
 A channel indicates the intensity of a color component (for example, the red channel in an RGB pixel).
 Typical channel operations are getting, comparing and setting the channel values.
 Channels have associated minimum and maximum value.
 GIL channels model the following concept:
-
-concept ChannelConcept<typename T> : EqualityComparable<T> {
-    typename value_type      = T;        // use channel_traits<T>::value_type to access it
-       where ChannelValueConcept<value_type>;
-    typename reference       = T&;       // use channel_traits<T>::reference to access it
-    typename pointer         = T*;       // use channel_traits<T>::pointer to access it
-    typename const_reference = const T&; // use channel_traits<T>::const_reference to access it
-    typename const_pointer   = const T*; // use channel_traits<T>::const_pointer to access it
-    static const bool is_mutable;        // use channel_traits<T>::is_mutable to access it
-
-    static T min_value();                // use channel_traits<T>::min_value to access it
-    static T max_value();                // use channel_traits<T>::min_value to access it
-};
-
-concept MutableChannelConcept<ChannelConcept T> : Swappable<T>, Assignable<T> {};
-
-concept ChannelValueConcept<ChannelConcept T> : Regular<T> {};
-
 -->
 
-## <a name="section_04"> 4. Channel
 Channelは、色成分の強度を示します (例: RGB Pixelの赤Channel)。
 基本的なChannel操作として、値の取得(get)や比較(compare)や代入(set)があります。
 また、Channelには最小値と最大値が設定されています。
@@ -500,29 +487,6 @@ concept ChannelValueConcept<ChannelConcept T> : Regular<T> {};
 <!--
 GIL allows built-in integral and floating point types to be channels.
 Therefore the associated types and range information are defined in channel_traits with the following default implementation:
-
-template <typename T>
-struct channel_traits {
-    typedef T         value_type;
-    typedef T&        reference;
-    typedef T*        pointer;
-    typedef T& const  const_reference;
-    typedef T* const  const_pointer;
-
-    static value_type min_value() { return std::numeric_limits<T>::min(); }
-    static value_type max_value() { return std::numeric_limits<T>::max(); }
-};
-Two channel types are compatible if they have the same value type:
-
-concept ChannelsCompatibleConcept<ChannelConcept T1, ChannelConcept T2> {
-    where SameType<T1::value_type, T2::value_type>;
-};
-A channel may be convertible to another channel:
-
-template <ChannelConcept Src, ChannelValueConcept Dst>
-concept ChannelConvertibleConcept {
-    Dst channel_convert(Src);
-};
 -->
 
 GILは、組み込みの整数型と浮動小数点型をChannelとして認めています。
@@ -545,6 +509,10 @@ struct channel_traits {
 
 {% endhighlight %}
 
+<!--
+Two channel types are compatible if they have the same value type:
+-->
+
 ふたつのChannelが同じ`value_type`をもつ場合、そのふたつのChannelには互換性があります。
 
 {% highlight C++ %}
@@ -554,6 +522,10 @@ concept ChannelsCompatibleConcept<ChannelConcept T1, ChannelConcept T2> {
 };
 
 {% endhighlight %}
+
+<!--
+A channel may be convertible to another channel:
+-->
 
 また、あるChannelが他のChannelに変換可能な場合もあります。
 
@@ -570,54 +542,9 @@ concept ChannelConvertibleConcept {
 Note that ChannelConcept and MutableChannelConcept do not require a default constructor.
 Channels that also support default construction (and thus are regular types) model ChannelValueConcept.
 To understand the motivation for this distinction, consider a 16-bit RGB pixel in a "565" bit pattern.
-Its channels correspond to bit ranges. To support such channels, we need to create a custom proxy class corresponding to a reference to a subbyte channel.
+Its channels correspond to bit ranges.
+To support such channels, we need to create a custom proxy class corresponding to a reference to a subbyte channel.
 Such a proxy reference class models only ChannelConcept, because, similar to native C++ references, it may not have a default constructor.
-
-Note also that algorithms may impose additional requirements on channels, such as support for arithmentic operations.
-
-Related Concepts:
-
-ChannelConcept<T>
-ChannelValueConcept<T>
-MutableChannelConcept<T>
-ChannelsCompatibleConcept<T1,T2>
-ChannelConvertibleConcept<SrcChannel,DstChannel>
-Models:
-
-All built-in integral and floating point types are valid channels. GIL provides standard typedefs for some integral channels:
-
-typedef boost::uint8_t  bits8;
-typedef boost::uint16_t bits16;
-typedef boost::uint32_t bits32;
-typedef boost::int8_t   bits8s;
-typedef boost::int16_t  bits16s;
-typedef boost::int32_t  bits32s;
-The minimum and maximum values of a channel modeled by a built-in type correspond to the minimum and maximum physical range of the built-in type, as specified by its std::numeric_limits.
-Sometimes the physical range is not appropriate. GIL provides scoped_channel_value, a model for a channel adapter that allows for specifying a custom range.
-We use it to define a [0..1] floating point channel type as follows:
-
-struct float_zero { static float apply() { return 0.0f; } };
-struct float_one  { static float apply() { return 1.0f; } };
-typedef scoped_channel_value<float,float_zero,float_one> bits32f;
-GIL also provides models for channels corresponding to ranges of bits:
-
-// Value of a channel defined over NumBits bits. Models ChannelValueConcept
-template <int NumBits> class packed_channel_value;
-
-// Reference to a channel defined over NumBits bits. Models ChannelConcept
-template <int FirstBit,
-          int NumBits,       // Defines the sequence of bits in the data value that contain the channel
-          bool Mutable>      // true if the reference is mutable
-class packed_channel_reference;
-
-// Reference to a channel defined over NumBits bits. Its FirstBit is a run-time parameter. Models ChannelConcept
-template <int NumBits,       // Defines the sequence of bits in the data value that contain the channel
-          bool Mutable>      // true if the reference is mutable
-class packed_dynamic_channel_reference;
-Note that there are two models of a reference proxy which differ based on whether the offset of the channel range is specified as a template or a run-time parameter.
-The first model is faster and more compact while the second model is more flexible. For example, the second model allows us to construct an iterator over bitrange channels.
-
-Algorithms:
 -->
 
 `ChannelConcept`と`MutableChannelConcept`が、デフォルトコンストラクタを要求していないことに注意してください。
@@ -627,7 +554,22 @@ Algorithms:
 このようなChannelをサポートするためには、バイト境界をまたがるChannel参照にも対応する特別なProxyクラスをつくる必要があります。
 このときProxy参照クラスは`ChannelConcept`だけに従って実装されます。
 なぜなら、このようなChannelは、C++における参照のように、デフォルトコンストラクタをもたない可能性があるからです。
+
+<!--
+Note also that algorithms may impose additional requirements on channels, such as support for arithmentic operations.
+-->
+
 また、アルゴリズムが、算術演算子のサポートなど、追加の要件を課すかもしれないことにも注意が必要です。
+
+<!--
+Related Concepts:
+
+ChannelConcept<T>
+ChannelValueConcept<T>
+MutableChannelConcept<T>
+ChannelsCompatibleConcept<T1,T2>
+ChannelConvertibleConcept<SrcChannel,DstChannel>
+-->
 
 #### 関連するConcept:
 
@@ -636,6 +578,13 @@ Algorithms:
 - `MutableChannelConcept<T>`
 - `ChannelsCompatibleConcept<T1,T2>`
 - `ChannelConvertibleConcept<SrcChannel,DstChannel>`
+
+<!--
+Models:
+
+All built-in integral and floating point types are valid channels.
+GIL provides standard typedefs for some integral channels:
+-->
 
 #### Model:
 
@@ -653,6 +602,12 @@ typedef boost::int32_t  bits32s;
 
 {% endhighlight %}
 
+<!--
+The minimum and maximum values of a channel modeled by a built-in type correspond to the minimum and maximum physical range of the built-in type, as specified by its std::numeric_limits.
+Sometimes the physical range is not appropriate. GIL provides scoped_channel_value, a model for a channel adapter that allows for specifying a custom range.
+We use it to define a [0..1] floating point channel type as follows:
+-->
+
 組み込み型を用いたChannelの最小値と最大値は、その型の`std::numeric_limits`で定められている、組み込み型のフィジカルレンジに由来する最小値と最大値に対応しています。
 しかし、状況によってはフィジカルレンジが適切でない場合もあります。
 GILは、特別なレンジを定めるためのChannelアダプタのModelである、`scoped_channel_value`を提供します。
@@ -665,6 +620,10 @@ struct float_one  { static float apply() { return 1.0f; } };
 typedef scoped_channel_value<float,float_zero,float_one> bits32f;
 
 {% endhighlight %}
+
+<!--
+GIL also provides models for channels corresponding to ranges of bits:
+-->
 
 GILは、ビット単位のレンジをもつChannelのためのModelも提供しています。
 
@@ -688,9 +647,21 @@ class packed_dynamic_channel_reference;
 
 {% endhighlight %}
 
+<!--
+Note that there are two models of a reference proxy which differ based on whether the offset of the channel range is specified as a template or a run-time parameter.
+The first model is faster and more compact while the second model is more flexible.
+For example, the second model allows us to construct an iterator over bitrange channels.
+-->
+
 各Channelレンジまでのオフセットについて、テンプレートで指定する参照Proxyと実行時のパラメータで指定する参照Proxyの異なる2種類の参照Proxy Modelがあることに注意してください。
 前者は軽快かつコンパクトなModelであり、後者はより適応性のあるModelです。
 例を挙げると、後者のModelはビット単位のレンジをもつChannel上で動作するIteratorを構築することができます。
+
+<!--
+Algorithms:
+
+Here is how to construct the three channels of a 16-bit "565" pixel and set them to their maximum value:
+-->
 
 #### Algorithms:
 
@@ -714,6 +685,10 @@ assert(data==65535);
 
 {% endhighlight %}
 
+<!--
+Assignment, equality comparison and copy construction are defined only between compatible channels:
+-->
+
 代入、比較、コピーコンストラクタは、互換性をもつChannel間にだけ定義されます。
 
 {% highlight C++ %}
@@ -724,6 +699,10 @@ channel_6bit = channel3;
 //channel_6bit = channel2; // compile error: Assignment between incompatible channels.
 
 {% endhighlight %}
+
+<!--
+All channel models provided by GIL are pairwise convertible:
+-->
 
 GILによって提供される全てのChannel Modelが互いに変換可能です。
 
@@ -737,11 +716,26 @@ assert(chan16 == 65535);
 
 {% endhighlight %}
 
+<!--
+Channel conversion is a lossy operation.
+GIL's channel conversion is a linear transformation between the ranges of the source and destination channel.
+It maps precisely the minimum to the minimum and the maximum to the maximum.
+(For example, to convert from uint8_t to uint16_t GIL does not do a bit shift because it will not properly match the maximum values.
+  Instead GIL multiplies the source by 257).
+-->
+
 Channel変換は、不可逆な操作です。
 GILのChannel変換は、変換元Channelのレンジと変換先Channelのレンジとの線形変換です。
 最小値と最小値、最大値と最大値がぴったりと対応します。
 (ひとつ例を挙げます。GILは`uint8_t`から`uint16_t`への変換に際してビットシフトは行いません。というのも、ビットシフトでは最大値がぴったり一致しない可能性があるからです。
-そのかわりに、GILは変換元Channelの値と257の積を求めます。)
+そのかわりに、GILは変換元のChannel値と257の積を求めます。)
+
+<!--
+All channel models that GIL provides are convertible from/to an integral or floating point type.
+Thus they support arithmetic operations.
+Here are the channel-level algorithms that GIL provides:
+-->
+
 GLが提供する全てのChannel Modelは、整数型と実数型の間で相互に変換可能です。
 そして、これらのChannel Modelは算術演算子をサポートしています。
 ここで、GILが提供するChannelレベルのアルゴリズムを示します。
@@ -763,55 +757,30 @@ typename channel_traits<Channel>::value_type channel_multiply(Channel a, Channel
 
 {% endhighlight %}
 
-<!--
 
+<!--
+5. Color Space and Layout
+-->
+
+## <a name="section_05"> 5. Color SpaceとLayout
+
+<!--
 A color space captures the set and interpretation of channels comprising a pixel.
 It is an MPL random access sequence containing the types of all elements in the color space.
 Two color spaces are considered compatible if they are equal (i.e. have the same set of colors in the same order).
+-->
 
+Color Spaceは、Pixelを構成するChannelに関して、それらの組み合わせと解釈を保持します。
+Color Spaceは、そのColor Spaceがもつ全ての要素の型を包含したMPLランダムアクセスシークエンスです。
+ふたつのColor Spaceが等しい(同じ色のセットを同じ順序でもつ)場合に限って、それらのColor Space間には互換性があると見なされます。
+
+<!--
 Related Concepts:
 
 ColorSpaceConcept<ColorSpace>
 ColorSpacesCompatibleConcept<ColorSpace1,ColorSpace2>
 ChannelMappingConcept<Mapping>
-Models:
-
-GIL currently provides the following color spaces: gray_t, rgb_t, rgba_t, and cmyk_t.
-It also provides unnamed N-channel color spaces of two to five channels, devicen_t<2>, devicen_t<3>, devicen_t<4>, devicen_t<5>.
-Besides the standard layouts, it provides bgr_layout_t, bgra_layout_t, abgr_layout_t and argb_layout_t.
-
-As an example, here is how GIL defines the RGBA color space:
-
-struct red_t{};
-struct green_t{};
-struct blue_t{};
-struct alpha_t{};
-typedef mpl::vector4<red_t,green_t,blue_t,alpha_t> rgba_t;
-The ordering of the channels in the color space definition specifies their semantic order.
-For example, red_t is the first semantic channel of rgba_t.
-While there is a unique semantic ordering of the channels in a color space, channels may vary in their physical ordering in memory.
-The mapping of channels is specified by ChannelMappingConcept, which is an MPL random access sequence of integral types.
-A color space and its associated mapping are often used together. Thus they are grouped in GIL's layout:
-
-template <typename ColorSpace,
-          typename ChannelMapping = mpl::range_c<int,0,mpl::size<ColorSpace>::value> >
-struct layout {
-    typedef ColorSpace      color_space_t;
-    typedef ChannelMapping  channel_mapping_t;
-};
-Here is how to create layouts for the RGBA color space:
-
-typedef layout<rgba_t> rgba_layout_t; // default ordering is 0,1,2,3...
-typedef layout<rgba_t, mpl::vector4_c<int,2,1,0,3> > bgra_layout_t;
-typedef layout<rgba_t, mpl::vector4_c<int,1,2,3,0> > argb_layout_t;
-typedef layout<rgba_t, mpl::vector4_c<int,3,2,1,0> > abgr_layout_t;
-
 -->
-
-## <a name="section_05"> 5. Color SpaceとLayout
-Color Spaceは、Pixelを構成するChannelに関して、それらの組み合わせと解釈を保持します。
-Color Spaceは、そのColor Spaceがもつ全ての要素の型を包含したMPLランダムアクセスシークエンスです。
-ふたつのColor Spaceが等しい(同じ色のセットを同じ順序でもつ)場合に限って、それらのColor Space間には互換性があると見なされます。
 
 #### 関連するConcept:
 
@@ -819,11 +788,23 @@ Color Spaceは、そのColor Spaceがもつ全ての要素の型を包含したM
 - `ColorSpacesCompatibleConcept<ColorSpace1,ColorSpace2>`
 - `ChannelMappingConcept<Mapping>`
 
+<!--
+Models:
+
+GIL currently provides the following color spaces: gray_t, rgb_t, rgba_t, and cmyk_t.
+It also provides unnamed N-channel color spaces of two to five channels, devicen_t<2>, devicen_t<3>, devicen_t<4>, devicen_t<5>.
+Besides the standard layouts, it provides bgr_layout_t, bgra_layout_t, abgr_layout_t and argb_layout_t.
+-->
+
 #### Model:
 
-現在のところ、GILは`gray_t`, `rgb_t`, `rgba_t`, `cmyk_t`といったColor Spaceを提供しています。
-また、2〜5個までのChannelをもった無名のN-Channel Color Spaceである、`devicen_t<2>`, `devicen_t<3>`, `devicen_t<4>`, `devicen_t<5>`も提供しています。
-Layoutについて言えば、GILはスタンダードなLayout以外に`bgr_layout_t`, `bgra_layout_t`, `abgr_layout_t`, `argb_layout_t`などのLayoutを提供しています。
+現在のところ、GILは`gray_t`、`rgb_t`、`rgba_t`、`cmyk_t`といったColor Spaceを提供しています。
+また、2〜5個までのChannelをもった無名のN-Channel Color Spaceである、`devicen_t<2>`、`devicen_t<3>`、`devicen_t<4>`、`devicen_t<5>`も提供しています。
+Layoutについて言えば、GILはスタンダードなLayout以外に`bgr_layout_t`、`bgra_layout_t`、`abgr_layout_t`、`argb_layout_t`などのLayoutを提供しています。
+
+<!--
+As an example, here is how GIL defines the RGBA color space:
+-->
 
 ひとつの例として、GILがどのようにしてRGBA Color Spaceを定義しているか示します。
 
@@ -836,6 +817,14 @@ struct alpha_t{};
 typedef mpl::vector4<red_t,green_t,blue_t,alpha_t> rgba_t;
 
 {% endhighlight %}
+
+<!--
+The ordering of the channels in the color space definition specifies their semantic order.
+For example, red_t is the first semantic channel of rgba_t.
+While there is a unique semantic ordering of the channels in a color space, channels may vary in their physical ordering in memory.
+The mapping of channels is specified by ChannelMappingConcept, which is an MPL random access sequence of integral types.
+A color space and its associated mapping are often used together. Thus they are grouped in GIL's layout:
+-->
 
 Color Spaceの定義におけるChannelの順序は、Channelのセマンテックな順序を規定します。
 例を挙げると、`red_t`は`rgba_t`のセマンティックな順序における最初のChannelです。
@@ -855,6 +844,10 @@ struct layout {
 
 {% endhighlight %}
 
+<!--
+Here is how to create layouts for the RGBA color space:
+-->
+
 RGBA Color SpaceのLayoutの作り方は、次の通りです。
 
 {% highlight C++ %}
@@ -867,13 +860,31 @@ typedef layout<rgba_t, mpl::vector4_c<int,3,2,1,0> > abgr_layout_t;
 {% endhighlight %}
 
 
+<!--
+6. Color Base
+-->
+
 ## <a name="section_06"> 6. Color Base
+
+<!--
+A color base is a container of color elements.
+The most common use of color base is in the implementation of a pixel, in which case the color elements are channel values.
+The color base concept, however, can be used in other scenarios. For example, a planar pixel has channels that are not contiguous in memory.
+Its reference is a proxy class that uses a color base whose elements are channel references.
+Its iterator uses a color base whose elements are channel iterators.
+-->
+
 Color Baseは色要素のコンテナです。
 Color BaseはPixelの実装のなかで、すなわち色要素がChannelの値になっている場合に、よく用いられます。
 しかし、Color BaseのConceptは他の用途に用いられる場合もあります。
 例えば、プラナー画像のPixelはメモリ上で不連続なChannelをもっています。
 その参照は、各Channelの参照を要素とする、Color Baseを用いたProxyクラスです。
 そのIteratorは、各ChannelのIteratorを要素とするColor Baseを使用します。
+
+<!--
+Color base models must satisfy the following concepts:
+-->
+
 Color BaseのModelは、次に示すConceptを満たさなければなりません。
 
 {% highlight C++ %}
@@ -936,6 +947,15 @@ concept ColorBasesCompatibleConcept<ColorBaseConcept C1, ColorBaseConcept C2> {
 
 {% endhighlight %}
 
+<!--
+A color base must have an associated layout (which consists of a color space, as well as an ordering of the channels).
+There are two ways to index the elements of a color base: A physical index corresponds to the way they are ordered in memory, and a semantic index corresponds to the way the elements are ordered in their color space.
+For example, in the RGB color space the elements are ordered as {red_t, green_t, blue_t}.
+For a color base with a BGR layout, the first element in physical ordering is the blue element, whereas the first semantic element is the red one.
+Models of ColorBaseConcept are required to provide the at_c<K>(ColorBase) function, which allows for accessing the elements based on their physical order.
+GIL provides a semantic_at_c<K>(ColorBase) function (described later) which can operate on any model of ColorBaseConcept and returns the corresponding semantic element.
+-->
+
 Color Baseは、Layoutを必ず1個もっていなければなりません (そのLayoutはColor SpaceとChannelの順序から構成されています)。
 Color Baseの各要素へのインデクシングには2種類の方法があります。
 メモリ上での各要素の配置に対応したフィジカルインデクスと、Color Spaceが示す順序に対応したセマンティックインデクスです。
@@ -943,7 +963,19 @@ Color Baseの各要素へのインデクシングには2種類の方法があり
 Color BaseがBGR Layoutをもつなら、フィジカルな順序でみると最初の要素は青(blue)ですが、一方、セマンティックな順序でみると最初の要素は赤(red)となります。
 `ColorBaseConcept`のModelは、フィジカルな順序に基づいて各要素にアクセスする関数`at_c<K>(ColorBase)`を提供することが求められます。
 GILは、あらゆる`ColorBaseConcept`のModel上で動作し、セマンティックに要素を返す関数`semantic_at_c<K>(ColorBase)` (あとで述べます)を提供します。
+
+<!--
+Two color bases are compatible if they have the same color space and their elements (paired semantically) are convertible to each other.
+-->
+
 ふたつのColor Baseは、同じColor Spaceをもち、セマンティックに対をなす各要素が互いに変換可能であるとき、互換性をもちます。
+
+
+<!--
+Models:
+
+GIL provides a model for a homogeneous color base (a color base whose elements all have the same type).
+-->
 
 #### Model:
 
@@ -957,9 +989,21 @@ namespace detail {
 
 {% endhighlight %}
 
+<!--
+It is used in the implementation of GIL's pixel, planar pixel reference and planar pixel iterator.
+Another model of ColorBaseConcept is packed_pixel - it is a pixel whose channels are bit ranges.
+See the 7. Pixel section for more.
+-->
+
 このModelは、GILのPixel、Planar Pixelの参照、Planar PixelのIteratorの実装に使われています。
 もうひとつの`ColorBaseConcept`のModelは`packed_pixel`であり、ビット単位のレンジをもつChannelに基づいたPixelです。
 詳しくは、第7章を参照ください。
+
+<!--
+Algorithms:
+
+GIL provides the following functions and metafunctions operating on color bases:
+-->
 
 #### Algorithm:
 
@@ -996,6 +1040,11 @@ template <typename ColorBase> struct element_reference_type;
 template <typename ColorBase> struct element_const_reference_type;
 
 {% endhighlight %}
+
+<!--
+GIL also provides the following algorithms which operate on color bases.
+Note that they all pair the elements semantically:
+-->
 
 GILは、Color Baseで動作する、次のようなアルゴリズムも提供しています。
 これらのアルゴリズムが各要素をセマンティックなペアで扱うことに注意してください。
@@ -1043,6 +1092,13 @@ template <typename HCB> typename element_reference_type<HCB>::type       static_
 
 {% endhighlight %}
 
+<!--
+These algorithms are designed after the corresponding STL algorithms, except that instead of ranges they take color bases and operate on their elements.
+In addition, they are implemented with a compile-time recursion (thus the prefix "static_").
+Finally, they pair the elements semantically instead of based on their physical order in memory.
+For example, here is the implementation of static_equal:
+-->
+
 これらのアルゴリズムは、レンジのかわりにColor Baseを使って各要素のオペレーションを行うという点を除いて、STLアルゴリズムに対応するようにデザインされています。
 さらに、コンパイル時の再帰を用いる実装になっています (そのため、prefixに`static_`がついてます)。
 そして、これらのアルゴリズムは、メモリ上のフィジカルな順序ではなく、セマンテックな順序に基づいて要素のペアを作ります。
@@ -1072,11 +1128,34 @@ bool static_equal(const P1& p1, const P2& p2) {
 
 {% endhighlight %}
 
+<!--
+This algorithm is used when invoking operator== on two pixels, for example.
+By using semantic accessors we are properly comparing an RGB pixel to a BGR pixel.
+Notice also that all of the above algorithms taking more than one color base require that they all have the same color space.
+-->
+
 このアルゴリズムは、例えば、ふたつのPixel間の`operator==`を実行するときに用います。
 セマンティックなアクセサを使うことで、RGB PixelとBGR Pixelを適切に比較できます。
 また、上記の2個以上のColor Baseを引数にとる全てのアルゴリズムは、全てのColorBaseが同じColor Spaceをもつよう要求することに注意しましょう。
 
+
+<!--
+7. Pixel
+-->
+
 ## <a name="section_07"> 7. Pixel
+
+<!--
+A pixel is a set of channels defining the color at a given point in an image.
+Conceptually, a pixel is little more than a color base whose elements model ChannelConcept.
+All properties of pixels inherit from color bases: pixels may be homogeneous if all of their channels have the same type; otherwise they are called heterogeneous.
+The channels of a pixel may be addressed using semantic or physical indexing, or by color; all color-base algorithms work on pixels as well.
+Two pixels are compatible if their color spaces are the same and their channels, paired semantically, are compatible.
+Note that constness, memory organization and reference/value are ignored.
+For example, an 8-bit RGB planar reference is compatible to a constant 8-bit BGR interleaved pixel value.
+Most pairwise pixel operations (copy construction, assignment, equality, etc.) are only defined for compatible pixels.
+-->
+
 Pixelは、ある画像中のある1点に対応する、色が定義されたChannelのセットです。
 概念的に言えば、Pixelと`ChannelConcept`に基づいた要素をもったColor Baseはほとんど同じようなものです。
 Pixelの全てのプロパティはColor Baseから受け継いだものです。
@@ -1087,7 +1166,11 @@ PixelのChannelは、セマンティックなインデクス、フィジカル�
 同じColor Spaceをもち、その各Channelがセマンティックなペアに対して互換性をもつとき、そのふたつのPixel間には互換性があります。
 Const性、メモリ上での配置、参照であるか値であるかは無視されることに注意してください。
 例を挙げると、8bitのRGBプラナー形式Pixelの参照は、8bitのBGRインタリーブ形式Pixelと互換性があります。
-ほとんどのPixelの2項演算(コピーコンストラクタ, 代入、等号など)は互換性をもつPixel間でだけ定義されています。
+ほとんどのPixelの2項演算(コピーコンストラクション, 代入、等価など)は互換性をもつPixel間でだけ定義されています。
+
+<!--
+Pixels (as well as other GIL constructs built on pixels, such as iterators, locators, views and images) must provide metafunctions to access their color space, channel mapping, number of channels, and (for homogeneous pixels) the channel type:
+-->
 
 Pixelは、(Pixelに基づいて構築されるIterator、Locator、View、Imageなどといった他のGILコンストラクトと同様、)そのColor Space、Channelマッピング、Channel数、(そのPixelがホモジニアスであるなら)Channel型にアクセスするためのメタ関数を提供しなければなりません。
 
@@ -1112,6 +1195,10 @@ concept HomogeneousPixelBasedConcept<PixelBasedConcept T> {
 };
 
 {% endhighlight %}
+
+<!--
+Pixels model the following concepts:
+-->
 
 Pixelは次のConceptに基づいたModelです。
 
@@ -1158,9 +1245,14 @@ concept PixelsCompatibleConcept<PixelConcept P1, PixelConcept P2> : ColorBasesCo
 
 {% endhighlight %}
 
+<!--
+A pixel is convertible to a second pixel if it is possible to approximate its color in the form of the second pixel.
+Conversion is an explicit, non-symmetric and often lossy operation (due to both channel and color space approximation).
+Convertability requires modeling the following concept:
+-->
+
 あるPixelが自身の色をもう一方のPixelの形式に近似できるとき、もう一方のPixelと変換可能です。
 変換は、数学的に陽であり、非対称であり、ほとんどの場合は(ChannelとColor Space両方の近似が原因で)不可逆変換です。
-
 交換可能性は次のConceptに基づいた実装を要求します。
 
 {% highlight C++ %}
@@ -1172,8 +1264,26 @@ concept PixelConvertibleConcept {
 
 {% endhighlight %}
 
+<!--
+The distinction between PixelConcept and PixelValueConcept is analogous to that for channels and color bases - pixel reference proxies model both, but only pixel values model the latter.
+-->
+
 `PixelConcept`と`PixelValueConcept`の違いは、ChannelとColor Baseの違いと似ています。
 Pixel参照Proxyは両方のConceptに基づいたModelですが、Pixelは後者のConceptだけに基づいたModelです。
+
+<!--
+Related Concepts:
+
+PixelBasedConcept<P>
+PixelConcept<Pixel>
+MutablePixelConcept<Pixel>
+PixelValueConcept<Pixel>
+HomogeneousPixelConcept<Pixel>
+MutableHomogeneousPixelConcept<Pixel>
+HomogeneousPixelValueConcept<Pixel>
+PixelsCompatibleConcept<Pixel1,Pixel2>
+PixelConvertibleConcept<SrcPixel,DstPixel>
+-->
 
 #### 関連するConcept:
 
@@ -1186,6 +1296,13 @@ Pixel参照Proxyは両方のConceptに基づいたModelですが、Pixelは後�
 - `HomogeneousPixelValueConcept<Pixel>`
 - `PixelsCompatibleConcept<Pixel1,Pixel2>`
 - `PixelConvertibleConcept<SrcPixel,DstPixel>`
+
+<!--
+Models:
+
+The most commonly used pixel is a homogeneous pixel whose values are together in memory.
+For this purpose GIL provides the struct pixel, templated over the channel value and layout:
+-->
 
 #### Model:
 
@@ -1214,6 +1331,12 @@ assert(rgb8[0] != bgr8[0]); // same as above (but operator[] is defined for pixe
 
 {% endhighlight %}
 
+<!--
+Planar pixels have their channels distributed in memory.
+While they share the same value type (pixel) with interleaved pixels, their reference type is a proxy class containing references to each of the channels.
+This is implemented with the struct planar_pixel_reference:
+-->
+
 プラナーPixelは、メモリ上の離れた地点に配置されたChannelをもちます。
 Channelに関連づけられた型についてインタリーブPixelと同じ型を共有している場合、その参照型は各Channelの参照をもつProxyクラスになっています。
 これは`struct planar_pixel_reference`で実装されています。
@@ -1229,9 +1352,21 @@ typedef planar_pixel_reference<const bits8&,rgb_t> rgb8c_planar_ref_t;
 
 {% endhighlight %}
 
+<!--
+Note that, unlike the pixel struct, planar pixel references are templated over the color space, not over the pixel layout.
+They always use a cannonical channel ordering.
+Ordering of their elements is unnecessary because their elements are references to the channels.
+-->
+
 `struct planar_pixel_reference`は、Layoutでテンプレート化されている`struct pixel`とは異なり、Color Spaceでテンプレート化されていることに注意してください。
 これらは常に標準化されたChannel順を用います。
 各要素は各Channelから参照されるため、要素の順序に関する情報は不要なのです。
+
+<!--
+Sometimes the channels of a pixel may not be byte-aligned.
+For example an RGB pixel in '5-5-6' format is a 16-bit pixel whose red, green and blue channels occupy bits [0..4],[5..9] and [10..15] respectively.
+GIL provides a model for such packed pixel formats:
+-->
 
 Pixelの各Channelの境界がバイト境界と一致していない可能性もあります。
 例えば、'556' RGB Pixelは赤(Red)、緑(Green)、青(Blue)の各Channelが[0..4]、[5..9]、[10..15]bitを占める16bitのPixelです。
@@ -1254,6 +1389,18 @@ function_requires<PixelValueConcept<bgr556_pixel_t> >();
 function_requires<PixelsCompatibleConcept<rgb565_pixel_t,bgr556_pixel_t> >();
 
 {% endhighlight %}
+
+<!--
+In some cases, the pixel itself may not be byte aligned.
+For example, consider an RGB pixel in '2-3-2' format.
+Its size is 7 bits.
+GIL refers to such pixels, pixel iterators and images as "bit-aligned".
+Bit-aligned pixels (and images) are more complex than packed ones.
+Since packed pixels are byte-aligned, we can use a C++ reference as the reference type to a packed pixel, and a C pointer as an x_iterator over a row of packed pixels.
+For bit-aligned constructs we need a special reference proxy class (bit_aligned_pixel_reference) and iterator class (bit_aligned_pixel_iterator).
+The value type of bit-aligned pixels is a packed_pixel.
+Here is how to use bit_aligned pixels and pixel iterators:
+-->
 
 ある場合には、Pixel全体の長さがバイト単位にならないかもしれません。
 例として、'232' RGB Pixelを考えてみましょう。
@@ -1291,6 +1438,12 @@ for (int i=0; i<8; ++i) {
 // Result: 0x60 0x30 0x11 0x0C 0x06 0x83 0xC1
 
 {% endhighlight %}
+
+<!--
+Algorithms:
+
+Since pixels model ColorBaseConcept and PixelBasedConcept all algorithms and metafunctions of color bases can work with them as well:
+-->
 
 #### Algorithm:
 
@@ -1333,6 +1486,10 @@ assert(r565 == rgb565_pixel_t((uint16_t)65535));
 
 {% endhighlight %}
 
+<!--
+GIL also provides the color_convert algorithm to convert between pixels of different color spaces and channel types:
+-->
+
 また、GILはColor SpaceとChannel型が異なるPixel間の変換を行う`color_convert`アルゴリズムを提供します。
 
 {% highlight C++ %}
@@ -1344,9 +1501,21 @@ color_convert(red_in_rgb8,red_in_cmyk16);
 {% endhighlight %}
 
 
+<!--
+8. Pixel Iterator
+-->
+
 ## <a name="section_08"> 8. Pixel Iterator
 
+<!--
+Fundamental Iterator
+
+Pixel iterators are random traversal iterators whose value_type models PixelValueConcept.
+Pixel iterators provide metafunctions to determine whether they are mutable (i.e. whether they allow for modifying the pixel they refer to), to get the immutable (read-only) type of the iterator, and to determine whether they are plain iterators or adaptors over another pixel iterator:
+-->
+
 ### <a name="section_08_1"> 基本となるIterator
+
 Pixel Iteratorは、`PixelValueConcept`に基づいたModelである`value_type`のランダム走査Iteratorです。
 Pixel Iteratorは、mutableであるか否か(すなわち、指し示すPixelが変更可能か否か)を判定するメタ関数、immutable (read-only)なIteratorを取得するメタ関数、素のIteratorかアダプタをまとった他のIteratorなのかを判定するメタ関数を提供します。
 
@@ -1365,18 +1534,36 @@ concept MutablePixelIteratorConcept : PixelIteratorConcept<Iterator>, MutableRan
 
 {% endhighlight %}
 
+<!--
+Related Concepts:
+
+PixelIteratorConcept<Iterator>
+MutablePixelIteratorConcept<Iterator>
+-->
+
 #### 関連するConcept:
 
 - `PixelIteratorConcept<Iterator>`
 - `MutablePixelIteratorConcept<Iterator>`
+
+<!--
+Models:
+
+A built-in pointer to pixel, pixel<ChannelValue,Layout>*, is GIL's model for pixel iterator over interleaved homogeneous pixels.
+Similarly, packed_pixel<PixelData,ChannelRefVec,Layout>* is GIL's model for an iterator over interleaved packed pixels.
+-->
 
 #### Model:
 
 Pixelのビルトインポインタ`pixel<ChannelValue,Layout>*`は、インタリーブ形式ホモジーニアスPixelを対象とするPixel IteratorのためのGILのModelです。
 同様に、`packed_pixel<PixelData,ChannelRefVec,Layout>*`は、インタリーブ形式バイト単位Pixelを対象とするIteratorのためのGILのModelです。
 
-プラナー形式ホモジーニアスPixelのために、GILはChannel IteratorとColor Spaceをパラメータにとるテンプレートである`planar_pixel_iterator`クラスを提供します。
+<!--
+For planar homogeneous pixels, GIL provides the class planar_pixel_iterator, templated over a channel iterator and color space.
+Here is how the standard mutable and read-only planar RGB iterators over unsigned char are defined:
+-->
 
+プラナー形式ホモジーニアスPixelのために、GILはChannel IteratorとColor Spaceをパラメータにとるテンプレートである`planar_pixel_iterator`クラスを提供します。
 ここで、unsigned char型プラナー形式RGB Pixelについて、mutableなIteratorとread-onlyのIteratorがどのように定義されているのかを示します。
 
 {% highlight C++ %}
@@ -1388,6 +1575,12 @@ typedef planar_pixel_iterator<const bits8*, rgb_t> rgb8c_planar_ptr_t;
 typedef planar_pixel_iterator<      bits8*, rgb_t> rgb8_planar_ptr_t;
 
 {% endhighlight %}
+
+<!--
+planar_pixel_iterator also models HomogeneousColorBaseConcept (it subclasses from homogeneous_color_base) and, as a result, all color base algorithms apply to it.
+The element type of its color base is a channel iterator.
+For example, GIL implements operator++ of planar iterators approximately like this:
+-->
 
 `planar_pixel_iterator`は`HomogeneousColorBaseConcept` (`homogeneous_color_base`のサブクラス)に基づいたModelであり、つまり、全てのColor Baseアルゴリズムを適用できます。
 そのColor Baseの要素の型はChannel Iteratorです。
@@ -1409,11 +1602,25 @@ planar_pixel_iterator<ChannelPtr,ColorSpace>::operator++() {
 
 {% endhighlight %}
 
+<!--
+Since static_transform uses compile-time recursion, incrementing an instance of rgb8_planar_ptr_t amounts to three pointer increments.
+GIL also uses the class bit_aligned_pixel_iterator as a model for a pixel iterator over bit-aligned pixels.
+Internally it keeps track of the current byte and the bit offset.
+-->
+
 `static_transform`はコンパイル時の再帰を用いるので、`rgb8_planar_ptr_t`インスタンスのインクリメントは3個のpointerのインクリメントに変換されます。
 また、GILは、ビット単位Pixelを走査するPixel IteratorのModelとして、`bit_aligned_pixel_iterator`クラスを用います。
 内部的には、各時点でのバイト位置とビットオフセットを記録しています。
 
+<!--
+Iterator Adaptor
+
+Iterator adaptor is an iterator that wraps around another iterator.
+Its is_iterator_adaptor metafunction must evaluate to true, and it needs to provide a member method to return the base iterator, a metafunction to get its type, and a metafunction to rebind to another base iterator:
+-->
+
 ### <a name="section_08_2"> Iteratorアダプタ
+
 Iteratorアダプタは他のIteratorをラップしたIteratorです。
 その`is_iterator_adaptor`というメタ関数は`true`でなければなりません。
 また、Base Iteratorを返すメンバ関数、型を取得するメタ関数、他のBase Iteratorに再結合するメタ関数を提供する必要があります。
@@ -1440,14 +1647,36 @@ concept MutableIteratorAdaptorConcept : IteratorAdaptorConcept<Iterator> {};
 
 {% endhighlight %}
 
+<!--
+Related Concepts:
+
+IteratorAdaptorConcept<Iterator>
+MutableIteratorAdaptorConcept<Iterator>
+-->
+
 #### 関連するConcept:
 
 - `IteratorAdaptorConcept<Iterator>`
 - `MutableIteratorAdaptorConcept<Iterator>`
 
+<!--
+Models:
+
+GIL provides several models of IteratorAdaptorConcept:
+-->
+
 #### Model:
 
 GILは`IteratorAdaptorConcept`のModelをいくつか提供しています。
+
+<!--
+memory_based_step_iterator<Iterator>: An iterator adaptor that changes the fundamental step of the base iterator (see Step Iterator)
+dereference_iterator_adaptor<Iterator,Fn>: An iterator that applies a unary function Fn upon dereferencing.
+It is used, for example, for on-the-fly color conversion.
+It can be used to construct a shallow image "view" that pretends to have a different color space or channel depth.
+See Creating Image Views from Other Image Views for more.
+The unary function Fn must model PixelDereferenceAdaptorConcept (see below).
+-->
 
 - `memory_based_step_iterator<Iterator>`: Base Iteratorの基本的なステップを変更するIteratorアダプタ。(ステップIteratorを参照)
 - `dereference_iterator_adaptor<Iterator,Fn>`: ひとつの引数をとる関数`Fn`に間接参照した値を適用するIteratorアダプタ。
@@ -1456,7 +1685,15 @@ GILは`IteratorAdaptorConcept`のModelをいくつか提供しています。
 詳細は、"ほかのImage ViewからImage Viewを作成する"をみてください。
 ひとつの引数をとる関数`Fn`は`PixelDereferenceAdaptorConcept`(次を見てください)に基づいたModelでなければなりません。
 
+<!--
+Pixel Dereference Adaptor
+
+Pixel dereference adaptor is a unary function that can be applied upon dereferencing a pixel iterator.
+Its argument type could be anything (usually a PixelConcept) and the result type must be convertible to PixelConcept
+-->
+
 ### <a name="section_08_3"> Pixel間接参照アダプタ
+
 Pixel間接参照アダプタは、Pixel Iteratorから間接参照した値を受け取る、ひとつの引数をもつ関数です。
 この引数の型はどんなものでも構いません(よくあるのは`PixelConcept`です)。また、戻り値の型は`PixelConcept`に変換可能でなければなりません。
 
@@ -1475,27 +1712,65 @@ concept PixelDereferenceAdaptorConcept : DefaultConstructibleConcept<D>, CopyCon
 
 {% endhighlight %}
 
+<!--
+Models:
+
+GIL provides several models of PixelDereferenceAdaptorConcept
+-->
+
 #### Model:
 
 GILは`PixelDereferenceAdaptorConcept`のModelをいくつか提供します。
+
+<!--
+color_convert_deref_fn: a function object that performs color conversion
+detail::nth_channel_deref_fn: a function object that returns a grayscale pixel corresponding to the n-th channel of a given pixel
+deref_compose: a function object that composes two models of PixelDereferenceAdaptorConcept. Similar to std::unary_compose, except it needs to pull the additional typedefs required by PixelDereferenceAdaptorConcept
+-->
 
 - `color_convert_deref_fn`: 色変換を行う関数オブジェクト。
 - `detail::nth_channel_deref_fn`: 与えられたPixelのN番目Channelに対応するグレイスケールPixelを返す関数オブジェクト。
 - `deref_compose`: 2つの`PixelDereferenceAdaptorConcept`のModelを合成する関数オブジェクト。`PixelDereferenceAdaptorConcept`で要求される追加の`typedef`を取る必要がある点を除いて、`std::unary_compose`と似ています。
 
+<!--
+GIL uses pixel dereference adaptors to implement image views that perform color conversion upon dereferencing, or that return the N-th channel of the underlying pixel.
+They can be used to model virtual image views that perform an arbitrary function upon dereferencing, for example a view of the Mandelbrot set.
+dereference_iterator_adaptor<Iterator,Fn> is an iterator wrapper over a pixel iterator Iterator that invokes the given dereference iterator adaptor Fn upon dereferencing.
+-->
+
 GILは、間接参照した値に色変換を実行するImage ViewやPixelのN番目のChannelを返すImage Viewを実装するために、Pixel間接参照アダプタを使用します。
 これらのPixel間接参照アダプタは、間接参照した値に任意関数を実行するVirtual Image View (例えば、マンデルブロ集合を表すViewなど)を実装する際に使用されます。
 `dereference_iterator_adaptor<Iterator,Fn>`は、`Iterator`で間接参照した値を引数にして与えられた間接参照Iteratorアダプタ`Fn`を実行する、Pixel Iteratorである`Iterator`を包むIteratorラッパです。
 
+<!--
+Step Iterator
+
+Sometimes we want to traverse pixels with a unit step other than the one provided by the fundamental pixel iterators.
+Examples where this would be useful:
+-->
+
 ### <a name="section_08_4"> ステップIterator
+
 基本的なPixel Iteratorによって提供される1ステップ以上のまとまったステップ数でPixelの走査を行いたい場合があります。
 例えば、次のような場合です。
+
+<!--
+a single-channel view of the red channel of an RGB interleaved image
+left-to-right flipped image (step = -fundamental_step)
+subsampled view, taking every N-th pixel (step = N*fundamental_step)
+traversal in vertical direction (step = number of bytes per row)
+any combination of the above (steps are multiplied)
+-->
 
 - RGBインタリーブ画像の赤Channelだけをみる単独Channel View
 - 左右反転画像 (step = -fundamental_step)
 - N個間隔でPixelを取ってきたView (step = N*fundamental_step)
 - 垂直方向への移動 (step = number bytes per row)
 - 上記の組み合わせ (stepは各stepの積)
+
+<!--
+Step iterators are forward traversal iterators that allow changing the step between adjacent values:
+-->
 
 ステップIteratorは、隣り合う要素への移動についてのステップ数の変更を許可する、前方移動Iteratorです。
 
@@ -1509,11 +1784,25 @@ concept MutableStepIteratorConcept<boost_concepts::Mutable_ForwardIteratorConcep
 
 {% endhighlight %}
 
+<!--
+GIL currently provides a step iterator whose value_type models PixelValueConcept.
+In addition, the step is specified in memory units (which are bytes or bits).
+This is necessary, for example, when implementing an iterator navigating along a column of pixels - the size of a row of pixels may sometimes not be divisible by the size of a pixel; for example rows may be word-aligned.
+-->
+
 いまのところ、GILは`PixelValueConcept`に基づいて実装された`value_type`をもつステップIteratorを提供します。
 そのとき、ステップにはメモリ上での単位(バイト単位かビット単位か)が指定されています。
 例えば、Pixelの列に沿って走査するIteratorを実装する場合などに必要だからです。
 各行のサイズは、Pixelのサイズで割り切れるとは限りません。
 例えば、各行にワード単位アラインメントが施されているかもしれません。
+
+<!--
+To advance in bytes/bits, the base iterator must model MemoryBasedIteratorConcept.
+A memory-based iterator has an inherent memory unit, which is either a bit or a byte.
+It must supply functions returning the number of bits per memory unit (1 or 8), the current step in memory units, the memory-unit distance between two iterators, and a reference a given distance in memunits away.
+It must also supply a function that advances an iterator a given distance in memory units.
+memunit_advanced and memunit_advanced_ref have a default implementation but some iterators may supply a more efficient version:
+-->
 
 数バイト毎または数ビット毎に進む場合、そのBase Iteratorは`MemoryBasedIteratorConcept`に基づいて実装されていなければなりません。
 メモリベースIteratorは、1ビットまたは1バイトの固有のメモリ単位をもっています。
@@ -1534,6 +1823,11 @@ concept MemoryBasedIteratorConcept<boost_concepts::RandomAccessTraversalConcept 
 
 {% endhighlight %}
 
+<!--
+It is useful to be able to construct a step iterator over another iterator.
+More generally, given a type, we want to be able to construct an equivalent type that allows for dynamically specified horizontal step:
+-->
+
 他のIteratorからステップIteratorを構築できれば便利です。
 より一般的に言えば、ある型を与えたとき、それと等価で水平方向のステップ数を動的に指定可能な型を構築したいのです。
 
@@ -1546,7 +1840,20 @@ concept HasDynamicXStepTypeConcept<typename T> {
 
 {% endhighlight %}
 
+<!--
+All models of pixel iterators, locators and image views that GIL provides support HasDynamicXStepTypeConcept.
+-->
+
 GILが提供する全てのPixel Iterator、Locator、Image ViewのModelは、`HasDynamicXStepConcept`をサポートしています。
+
+<!--
+Related Concepts:
+
+StepIteratorConcept<Iterator>
+MutableStepIteratorConcept<Iterator>
+MemoryBasedIteratorConcept<Iterator>
+HasDynamicXStepTypeConcept<T>
+-->
 
 #### 関連するConcept:
 
@@ -1554,6 +1861,17 @@ GILが提供する全てのPixel Iterator、Locator、Image ViewのModelは、`H
 - `MutableStepIteratorConcept<Iterator>`
 - `MemoryBasedIteratorConcept<Iterator>`
 - `HasDynamicXStepTypeConcept<T>`
+
+<!--
+Models:
+
+All standard memory-based iterators GIL currently provides model MemoryBasedIteratorConcept.
+GIL provides the class memory_based_step_iterator which models PixelIteratorConcept, StepIteratorConcept, and MemoryBasedIteratorConcept.
+It takes the base iterator as a template parameter (which must model PixelIteratorConcept and MemoryBasedIteratorConcept) and allows changing the step dynamically.
+GIL's implementation contains the base iterator and a ptrdiff_t denoting the number of memory units (bytes or bits) to skip for a unit step.
+It may also be used with a negative number.
+GIL provides a function to create a step iterator from a base iterator and a step:
+-->
 
 #### Model:
 
@@ -1571,15 +1889,30 @@ typename dynamic_x_step_type<I>::type make_step_iterator(const I& it, std::ptrdi
 
 {% endhighlight %}
 
+<!--
+GIL also provides a model of an iterator over a virtual array of pixels, position_iterator.
+It is a step iterator that keeps track of the pixel position and invokes a function object to get the value of the pixel upon dereferencing.
+It models PixelIteratorConcept and StepIteratorConcept but not MemoryBasedIteratorConcept.
+-->
+
 GILは、`position_iterator`という、仮想的なPixel配列に対するIteratorのModelも提供しています。
 これは、Pixelの位置情報を保持し、その位置にあるPixelの値を間接参照で取得する関数オブジェクトを実行するステップIteratorです。
 これは、`PixelIteratorConcept`と`StepIteratorConcept`に基づいたModelですが、`MemoryBasedIteratorConcept`に基づいたModelではありません。
 
+<!--
+Pixel Locator
+
+A Locator allows for navigation in two or more dimensions.
+Locators are N-dimensional iterators in spirit, but we use a different name because they don't satisfy all the requirements of iterators.
+For example, they don't supply increment and decrement operators because it is unclear which dimension the operators should advance along.
+N-dimensional locators model the following concept:
+-->
+
 ### <a name="section_08_5"> Pixel Locator
+
 Locatorは2次元もしくはそれ以上の次元でのナビゲーションを可能にします。
 Locatorは、本来であればN次元Iteratorと呼ぶべきですが、Iteratorが満たすべき要件を完全には満たしていないため、このように違う名前を使っています。
 例を挙げると、Locatorは、どの軸にそって移動するべきか明確でないために、インクリメントやデクリメントを行う演算子を提供しません。
-
 N次元Locatorは次のConceptに基づいたModelです。
 
 {% highlight C++ %}
@@ -1634,6 +1967,10 @@ concept MutableRandomAccessNDLocatorConcept : RandomAccessNDLocatorConcept<Loc> 
 
 {% endhighlight %}
 
+<!--
+Two-dimensional locators have additional requirements:
+-->
+
 2次元Locatorには追加の要件があります。
 
 {% highlight C++ %}
@@ -1677,6 +2014,11 @@ concept MutableRandomAccess2DLocatorConcept<RandomAccess2DLocatorConcept Loc> : 
 
 {% endhighlight %}
 
+<!--
+2D locators can have a dynamic step not just horizontally, but also vertically.
+This gives rise to the Y equivalent of HasDynamicXStepTypeConcept:
+-->
+
 2次元Locatorは、水平方向だけではなく垂直方向にも、動的なステップをもつことができます。
 これはつまり、Y軸における`HasDynamicXStepTypeConcept`です。
 
@@ -1689,7 +2031,16 @@ concept HasDynamicYStepTypeConcept<typename T> {
 
 {% endhighlight %}
 
+<!--
+All locators and image views that GIL provides model HasDynamicYStepTypeConcept.
+-->
+
 GILが提供する全てのLocatorとImage Viewは`HasDynamicYStepTypeConcept`に基づいたModelです。
+
+<!--
+Sometimes it is necessary to swap the meaning of X and Y for a given locator or image view type (for example, GIL provides a function to transpose an image view).
+Such locators and views must be transposable:
+-->
 
 与えられたLocatorやImage Viewについて、X軸とY軸の入れ替えが必要になることがあります(例を挙げると、GILはImage Viewの転置変換を行う関数を提供しています)。
 上記のようなLocatorやViewは転置変換可能でなければなりません。
@@ -1703,7 +2054,17 @@ concept HasTransposedTypeConcept<typename T> {
 
 {% endhighlight %}
 
+<!--
+All GIL provided locators and views model HasTransposedTypeConcept.
+-->
+
 GILが提供する全てのLocatorとViewは、`HasTransposedTypeConcept`に基づいたModelです。
+
+
+<!--
+The locators GIL uses operate over models of PixelConcept and their x and y dimension types are the same.
+They model the following concept:
+-->
 
 GILが用いるLocatorは、`PixelConcept`のModel上で動作し、X軸とY軸の次元の型が同じです。
 これらのLocatorは次に示すConceptに基づいたModelです。
@@ -1723,6 +2084,19 @@ concept MutablePixelLocatorConcept<PixelLocatorConcept Loc> : MutableRandomAcces
 
 {% endhighlight %}
 
+<!--
+Related Concepts:
+
+HasDynamicYStepTypeConcept<T>
+HasTransposedTypeConcept<T>
+RandomAccessNDLocatorConcept<Locator>
+MutableRandomAccessNDLocatorConcept<Locator>
+RandomAccess2DLocatorConcept<Locator>
+MutableRandomAccess2DLocatorConcept<Locator>
+PixelLocatorConcept<Locator>
+MutablePixelLocatorConcept<Locator>
+-->
+
 #### 関連するConcept:
 
 - `HasDynamicYStepTypeConcept<T>`
@@ -1734,11 +2108,22 @@ concept MutablePixelLocatorConcept<PixelLocatorConcept Loc> : MutableRandomAcces
 - `PixelLocatorConcept<Locator>`
 - `MutablePixelLocatorConcept<Locator>`
 
+<!--
+Models:
+
+GIL provides two models of PixelLocatorConcept - a memory-based locator, memory_based_2d_locator and a virtual locator virtual_2d_locator.
+-->
 
 #### Model:
 
 GILは2種類の`PixelLocatorConcept`のModelを提供します。
 メモリベースLocatorである`memory_based_2d_locator`と、Virtual Locatorである`virtual_2d_locator`です。
+
+<!--
+memory_based_2d_locator is a locator over planar or interleaved images that have their pixels in memory.
+It takes a model of StepIteratorConcept over pixels as a template parameter.
+(When instantiated with a model of MutableStepIteratorConcept, it models MutablePixelLocatorConcept).
+-->
 
 `memory_based_2d_locator`は、メモリ上にPixelがあるプラナー画像もしくはインタリーブ画像におけるLocatorです。
 このLocatorは、テンプレートのパラメータとして`StepIteratorConcept`のModelを取ります。
@@ -1751,12 +2136,27 @@ class memory_based_2d_locator;
 
 {% endhighlight %}
 
+<!--
+The step of StepIterator must be the number of memory units (bytes or bits) per row (thus it must be memunit advanceable).
+The class memory_based_2d_locator is a wrapper around StepIterator and uses it to navigate vertically, while its base iterator is used to navigate horizontally.
+-->
+
 ステップIteratorのステップは、各行において、メモリ単位(バイト数かビット数で示されます)の倍数でなければなりません(すなわち、ステップIteratorはメモリ単位で移動しなければなりません)。
 `memory_based_2d_locator`クラスはステップIteratorのラッパであり、垂直方向のナビゲートにステップIteratorが使われる一方で、水平方向のナビゲートにはそのステップIteratorのBase Iteratorが使われます。
 
+<!--
+Combining fundamental and step iterators allows us to create locators that describe complex pixel memory organizations.
+First, we have a choice of iterator to use for horizontal direction, i.e. for iterating over the pixels on the same row.
+Using the fundamental and step iterators gives us four choices:
+
+pixel<T,C>* (for interleaved images)
+planar_pixel_iterator<T*,C> (for planar images)
+memory_based_step_iterator<pixel<T,C>*> (for interleaved images with non-standard step)
+memory_based_step_iterator<planar_pixel_iterator<T*,C> > (for planar images with non-standard step)
+-->
+
 Base IteratorとステップIteratorの合成によって、Pixelについての複雑なメモリ配置を記述したLocatorの作成が可能になります。
 始めに、水平方向すなわちに同じ行にあるPixelに対する走査に用いるIteratorを選択します。
-
 Base IteratorやステップIteratorには、4つの選択肢が与えられています。
 
 - `pixel<T,C>*` (インタリーブ画像用)
@@ -1764,23 +2164,53 @@ Base IteratorやステップIteratorには、4つの選択肢が与えられて�
 - `memory_based_step_iterator<pixel<T,C>*>` (標準以外のステップをもつインタリーブ画像用)
 - `memory_based_step_iterator<planar_pixel_iterator<T*,C> >` (標準以外のステップをもつプラナー画像用)
 
+<!--
+Of course, one could provide their own custom x-iterator.
+One such example described later is an iterator adaptor that performs color conversion when dereferenced.
+-->
+
 もちろん、独自の水平方向Iteratorを提供することもできます。
 この先に記述されている一例として、間接参照された際に色変換を実行するIteratorアダプタがあります。
+
+<!--
+Given a horizontal iterator XIterator, we could choose the y-iterator, the iterator that moves along a column, as memory_based_step_iterator<XIterator> with a step equal to the number of memory units (bytes or bits) per row.
+Again, one is free to provide their own y-iterator.
+-->
 
 水平方向Iteratorである`XIterator`が与えられるとき、メモリ単位(バイト数かビット数で示されます)の倍数と等しいステップをもつ`memory_based_step_iterator<XIterator>`として、ある列に沿って移動するIteratorである垂直方向Iteratorを選ぶことができます。
 ここでも、独自の垂直方向Iteratorを提供することは自由です。
 
+<!--
+Then we can instantiate memory_based_2d_locator<memory_based_step_iterator<XIterator> > to obtain a 2D pixel locator, as the diagram indicates:
+-->
+
 ここでは、ダイアグラムが示すように、2次元Pixel Locatorを得るために`memory_based_2d_locator<memory_based_step_iterator<XIterator> >`を作成します。
 
 ![2次元Pixel Locator](http://hironishihara.github.com/GILDesignGuide-ja/src/img/step_iterator.gif "2次元Pixel Locator")
+
+<!--
+virtual_2d_locator is a locator that is instantiated with a function object invoked upon dereferencing a pixel.
+It returns the value of a pixel given its X,Y coordiantes.
+Virtual locators can be used to implement virtual image views that can model any user-defined function.
+See the GIL tutorial for an example of using virtual locators to create a view of the Mandelbrot set.
+-->
 
 `virtual_2d_locator`は、間接参照したPixelに対して実行される関数オブジェクトと共に作成されるLocatorです。
 これは、与えられたXY座標にあるPixelの値を返します。
 Virtual Locatorは、任意のユーザ定義関数に基づいたVirtual Image Viewを実装するときに使うことができます。
 Virtual Locatorを用いてマンデルブロ集合のViewを作成する例については、GILチュートリアルを参照ください。
 
+<!--
+Both the virtual and the memory-based locators subclass from pixel_2d_locator_base, a base class that provides most of the interface required by PixelLocatorConcept.
+Users may find this base class useful if they need to provide other models of PixelLocatorConcept.
+-->
+
 Virtual LocatorとメモリベースLocatorは、`PixelLocatorConcept`から要求されるほとんどのインタフェースを提供する基本クラスである`pixel_2d_locator_base`のサブクラスです。
 この基本クラスは、他の`PixelLocatorConcept`のModelを提供する必要が生じた際に利用できるかもしれません。
+
+<!--
+Here is some sample code using locators:
+-->
 
 ここで、Locatorを用いたサンプルコードをいくつか示します。
 
@@ -1797,6 +2227,14 @@ loc-=point2<std::ptrdiff_t>(1,1);// move to (10,24)
 
 {% endhighlight %}
 
+<!--
+The standard GIL locators are fast and lightweight objects.
+For example, the locator for a simple interleaved image consists of one raw pointer to the pixel location plus one integer for the row size in bytes, for a total of 8 bytes.
+++loc.x() amounts to incrementing a raw pointer (or N pointers for planar images).
+Computing 2D offsets is slower as it requires multiplication and addition. Filters, for example, need to access the same neighbors for every pixel in the image, in which case the relative positions can be cached into a raw byte difference using cache_location.
+In the above example loc[above] for simple interleaved images amounts to a raw array index operator.
+-->
+
 標準的なGIL Locatorは、高速で軽量なオブジェクトです。
 例を挙げると、シンプルなインタリーブ画像のためのLocatorは、Pixelの位置を示す生ポインタとバイト単位での行サイズを値にもつ整数型との合計8バイトで構成されます。
 `++loc.x()`は、生ポインタのインクリメントと等価(プラナー画像の場合、N個のポインタのインクリメントと等価)です。
@@ -1804,12 +2242,27 @@ loc-=point2<std::ptrdiff_t>(1,1);// move to (10,24)
 例えば、フィルタ処理では画像中の各Pixelにおいて同じ位置関係にある隣接Pixelへのアクセスが必要ですが、そのような場合に、相対的な位置は`cache_location`を利用して差分を表す整数のなかにキャッシュできます。
 上記の例で言うと、インタリーブ画像の`loc[above]`は生配列のインデクス演算子と等価です。
 
+<!--
+Iterator over 2D image
+
+Sometimes we want to perform the same, location-independent operation over all pixels of an image.
+In such a case it is useful to represent the pixels as a one-dimensional array.
+GIL's iterator_from_2d is a random access traversal iterator that visits all pixels in an image in the natural memory-friendly order left-to-right inside top-to-bottom.
+It takes a locator, the width of the image and the current X position.
+This is sufficient information for it to determine when to do a "carriage return". Synopsis:
+-->
+
 ### <a name="section_08_6"> 2次元画像上でのIterator
+
 ときには、画像中の全Pixelに対して位置に依存しない一律の処理を実行したいといった場合も考えられます。
 このようなとき、一律に扱うPixel全てを一次元配列のように扱うことができれば便利です。
 GILの`itarator_from_2d`は、画像中の全Pixelを左から右、上から下というメモリフレンドリな順序で走査するランダムアクセスIteratorです。
 これは、ひとつのLocatorと画像の幅と現在のX座標をもっています。
 これは"キャリッジリターン"のタイミングを決定するために十分な情報です。
+
+<!--
+Synopsis:
+-->
 
 #### Synopsis:
 
@@ -1830,10 +2283,17 @@ private:
 
 {% endhighlight %}
 
+<!--
+Iterating through the pixels in an image using iterator_from_2d is slower than going through all rows and using the x-iterator at each row.
+This is because two comparisons are done per iteration step - one for the end condition of the loop using the iterators, and one inside iterator_from_2d::operator++ to determine whether we are at the end of a row.
+For fast operations, such as pixel copy, this second check adds about 15% performance delay (measured for interleaved images on Intel platform).
+GIL overrides some STL algorithms, such as std::copy and std::fill, when invoked with iterator_from_2d-s, to go through each row using their base x-iterators, and, if the image has no padding (i.e. iterator_from_2d::is_1d_traversable() returns true) to simply iterate using the x-iterators directly.
+-->
+
 `iterator_from_2d`を用いた画像中の全Pixelへの走査は、水平方向Iteratorを用いた各行での走査の全行分の合算よりも低速です。
 これは、1ステップ毎にIteratorによるループの終了判定と`iterator_from_2d::operator++`による行の終端判定との2個の比較が行われることが原因です。
 Pixelのコピーのような高速な処理では、この2個目の判定は約15%の遅延の原因となります(Intelプラットホーム上にて、インタリーブ画像で計測)。
-GILは`std::copy`や`std::fill`といったいくつかのSTLアルゴリズムをオーバーライドしており、実行時`iterator_from_2d`が渡された場合には、各行に対してBase Iteratorである水平方向Iteratorを用います。
+GILは`std::copy`や`std::fill`といったいくつかのSTLアルゴリズムをオーバーライドしており、実行時に`iterator_from_2d`が渡された場合には、各行に対してBase Iteratorである水平方向Iteratorを用います。
 また、画像にパディングがない(例：`iterator_from_2d::is_1d_traversable()`が`true`を返す)場合には、シンプルな水平方向Iteratorを直接使用します。
 
 ## <a name="section_09"> 9. Image View
