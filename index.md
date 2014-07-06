@@ -2296,7 +2296,21 @@ Pixelのコピーのような高速な処理では、この2個目の判定は�
 GILは`std::copy`や`std::fill`といったいくつかのSTLアルゴリズムをオーバーライドしており、実行時に`iterator_from_2d`が渡された場合には、各行に対してBase Iteratorである水平方向Iteratorを用います。
 また、画像にパディングがない(例：`iterator_from_2d::is_1d_traversable()`が`true`を返す)場合には、シンプルな水平方向Iteratorを直接使用します。
 
+
+<!--
+9. Image View
+-->
+
 ## <a name="section_09"> 9. Image View
+
+<!--
+An image view is a generalization of STL's range concept to multiple dimensions.
+Similar to ranges (and iterators), image views are shallow, don't own the underlying data and don't propagate their constness over the data.
+For example, a constant image view cannot be resized, but may allow modifying the pixels.
+For pixel-immutable operations, use constant-value image view (also called non-mutable image view).
+Most general N-dimensional views satisfy the following concept:
+-->
+
 Image Viewは、STLのRangeというConceptを複数次元に一般化したものです。
 Renge (と、そのIterator)と同様、Image Viewは浅く、自身でデータをもたず、自身のconst性をデータにまで伝えません。
 例を挙げると、constantなImage Viewはサイズを変更できませんが、Pixelの値を変更することは可能かもしれません。
@@ -2357,6 +2371,10 @@ concept MutableRandomAccessNDImageViewConcept<RandomAccessNDImageViewConcept Vie
 
 {% endhighlight %}
 
+<!--
+Two-dimensional image views have the following extra requirements:
+-->
+
 2次元のImage Viewは、次に示す追加の要件をもっています。
 
 {% highlight C++ %}
@@ -2400,6 +2418,10 @@ concept MutableRandomAccess2DImageViewConcept<RandomAccess2DImageViewConcept Vie
 
 {% endhighlight %}
 
+<!--
+Image views that GIL typically uses operate on value types that model PixelValueConcept and have some additional requirements:
+-->
+
 GILが通常用いるImage Viewは、`PixelValueConcept`に基づいたModelであるPixel型で動作し、いくつかの追加の要件をもっています。
 
 {% highlight C++ %}
@@ -2419,6 +2441,10 @@ concept MutableImageViewConcept<ImageViewConcept View> : MutableRandomAccess2DIm
 
 {% endhighlight %}
 
+<!--
+Two image views are compatible if they have compatible pixels and the same number of dimensions:
+-->
+
 ふたつのImage Viewが、互換性のあるPixelをもち、同じ次元数であるとき、それらのImage Viewの間には互換性があります。
 
 {% highlight C++ %}
@@ -2430,8 +2456,25 @@ concept ViewsCompatibleConcept<ImageViewConcept V1, ImageViewConcept V2> {
 
 {% endhighlight %}
 
+<!--
+Compatible views must also have the same dimensions (i.e. the same width and height).
+Many algorithms taking multiple views require that they be pairwise compatible.
+-->
+
 互換性のあるViewは、同じサイズ(すなわち、同じWidthとHeight)でなければなりません。
 複数のViewを用いるアルゴリズムの多くが、それぞれのViewの間での互換性を要求します。
+
+<!--
+Related Concepts:
+
+RandomAccessNDImageViewConcept<View>
+MutableRandomAccessNDImageViewConcept<View>
+RandomAccess2DImageViewConcept<View>
+MutableRandomAccess2DImageViewConcept<View>
+ImageViewConcept<View>
+MutableImageViewConcept<View>
+ViewsCompatibleConcept<View1,View2>
+-->
 
 #### 関連するConcept:
 
@@ -2443,11 +2486,23 @@ concept ViewsCompatibleConcept<ImageViewConcept V1, ImageViewConcept V2> {
 - `MutableImageViewConcept<View>`
 - `ViewsCompatibleConcept<View1,View2>`
 
+<!--
+Models:
+
+GIL provides a model for ImageViewConcept called image_view.
+It is templated over a model of PixelLocatorConcept.
+(If instantiated with a model of MutablePixelLocatorConcept, it models MutableImageViewConcept).
+-->
+
 #### Model:
 
 GILは`image_view`と呼ばれる`ImageViewConcept`のためのModelを提供します。
 それは`PixelLocatorConcept`のModelをパラメータにしたテンプレートになっています。
 (`MutablePixelLocatorConcept`のModelを用いてインスタンス化された場合には、それは`MutableImageViewConcept`に基づいたModelになります。)
+
+<!--
+Synopsis:
+-->
 
 #### Synopsis:
 
@@ -2466,11 +2521,25 @@ private:
 
 {% endhighlight %}
 
+<!--
+Image views are lightweight objects.
+A regular interleaved view is typically 16 bytes long - two integers for the width and height (inside dimensions) one for the number of bytes between adjacent rows (inside the locator) and one pointer to the beginning of the pixel block.
+
+Algorithms:
+-->
+
 Image Viewは軽量なオブジェクトです。
 正規のインタリーブ形式Viewであれば、基本的に16バイトです。
 その内訳は、Dimensionsに含まれるWidthとHeightを表す2つの整数と、Locatorに含まれる1行のバイト数を示す整数と、Pixel配列の先頭を指すポインタです。
 
 #### Algorithm:
+
+<!--
+Creating Views from Raw Pixels
+
+Standard image views can be constructed from raw data of any supported color space, bit depth, channel ordering or planar vs. interleaved structure.
+Interleaved views are constructed using interleaved_view, supplying the image dimensions, number of bytes per row, and a pointer to the first pixel:
+-->
 
 ### <a name="section_09_1"> メモリ上のPixel生データからのImage View作成
 
@@ -2484,6 +2553,11 @@ image_view<...> interleaved_view(ptrdiff_t width, ptrdiff_t height, Iterator pix
 
 {% endhighlight %}
 
+<!--
+Planar views are defined for every color space and take each plane separately.
+Here is the RGB one:
+-->
+
 プラナー形式Viewは、あらゆるColor Spaceのために定義されており、各Planeを個別に用意します。
 ここに、RGB形式のプラナー形式Viewを示します。
 
@@ -2495,7 +2569,19 @@ image_view<...> planar_rgb_view(ptrdiff_t width, ptrdiff_t height,
 
 {% endhighlight %}
 
+<!--
+Note that the supplied pixel/channel iterators could be constant (read-only), in which case the returned view is a constant-value (immutable) view.
+-->
+
 戻り値のViewが値がconstantな(immutableな)Viewである場合、提供されるPixel/Channel Iteratorがconstant (read-only)になることに注意してください。
+
+<!--
+Creating Image Views from Other Image Views
+
+It is possible to construct one image view from another by changing some policy of how image data is interpreted.
+The result could be a view whose type is derived from the type of the source.
+GIL uses the following metafunctions to get the derived types:
+-->
 
 ### <a name="section_09_2"> 他のImage ViewからのImage View作成
 
@@ -2527,6 +2613,10 @@ struct nth_channel_view_type {
 };
 
 {% endhighlight %}
+
+<!--
+GIL Provides the following view transformations:
+-->
 
 GILは、次に示すView変換を提供します。
 
@@ -2560,6 +2650,12 @@ nth_channel_view_type<View>::view_t                                           nt
 
 {% endhighlight %}
 
+<!--
+The implementations of most of these view factory methods are straightforward.
+Here is, for example, how the flip views are implemented.
+The flip upside-down view creates a view whose first pixel is the bottom left pixel of the original view and whose y-step is the negated step of the source.
+-->
+
 これらView Factoryメソッドの実装のほとんどは、単純です。
 例として、反転Viewがどのように実装されているのかを示します。
 上下反転Viewは、元のViewの最左下Pixelが先頭Pixelの、垂直方向ステップが元のステップと逆向きになったViewをつくります。
@@ -2575,11 +2671,24 @@ typename dynamic_y_step_type<View>::type flipped_up_down_view(const View& src) {
 
 {% endhighlight %}
 
+<!--
+The call to gil_function_requires ensures (at compile time) that the template parameter is a valid model of ImageViewConcept.
+Using it generates easier to track compile errors, creates no extra code and has no run-time performance impact.
+We are using the boost::concept_check library, but wrapping it in gil_function_requires, which performs the check if the BOOST_GIL_USE_CONCEPT_CHECK is set.
+It is unset by default, because there is a significant increase in compile time when using concept checks.
+We will skip gil_function_requires in the code examples in this guide for the sake of succinctness.
+-->
+
 `gil_function_requires`関数の呼び出しは、テンプレートのパラメータが`ImageViewConcept`の有効なModelであることを(コンパイル時に)保証します。
 これを使うことで、コンパイルエラーの追跡は容易になり、余計なコードの生成されず、実行時のパフォーマンスへの影響もありません。
 私たちは`boost::concept_check`ライブラリを使用していますが、`BOOST_GIL_USE_CONCEPT_CHECK`がセットされているときにだけチェックを実行するように、`gil_function_requires`の中に`boost::concept_check`ライブラリをラップしています。
 そして、デフォルトでは`BOOST_GIL_USE_CONCEPT_CHECK`はセットされていません。なぜなら、コンセプトチェックを使用するとコンパイルタイムが大幅に長くなるからです。
 このガイド内のサンプルコードでは、簡潔さのために`gil_function_requires`はスキップすることにします。
+
+<!--
+Image views can be freely composed (see section 12. Useful Metafunctions and Typedefs for the typedefs rgb16_image_t and gray16_step_view_t):
+-->
+
 Image Viewは自由に構成することが出来ます("第12章 メタ関数とTypedef"を参照ください)。
 
 {% highlight C++ %}
@@ -2594,10 +2703,22 @@ gray16_step_view_t ud_fud=flipped_up_down_view(subsampled_view(green,2,2));
 
 {% endhighlight %}
 
-前述のとおり、Image Viewは高速で、定量時間で動作する、浅いViewです。
+<!--
+As previously stated, image views are fast, constant-time, shallow views over the pixel data.
+The above code does not copy any pixels; it operates on the pixel data allocated when img was created.
+-->
 
+前述のとおり、Image Viewは高速で、定量時間で動作する、浅いViewです。
 上記のコードではひとつのPixelもコピーされていません。
 すなわち、ViewはImageが作られたときに確保されたPixelデータを操作するのです。
+
+<!--
+STL-Style Algorithms on Image Views
+
+Image views provide 1D iteration of their pixels via begin() and end() methods, which makes it possible to use STL algorithms with them.
+However, using nested loops over X and Y is in many cases more efficient.
+The algorithms in this section resemble STL algorithms, but they abstract away the nested loops and take views (as opposed to ranges) as input.
+-->
 
 ### <a name="section_09_3"> Image View上で動作するSTL-Styleアルゴリズム
 
@@ -2671,9 +2792,23 @@ bool equal_pixels(const V1& view1, const V2& view2);
 
 {% endhighlight %}
 
+<!--
+Algorithms that take multiple views require that they have the same dimensions.
+for_each_pixel_position and transform_pixel_positions pass pixel locators, as opposed to pixel references, to their function objects.
+This allows for writing algorithms that use pixel neighbors, as the tutorial demonstrates.
+-->
+
 複数のViewを取るアルゴリズムは、それらが同じDimensionsをもつことを要求します。
 `for_each_pixel_position`と`transform_pixel_positions`は、Pixelの参照ではなく、Pixel Locatorを関数オブジェクトに渡します。
 このことは、チュートリアルで示したように、隣接するPixelを使用するアルゴリズムの記述を可能にします。
+
+<!--
+Most of these algorithms check whether the image views are 1D-traversable.
+A 1D-traversable image view has no gaps at the end of the rows.
+In other words, if an x_iterator of that view is advanced past the last pixel in a row it will move to the first pixel of the next row.
+When image views are 1D-traversable, the algorithms use a single loop and run more efficiently.
+If one or more of the input views are not 1D-traversable, the algorithms fall-back to an X-loop nested inside a Y-loop.
+-->
 
 これらのほとんどのアルゴリズムで、Image Viewが1次元走査可能であるか否かを調べています。
 1次元走査可能なImage Viewは、各行の終端にギャップをもちません。
@@ -2681,26 +2816,64 @@ bool equal_pixels(const V1& view1, const V2& view2);
 Image Viewが1次元走査可能である場合、これらのアルゴリズムは一重のループを使用し、より効率的に動作します。
 入力されたViewの中に1次元走査のできないViewが含まれていた場合、これらのアルゴリズムはYループのなかにネストされたXループへと後退します。
 
+<!--
+The algorithms typically delegate the work to their corresponding STL algorithms.
+For example, copy_pixels calls std::copy either for each row, or, when the images are 1D-traversable, once for all pixels.
+-->
+
 基本的に、これらのアルゴリズムはその処理を対応するSTLアルゴリズムに委託します。
 例を挙げると、`copy_pixels`は、1次元走査可能なViewの場合は全Pixelを対象に、それ以外のViewの場合は各行を対象に、`std::copy`を呼びます。
+
+<!--
+In addition, overloads are sometimes provided for the STL algorithms.
+For example, std::copy for planar iterators is overloaded to perform std::copy for each of the planes.
+std::copy over bitwise-copiable pixels results in std::copy over unsigned char, which STL typically implements via memmove.
+-->
 
 さらに、STLアルゴリズムのオーバーロードが提供される場合もあります。
 例えば、プラナー形式Iteratorに対する`std::copy`は、各Planeに対して`std::copy`を実行するようにオーバーライドされます。
 ビット単位でコピー可能なPixel上で動作する`std::copy`は、結果的に、STLでは一般的に`memmove`を介して実装される、unsigned charで動作する`std::copy`となります。
 
+<!--
+As a result copy_pixels may result in a single call to memmove for interleaved 1D-traversable views, or one per each plane of planar 1D-traversable views, or one per each row of interleaved non-1D-traversable images, etc.
+-->
+
 まとめると、`copy_pixels`は、インタリーブ形式の1次元走査可能なViewに対しては1回の`memmove`呼び出しになり、プラナー形式の1次元走査可能なViewに対しては各Plane毎の`memmove`呼び出しになり、インタリーブ形式の1次元走査ができないViewに対しては各行毎の`memmove`呼び出しになる、といった感じです。
+
+<!--
+GIL also provides some beta-versions of image processing algorithms, such as resampling and convolution in a numerics extension available on http://opensource.adobe.com/gil/download.html.
+This code is in early stage of development and is not optimized for speed
+-->
 
 GILは、リサンプリングや畳み込みなど、いくつかの画像処理アルゴリズムのβバージョンの提供も行っています。
 それらは、<http://opensource.adobe.com/gil/download.html> のnumerics extensionからダウンロードできます。
 これらのコードは開発の初期段階にあり、速度の最適化はなされていません。
 
+
+<!--
+10. Image
+-->
+
 ## <a name="section_10"> 10. Image
+
+<!--
+An image is a container that owns the pixels of a given image view.
+It allocates them in its constructor and deletes them in the destructor.
+It has a deep assignment operator and copy constructor. Images are used rarely, just when data ownership is important.
+Most STL algorithms operate on ranges, not containers.
+Similarly most GIL algorithms operate on image views (which images provide).
+-->
+
 Imageは、あるImage Viewが扱うPixel配列を所有するコンテナです。
 Imageは、コンストラクタでPixel配列を確保し、デストラクタでそのPixel配列を解放します。
 Imageは、深い代入演算子とコピーコンストラクタをもちます。
 Imageは、データの所有が重要な意味をもつ場合にだけ使用されます。
 ほとんどのSTLアルゴリズムは、コンテナ上ではなく、Range上で動作します。
 ほどんどのGILアルゴリズムも同じように、(Imageが提供する)Image Viewの上で動作します。
+
+<!--
+In the most general form images are N-dimensional and satisfy the following concept:
+-->
 
 一般的に、ImageはN次元であり、次のConceptを満たします。
 
@@ -2726,6 +2899,10 @@ concept RandomAccessNDImageConcept<typename Img> : Regular<Img> {
 
 {% endhighlight %}
 
+<!--
+Two-dimensional images have additional requirements:
+-->
+
 2次元のImageは、追加の要件をもっています。
 
 {% highlight C++ %}
@@ -2746,6 +2923,10 @@ concept RandomAccess2DImageConcept<RandomAccessNDImageConcept Img> {
 
 {% endhighlight %}
 
+<!--
+GIL's images have views that model ImageViewConcept and operate on pixels.
+-->
+
 GILのImageは、`ImageViewConcept`に基づいたModelでありPixel上で動作するViewをもちます。
 
 {% highlight C++ %}
@@ -2757,13 +2938,31 @@ concept ImageConcept<RandomAccess2DImageConcept Img> {
 
 {% endhighlight %}
 
+<!--
+Images, unlike locators and image views, don't have 'mutable' set of concepts because immutable images are not very useful.
+-->
+
 LocatorやImage Viewと異なり、immutableなImageはそもそも不便であるため、わざわざ'mutable'を指定したConceptのセットはもちません。
+
+<!--
+Related Concepts:
+
+RandomAccessNDImageConcept<Image>
+RandomAccess2DImageConcept<Image>
+ImageConcept<Image>
+-->
 
 #### 関連するConcept:
 
 - `RandomAccessNDImageConcept<Image>`
 - `RandomAccess2DImageConcept<Image>`
 - `ImageConcept<Image>`
+
+<!--
+Models:
+
+GIL provides a class, image, which is templated over the value type (the pixel) and models ImageConcept.
+-->
 
 #### Model:
 
@@ -2778,18 +2977,45 @@ class image;
 
 {% endhighlight %}
 
+<!--
+By default images have 1 memory unit (no) alignment - i.e. there is no padding at the end of rows.
+Many operations are faster using such 1D-traversable images image_view::x_iterator can be used to traverse the pixels, instead of the more complicated image_view::iterator.
+The image constructor takes an alignment parameter which allows for constructing images that are word-aligned or 8-byte aligned.
+Beware that the alignment parameter is in memory units, which is usually but not always bytes.
+Specifically, for bit-aligned images the memory unit is a bit.
+-->
+
 デフォルトのImageは、メモリ単位0個分でアラインメントされます。すなわち、各行の末尾にパディングはありません。
 比較的複雑な`image_view::iterator`の代わりに、上記のような1次元走査可能なImageでは`image_view::x_iterator`をPixelの走査に使うことができるため、多くの処理が高速です。
 Imageのコンストラクタは、ワードアラインメントや8バイトアラインメントといったImageの生成を可能にする、`alignment`パラメータを取ります。
 この`alignment`パラメータが、必ずしもバイトであると限らない、メモリ単位によって指定されることに注意してください。
 特に、ビットアラインメントImageのメモリ単位は、1ビットです。
 
+
+<!--
+11. Run-time specified images and image views
+-->
+
 ## <a name="section_11"> 11. 実行時に型を指定するImageとImage View
+
+<!--
+The color space, channel depth, channel ordering, and interleaved/planar structure of an image are defined by the type of its template argument, which makes them compile-time bound.
+Often some of these parameters are available only at run time.
+Consider, for example, writing a module that opens the image at a given file path, rotates it and saves it back in its original color space and channel depth.
+How can we possibly write this using our generic image?
+What type is the image loading code supposed to return?
+-->
+
 Color Space、Channel深度、Channel順、インタリーブ形式/プラナー形式といったImageの構造は、コンパイル時に結びつけられる、テンプレートパラメータの型によって定義されます。
 それらのパラメータのいくつかが実行時になって初めて決まるといった場合もしばしば存在します。
 例として、与えられたパスにある画像を開き、くるりと回転させ、画像オリジナルのColor SpaceとChannel深度で保存する、というモジュールを書く場合を考えましょう。
 我々のgeneric imageを使って、これをどのように書くことができるでしょうか？
 読み込むコードから返されるImageはどのような型でしょうか？
+
+<!--
+GIL's dynamic_image extension allows for images, image views or any GIL constructs to have their parameters defined at run time.
+Here is an example:
+-->
 
 GILの`dynamic_image` extensionは、実行時にパラメータを決めるImageやImage Viewやその他のGILクラスを実現します。
 ここで、例を示します。
@@ -2829,12 +3055,29 @@ myImg = gray8_image_t();        // will throw std::bad_cast
 
 {% endhighlight %}
 
+<!--
+any_image and any_image_view subclass from GIL's variant class, which breaks down the instantiated type into a non-templated underlying base type and a unique instantiation type identifier.
+The underlying base instance is represented as a block of bytes.
+The block is large enough to hold the largest of the specified types.
+-->
+
 `any_image`と`any_image_view`は、インスタンス化される型について非テンプレートの基本的なBase型と一意のインスタンス型識別子に分解した、GILの`variant`クラスのサブクラスです。
 この基本的なBase型インスタンスは、バイトのブロックとして表わされます。
 そのブロックは、指定された型の中で最大の型を保持するために十分な規模となります。
+
+<!--
+GIL's variant is similar to boost::variant in spirit (hence we borrow the name from there) but it differs in several ways from the current boost implementation.
+Perhaps the biggest difference is that GIL's variant always takes a single argument, which is a model of MPL Random Access Sequence enumerating the allowed types.
+Having a single interface allows GIL's variant to be used easier in generic code.
+-->
+
 GILの`variant`は`boost::variant`と考え方は似ています(だからこそ、そこから名前を拝借したわけです)が、現在のboostの実装とは幾つかの点で異なっています。
 おそらく、最大の違いは、許可する型を列挙するMPLランダムアクセスシークエンスをGILの`variant`が引数として常に1個とることです。
 インタフェイスをひとつにしたことで、GILの`variant`はジェネリックコードの中で使いやすくなっています。
+
+<!--
+Synopsis:
+-->
 
 #### Synopsis:
 
@@ -2886,6 +3129,10 @@ template <typename BOP, typename Types1, typename Types2>
    BOP::result_type apply_operation(const variant<Types1>& v1, const variant<Types2>& v2, UOP op);
 
 {% endhighlight %}
+
+<!--
+GIL's any_image_view and any_image are subclasses of variant:
+-->
 
 GILの`any_image_view`と`any_image`は`variant`のサブクラスです。
 
@@ -2942,15 +3189,39 @@ public:
 
 {% endhighlight %}
 
+<!--
+Operations are invoked on variants via apply_operation passing a function object to perform the operation.
+The code for every allowed type in the variant is instantiated and the appropriate instantiation is selected via a switch statement.
+Since image view algorithms typically have time complexity at least linear on the number of pixels, the single switch statement of image view variant adds practically no measurable performance overhead compared to templated image views.
+-->
+
 処理を実行するための関数オブジェクトを`apply_operation`に渡すことによって、`variant`上での処理が実行されます。
 その`variant`で許可されている全ての型のためのコードがインスタンス化され、`switch`文を経由して適切なインスタンスが選択されます。
 Image Viewアルゴリズムは、一般的に、少なくともPixel数に対して線形な時間計算量をもつことから、Image View `variant`による1個の`switch`文がテンプレートによるImage Viewと比較して実際に測定可能なほどのパフォーマンスのオーバーヘッドを加えることはありません。
+
+<!--
+Variants behave like the underlying type.
+Their copy constructor will invoke the copy constructor of the underlying instance.
+Equality operator will check if the two instances are of the same type and then invoke their operator==, etc.
+The default constructor of a variant will default-construct the first type.
+That means that any_image_view has shallow default-constructor, copy-constructor, assigment and equaty comparison, whereas any_image has deep ones.
+-->
 
 `variant`は基本的な型と同じように振舞います。
 `variant`のコピーコンストラクタは、基本的な型のインスタンスのコピーコンストラクタを呼び出します。
 比較演算子は、ふたつのインスタンスの型が同じか否かを確認し、それから`operator==`などを呼び出します。
 `variant`のデフォルトコンストラクタは、最初に指定されている型のデフォルトコンストラクタを呼びます。
 これは、`any_image_view`が浅いデフォルトコンストラクタ、コピーコンストラクタ、代入、比較をもつ一方で、`any_image`が深いデフォルトコンストラクタ、コピーコンストラクタ、代入、比較をもつことを意味します。
+
+<!--
+It is important to note that even though any_image_view and any_image resemble the static image_view and image, they do not model the full requirements of ImageViewConcept and ImageConcept.
+In particular they don't provide access to the pixels.
+There is no "any_pixel" or "any_pixel_iterator" in GIL.
+Such constructs could be provided via the variant mechanism, but doing so would result in inefficient algorithms, since the type resolution would have to be performed per pixel.
+Image-level algorithms should be implemented via apply_operation.
+That said, many common operations are shared between the static and dynamic types.
+In addition, all of the image view transformations and many STL-like image view algorithms have overloads operating on any_image_view, as illustrated with copy_pixels:
+-->
 
 `any_image_view`や`any_image`はstaticな`image_view`や`image`と似ていますが、`ImageViewConcept`や`ImageConcept`の全ての要件に基づいたModelではない点に注意しなければなりません。
 特に`variant`はPixelへのアクセスを提供しません。
@@ -2978,6 +3249,11 @@ copy_pixels(av, av);
 
 {% endhighlight %}
 
+<!--
+By having algorithm overloads supporting dynamic constructs, we create a base upon which it is possible to write algorithms that can work with either compile-time or runtime images or views.
+The following code, for example, uses the GIL I/O extension to turn an image on disk upside down:
+-->
+
 dynamicな型をサポートするアルゴリズムのオーバーロードをもつことによって、コンパイル時に決定するImageやViewと実行時に決定するImageやViewのどちらかで動作するアルゴリズムの記述を可能にする基盤を作ります。
 例を挙げると、次に示すコードはディスク上の画像を上下反転して返すGIL I/O extensionを使用します。
 
@@ -2993,6 +3269,11 @@ void save_180rot(const std::string& file_name) {
 }
 
 {% endhighlight %}
+
+<!--
+It can be instantiated with either a compile-time or a runtime image because all functions it uses have overloads taking runtime constructs.
+For example, here is how rotated180_view is implemented:
+-->
 
 使用する全ての関数が実行時に決定する型のインスタンスを引数に取るオーバーロードをもっていることから、コンパイル時に決定するImageと実行時に決定するImageのどちらであってもインスタンス化が可能です。
 ここで、`rotated180_view`がどのように実装されているかを示します。
@@ -3022,18 +3303,52 @@ typename dynamic_xy_step_type<any_image_view<ViewTypes> >::type rotated180_view(
 
 {% endhighlight %}
 
+<!--
+Variants should be used with caution (especially algorithms that take more than one variant) because they instantiate the algorithm for every possible model that the variant can take.
+This can take a toll on compile time and executable size.
+Despite these limitations, variant is a powerful technique that allows us to combine the speed of compile-time resolution with the flexibility of run-time resolution.
+It allows us to treat images of different parameters uniformly as a collection and store them in the same container.
+-->
+
 `variant`は、それが取りうる全てのModel毎にアルゴリズムをインスタンス化するので、(特に、ふたつ以上の`variant`を引数に取るアルゴリズムでは)注意して用いるべきです。
 これは、コンパイル時間と実行ファイルのサイズに甚大な影響を与える可能性があります。
 これらのような欠点もありますが、`variant`はコンパイル時の型解決によるスピードと実行時の型解決による柔軟性を組み合わせることを可能にする強力な手法です。
 `variant`は、パラメータが異なる複数の画像をひとつのコレクションとして扱い、それらを同じコンテナに収めることを可能にします。
 
+
+<!--
+12. Useful Metafunctions and Typedefs
+-->
+
 ## <a name="section_12"> 12. メタ関数とtypedef
+
+<!--
+Flexibility comes at a price. GIL types can be very long and hard to read.
+To address this problem, GIL provides typedefs to refer to any standard image, pixel iterator, pixel locator, pixel reference or pixel value.
+They follow this pattern:
+-->
+
 柔軟性は高くつきます。
 GILの型はとても長くて読みづらいものになりがちです。
 この問題に取り組むために、GILは基本的なImage、Pixel Iterator、Pixel Locator、Pixel参照、Pixel値を参照する`typedef`を提供しています。
 それらの`typedef`は、次のようなパターンに従います。
 
+<!--
+ColorSpace + BitDepth + ["s|f"] + ["c"] + ["_planar"] + ["_step"] + ClassType + "_t"
+-->
+
 ColorSpace + BitDepth + [`s` \| `f`] + [`c`] + [`_planar`] + [`_step`] + ClassType + `_t`
+
+<!--
+Where ColorSpace also indicates the ordering of components.
+Examples are rgb, bgr, cmyk, rgba.
+BitDepth can be, for example, 8,16,32. By default the bits are unsigned integral type.
+Append s to the bit depth to indicate signed integral, or f to indicate floating point.
+c indicates object whose associated pixel reference is immutable.
+_planar indicates planar organization (as opposed to interleaved).
+_step indicates the type has a dynamic step and ClassType is _image (image, using a standard allocator), _view (image view), _loc (pixel locator), _ptr (pixel iterator), _ref (pixel reference), _pixel (pixel value).
+Here are examples:
+-->
 
 ここでのColorSpaceは、色要素とその順序を示します。
 例えば、`rgb`、`bgr`、`cmyk`、`rgba`です。
@@ -3044,7 +3359,6 @@ BitDepthに続く`s`は符号つき整数型であることを示し、また、
 `_planar`は、(インタリーブ形式ではなく)プラナー形式であることを示しています。
 `_step`は、その型がdynamicなステップをもつことを示します。
 ClassTypeは、(一般的なアロケータを用いるImageであることを示す)`_image`、(Image Viewであることを示す)`_view`、(Pixel Locatorであることを示す)`_loc`、(Pixel Iteratorであることを示す)`_ptr`、(Pixel参照であることを示す)`_ref`、(Pixel値であることを示す)`_pixel`をとります。
-
 いくつか例を挙げます。
 
 {% highlight C++ %}
@@ -3055,6 +3369,10 @@ cmyk16sc_planar_ref_t      p(x);  // const reference to a 16-bit signed integral
 rgb32f_planar_step_ptr_t   ii;    // step iterator to a floating point 32-bit (float) planar RGB pixel.
 
 {% endhighlight %}
+
+<!--
+GIL provides the metafunctions that return the types of standard homogeneous memory-based GIL constructs given a channel type, a layout, and whether the construct is planar, has a step along the X direction, and is mutable:
+-->
 
 GILは、与えられたChannel型、Layout、プラナー形式であるか否か、X方向のステップをもっているか否か、mutableであるか否かの情報に基づいて、基本的なホモジーニアスメモリベースGILクラスの型を返すメタ関数を提供します。
 
@@ -3085,6 +3403,10 @@ template <typename ChannelBitSizeVector, typename Layout, typename Alloc=std::al
 struct bit_aligned_image_type { typedef ... type; };
 
 {% endhighlight %}
+
+<!--
+There are also helper metafunctions to construct packed and bit-aligned images with up to five channels:
+-->
 
 5個までのChannelをもつバイト単位Imageとビット単位Imageを構築する、ヘルパメタ関数もあります。
 
@@ -3132,6 +3454,12 @@ struct bit_aligned_image5_type { typedef ... type; };
 
 {% endhighlight %}
 
+<!--
+Here ChannelValue models ChannelValueConcept.
+We don't need IsYStep because GIL's memory-based locator and view already allow the vertical step to be specified dynamically.
+Iterators and views can be constructed from a pixel type:
+-->
+
 この`ChannelValue`は`ChannelValueConcept`に基づいたModelです。
 GILのメモリベースLocatorとViewでは、垂直方向ステップを動的に指定することが可能なので`IsYStep`は必要ありません。
 IteratorとViewについては、Pixel型から構築することができます。
@@ -3146,6 +3474,11 @@ struct view_type_from_pixel { typedef ... type; };
 
 {% endhighlight %}
 
+<!--
+Using a heterogeneous pixel type will result in heterogeneous iterators and views.
+Types can also be constructed from horizontal iterator:
+-->
+
 ヘテロジーニアスPixel型からは、ヘテロジーニアスIteratorとヘテロジーニアスViewが得られます。
 また、次に示す各種の型については、水平方向Iteratorから構築することができます。
 
@@ -3159,6 +3492,10 @@ struct type_from_x_iterator {
 };
 
 {% endhighlight %}
+
+<!--
+There are metafunctions to construct the type of a construct from an existing type by changing one or more of its properties:
+-->
 
 既存の型の幾つかのプロパティを変更してクラス型を構築するメタ関数があります。
 
@@ -3190,6 +3527,12 @@ struct derived_image_type {
 
 {% endhighlight %}
 
+<!--
+You can replace one or more of its properties and use boost::use_default for the rest.
+In this case IsPlanar, IsStep and IsMutable are MPL boolean constants.
+For example, here is how to create the type of a view just like View, but being grayscale and planar:
+-->
+
 いくつかのプロパティを置き換えて、それ以外のプロパティには`boost::use_default`を使うことができます。
 このケースにおいて、`IsPlanar`、`IsStep`、`IsMutable`はMPLブール型定数です。
 例として、Viewとよく似た、ただしグレイスケール化とプラナー形式化を行った、新たなViewの型をどのように作成するのかを示します。
@@ -3199,6 +3542,10 @@ struct derived_image_type {
 typedef typename derived_view_type<View, boost::use_default, gray_t, mpl::true_>::type VT;
 
 {% endhighlight %}
+
+<!--
+You can get pixel-related types of any pixel-based GIL constructs (pixels, iterators, locators and views) using the following metafunctions provided by PixelBasedConcept, HomogeneousPixelBasedConcept and metafunctions built on top of them:
+-->
 
 `PixelBasedConcept`と`HomogeneousPixelBasedConcept`とそれらの上に構築されたメタ関数から提供されるメタ関数を用いることで、PixelベースのGILクラス(Pixel、Iterator、Locator、View)からPixelに関する型を取得することができます。
 
@@ -3214,6 +3561,10 @@ template <typename T> struct num_channels { typedef ... type; };
 
 {% endhighlight %}
 
+<!--
+These are metafunctions, some of which return integral types which can be evaluated like this:
+-->
+
 これらのメタ関数のいくつかは、次のように評価することが可能な整数型を返します。
 
 {% highlight C++ %}
@@ -3221,6 +3572,12 @@ template <typename T> struct num_channels { typedef ... type; };
 BOOST_STATIC_ASSERT(is_planar<rgb8_planar_view_t>::value == true);
 
 {% endhighlight %}
+
+<!--
+GIL also supports type analysis metafunctions of the form:
+[pixel_reference/iterator/locator/view/image] + "_is_" + [basic/mutable/step].
+For example:
+-->
 
 GILは、次に示す命名規則に従う、型解析を行うメタ関数についてもサポートしています。
 
@@ -3235,6 +3592,11 @@ if (view_is_mutable<View>::value) {
 }
 
 {% endhighlight %}
+
+<!--
+A basic GIL construct is a memory-based construct that uses the built-in GIL classes and does not have any function object to invoke upon dereferencing.
+For example, a simple planar or interleaved, step or non-step RGB image view is basic, but a color converted view or a virtual view is not.
+-->
 
 基本的なGILコンストラクトは、ビルトインGILクラスを用いたメモリベースコンストラクトであり、間接参照に対して実行されるいかなる関数オブジェクトももちません。
 例を挙げると、単純なプラナーまたはインタリーブ形式でstepまたはnon-stepなRGB Image Viewは基本的なGILコンストラクトですが、Color Converted ViewやVirtual Viewはそうではありません。
