@@ -21,12 +21,31 @@
     Please see "http://stlab.adobe.com/licenses.html" for more information.
 -->
 
+
+<!--
+11. Run-time specified images and image views
+-->
+
 ## 11. 実行時に型を指定するImageとImage View
+
+<!--
+The color space, channel depth, channel ordering, and interleaved/planar structure of an image are defined by the type of its template argument, which makes them compile-time bound.
+Often some of these parameters are available only at run time.
+Consider, for example, writing a module that opens the image at a given file path, rotates it and saves it back in its original color space and channel depth.
+How can we possibly write this using our generic image?
+What type is the image loading code supposed to return?
+-->
+
 Color Space、Channel深度、Channel順、インタリーブ形式/プラナー形式といったImageの構造は、コンパイル時に結びつけられる、テンプレートパラメータの型によって定義されます。
 それらのパラメータのいくつかが実行時になって初めて決まるといった場合もしばしば存在します。
 例として、与えられたパスにある画像を開き、くるりと回転させ、画像オリジナルのColor SpaceとChannel深度で保存する、というモジュールを書く場合を考えましょう。
 我々のgeneric imageを使って、これをどのように書くことができるでしょうか？
 読み込むコードから返されるImageはどのような型でしょうか？
+
+<!--
+GIL's dynamic_image extension allows for images, image views or any GIL constructs to have their parameters defined at run time.
+Here is an example:
+-->
 
 GILの`dynamic_image` extensionは、実行時にパラメータを決めるImageやImage Viewやその他のGILクラスを実現します。
 ここで、例を示します。
@@ -64,12 +83,29 @@ myImg = cmyk16_planar_image_t(200,100);
 myImg = gray8_image_t();        // will throw std::bad_cast
 ```
 
+<!--
+any_image and any_image_view subclass from GIL's variant class, which breaks down the instantiated type into a non-templated underlying base type and a unique instantiation type identifier.
+The underlying base instance is represented as a block of bytes.
+The block is large enough to hold the largest of the specified types.
+-->
+
 `any_image`と`any_image_view`は、インスタンス化される型について非テンプレートの基本的なBase型と一意のインスタンス型識別子に分解した、GILの`variant`クラスのサブクラスです。
 この基本的なBase型インスタンスは、バイトのブロックとして表わされます。
 そのブロックは、指定された型の中で最大の型を保持するために十分な規模となります。
+
+<!--
+GIL's variant is similar to boost::variant in spirit (hence we borrow the name from there) but it differs in several ways from the current boost implementation.
+Perhaps the biggest difference is that GIL's variant always takes a single argument, which is a model of MPL Random Access Sequence enumerating the allowed types.
+Having a single interface allows GIL's variant to be used easier in generic code.
+-->
+
 GILの`variant`は`boost::variant`と考え方は似ています(だからこそ、そこから名前を拝借したわけです)が、現在のboostの実装とは幾つかの点で異なっています。
 おそらく、最大の違いは、許可する型を列挙するMPLランダムアクセスシークエンスをGILの`variant`が引数として常に1個とることです。
 インタフェイスをひとつにしたことで、GILの`variant`はジェネリックコードの中で使いやすくなっています。
+
+<!--
+Synopsis:
+-->
 
 #### Synopsis:
 
@@ -119,6 +155,10 @@ template <typename BOP, typename Types1, typename Types2>
 template <typename BOP, typename Types1, typename Types2>
    BOP::result_type apply_operation(const variant<Types1>& v1, const variant<Types2>& v2, UOP op);
 ```
+
+<!--
+GIL's any_image_view and any_image are subclasses of variant:
+-->
 
 GILの`any_image_view`と`any_image`は`variant`のサブクラスです。
 
@@ -173,15 +213,39 @@ public:
 };
 ```
 
+<!--
+Operations are invoked on variants via apply_operation passing a function object to perform the operation.
+The code for every allowed type in the variant is instantiated and the appropriate instantiation is selected via a switch statement.
+Since image view algorithms typically have time complexity at least linear on the number of pixels, the single switch statement of image view variant adds practically no measurable performance overhead compared to templated image views.
+-->
+
 処理を実行するための関数オブジェクトを`apply_operation`に渡すことによって、`variant`上での処理が実行されます。
 その`variant`で許可されている全ての型のためのコードがインスタンス化され、`switch`文を経由して適切なインスタンスが選択されます。
 Image Viewアルゴリズムは、一般的に、少なくともPixel数に対して線形な時間計算量をもつことから、Image View `variant`による1個の`switch`文がテンプレートによるImage Viewと比較して実際に測定可能なほどのパフォーマンスのオーバーヘッドを加えることはありません。
+
+<!--
+Variants behave like the underlying type.
+Their copy constructor will invoke the copy constructor of the underlying instance.
+Equality operator will check if the two instances are of the same type and then invoke their operator==, etc.
+The default constructor of a variant will default-construct the first type.
+That means that any_image_view has shallow default-constructor, copy-constructor, assigment and equaty comparison, whereas any_image has deep ones.
+-->
 
 `variant`は基本的な型と同じように振舞います。
 `variant`のコピーコンストラクタは、基本的な型のインスタンスのコピーコンストラクタを呼び出します。
 比較演算子は、ふたつのインスタンスの型が同じか否かを確認し、それから`operator==`などを呼び出します。
 `variant`のデフォルトコンストラクタは、最初に指定されている型のデフォルトコンストラクタを呼びます。
 これは、`any_image_view`が浅いデフォルトコンストラクタ、コピーコンストラクタ、代入、比較をもつ一方で、`any_image`が深いデフォルトコンストラクタ、コピーコンストラクタ、代入、比較をもつことを意味します。
+
+<!--
+It is important to note that even though any_image_view and any_image resemble the static image_view and image, they do not model the full requirements of ImageViewConcept and ImageConcept.
+In particular they don't provide access to the pixels.
+There is no "any_pixel" or "any_pixel_iterator" in GIL.
+Such constructs could be provided via the variant mechanism, but doing so would result in inefficient algorithms, since the type resolution would have to be performed per pixel.
+Image-level algorithms should be implemented via apply_operation.
+That said, many common operations are shared between the static and dynamic types.
+In addition, all of the image view transformations and many STL-like image view algorithms have overloads operating on any_image_view, as illustrated with copy_pixels:
+-->
 
 `any_image_view`や`any_image`はstaticな`image_view`や`image`と似ていますが、`ImageViewConcept`や`ImageConcept`の全ての要件に基づいたModelではない点に注意しなければなりません。
 特に`variant`はPixelへのアクセスを提供しません。
@@ -207,6 +271,11 @@ copy_pixels(av, v2);
 copy_pixels(av, av);
 ```
 
+<!--
+By having algorithm overloads supporting dynamic constructs, we create a base upon which it is possible to write algorithms that can work with either compile-time or runtime images or views.
+The following code, for example, uses the GIL I/O extension to turn an image on disk upside down:
+-->
+
 dynamicな型をサポートするアルゴリズムのオーバーロードをもつことによって、コンパイル時に決定するImageやViewと実行時に決定するImageやViewのどちらかで動作するアルゴリズムの記述を可能にする基盤を作ります。
 例を挙げると、次に示すコードはディスク上の画像を上下反転して返すGIL I/O extensionを使用します。
 
@@ -220,6 +289,11 @@ void save_180rot(const std::string& file_name) {
     jpeg_write_view(file_name, rotated180_view(view(img)));
 }
 ```
+
+<!--
+It can be instantiated with either a compile-time or a runtime image because all functions it uses have overloads taking runtime constructs.
+For example, here is how rotated180_view is implemented:
+-->
 
 使用する全ての関数が実行時に決定する型のインスタンスを引数に取るオーバーロードをもっていることから、コンパイル時に決定するImageと実行時に決定するImageのどちらであってもインスタンス化が可能です。
 ここで、`rotated180_view`がどのように実装されているかを示します。
@@ -246,6 +320,13 @@ typename dynamic_xy_step_type<any_image_view<ViewTypes> >::type rotated180_view(
     return apply_operation(src,detail::rotated180_view_fn<typename dynamic_xy_step_type<any_image_view<ViewTypes> >::type>());
 }
 ```
+
+<!--
+Variants should be used with caution (especially algorithms that take more than one variant) because they instantiate the algorithm for every possible model that the variant can take.
+This can take a toll on compile time and executable size.
+Despite these limitations, variant is a powerful technique that allows us to combine the speed of compile-time resolution with the flexibility of run-time resolution. 
+It allows us to treat images of different parameters uniformly as a collection and store them in the same container.
+-->
 
 `variant`は、それが取りうる全てのModel毎にアルゴリズムをインスタンス化するので、(特に、ふたつ以上の`variant`を引数に取るアルゴリズムでは)注意して用いるべきです。
 これは、コンパイル時間と実行ファイルのサイズに甚大な影響を与える可能性があります。
