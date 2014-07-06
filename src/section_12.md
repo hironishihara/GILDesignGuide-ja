@@ -25,13 +25,40 @@ layout: default
     Please see "http://stlab.adobe.com/licenses.html" for more information.
 -->
 
+
+<!--
+12. Useful Metafunctions and Typedefs
+-->
+
 ## <a name="section_12"> 12. メタ関数とtypedef
+
+<!--
+Flexibility comes at a price. GIL types can be very long and hard to read.
+To address this problem, GIL provides typedefs to refer to any standard image, pixel iterator, pixel locator, pixel reference or pixel value.
+They follow this pattern:
+-->
+
 柔軟性は高くつきます。
 GILの型はとても長くて読みづらいものになりがちです。
 この問題に取り組むために、GILは基本的なImage、Pixel Iterator、Pixel Locator、Pixel参照、Pixel値を参照する`typedef`を提供しています。
 それらの`typedef`は、次のようなパターンに従います。
 
+<!--
+ColorSpace + BitDepth + ["s|f"] + ["c"] + ["_planar"] + ["_step"] + ClassType + "_t"
+-->
+
 ColorSpace + BitDepth + [`s` \| `f`] + [`c`] + [`_planar`] + [`_step`] + ClassType + `_t`
+
+<!--
+Where ColorSpace also indicates the ordering of components.
+Examples are rgb, bgr, cmyk, rgba.
+BitDepth can be, for example, 8,16,32. By default the bits are unsigned integral type.
+Append s to the bit depth to indicate signed integral, or f to indicate floating point.
+c indicates object whose associated pixel reference is immutable.
+_planar indicates planar organization (as opposed to interleaved).
+_step indicates the type has a dynamic step and ClassType is _image (image, using a standard allocator), _view (image view), _loc (pixel locator), _ptr (pixel iterator), _ref (pixel reference), _pixel (pixel value).
+Here are examples:
+-->
 
 ここでのColorSpaceは、色要素とその順序を示します。
 例えば、`rgb`、`bgr`、`cmyk`、`rgba`です。
@@ -42,7 +69,6 @@ BitDepthに続く`s`は符号つき整数型であることを示し、また、
 `_planar`は、(インタリーブ形式ではなく)プラナー形式であることを示しています。
 `_step`は、その型がdynamicなステップをもつことを示します。
 ClassTypeは、(一般的なアロケータを用いるImageであることを示す)`_image`、(Image Viewであることを示す)`_view`、(Pixel Locatorであることを示す)`_loc`、(Pixel Iteratorであることを示す)`_ptr`、(Pixel参照であることを示す)`_ref`、(Pixel値であることを示す)`_pixel`をとります。
-
 いくつか例を挙げます。
 
 {% highlight C++ %}
@@ -53,6 +79,10 @@ cmyk16sc_planar_ref_t      p(x);  // const reference to a 16-bit signed integral
 rgb32f_planar_step_ptr_t   ii;    // step iterator to a floating point 32-bit (float) planar RGB pixel.
 
 {% endhighlight %}
+
+<!--
+GIL provides the metafunctions that return the types of standard homogeneous memory-based GIL constructs given a channel type, a layout, and whether the construct is planar, has a step along the X direction, and is mutable:
+-->
 
 GILは、与えられたChannel型、Layout、プラナー形式であるか否か、X方向のステップをもっているか否か、mutableであるか否かの情報に基づいて、基本的なホモジーニアスメモリベースGILクラスの型を返すメタ関数を提供します。
 
@@ -83,6 +113,10 @@ template <typename ChannelBitSizeVector, typename Layout, typename Alloc=std::al
 struct bit_aligned_image_type { typedef ... type; };
 
 {% endhighlight %}
+
+<!--
+There are also helper metafunctions to construct packed and bit-aligned images with up to five channels:
+-->
 
 5個までのChannelをもつバイト単位Imageとビット単位Imageを構築する、ヘルパメタ関数もあります。
 
@@ -130,6 +164,12 @@ struct bit_aligned_image5_type { typedef ... type; };
 
 {% endhighlight %}
 
+<!--
+Here ChannelValue models ChannelValueConcept.
+We don't need IsYStep because GIL's memory-based locator and view already allow the vertical step to be specified dynamically.
+Iterators and views can be constructed from a pixel type:
+-->
+
 この`ChannelValue`は`ChannelValueConcept`に基づいたModelです。
 GILのメモリベースLocatorとViewでは、垂直方向ステップを動的に指定することが可能なので`IsYStep`は必要ありません。
 IteratorとViewについては、Pixel型から構築することができます。
@@ -144,6 +184,11 @@ struct view_type_from_pixel { typedef ... type; };
 
 {% endhighlight %}
 
+<!--
+Using a heterogeneous pixel type will result in heterogeneous iterators and views.
+Types can also be constructed from horizontal iterator:
+-->
+
 ヘテロジーニアスPixel型からは、ヘテロジーニアスIteratorとヘテロジーニアスViewが得られます。
 また、次に示す各種の型については、水平方向Iteratorから構築することができます。
 
@@ -157,6 +202,10 @@ struct type_from_x_iterator {
 };
 
 {% endhighlight %}
+
+<!--
+There are metafunctions to construct the type of a construct from an existing type by changing one or more of its properties:
+-->
 
 既存の型の幾つかのプロパティを変更してクラス型を構築するメタ関数があります。
 
@@ -188,6 +237,12 @@ struct derived_image_type {
 
 {% endhighlight %}
 
+<!--
+You can replace one or more of its properties and use boost::use_default for the rest.
+In this case IsPlanar, IsStep and IsMutable are MPL boolean constants.
+For example, here is how to create the type of a view just like View, but being grayscale and planar:
+-->
+
 いくつかのプロパティを置き換えて、それ以外のプロパティには`boost::use_default`を使うことができます。
 このケースにおいて、`IsPlanar`、`IsStep`、`IsMutable`はMPLブール型定数です。
 例として、Viewとよく似た、ただしグレイスケール化とプラナー形式化を行った、新たなViewの型をどのように作成するのかを示します。
@@ -197,6 +252,10 @@ struct derived_image_type {
 typedef typename derived_view_type<View, boost::use_default, gray_t, mpl::true_>::type VT;
 
 {% endhighlight %}
+
+<!--
+You can get pixel-related types of any pixel-based GIL constructs (pixels, iterators, locators and views) using the following metafunctions provided by PixelBasedConcept, HomogeneousPixelBasedConcept and metafunctions built on top of them:
+-->
 
 `PixelBasedConcept`と`HomogeneousPixelBasedConcept`とそれらの上に構築されたメタ関数から提供されるメタ関数を用いることで、PixelベースのGILクラス(Pixel、Iterator、Locator、View)からPixelに関する型を取得することができます。
 
@@ -212,6 +271,10 @@ template <typename T> struct num_channels { typedef ... type; };
 
 {% endhighlight %}
 
+<!--
+These are metafunctions, some of which return integral types which can be evaluated like this:
+-->
+
 これらのメタ関数のいくつかは、次のように評価することが可能な整数型を返します。
 
 {% highlight C++ %}
@@ -219,6 +282,12 @@ template <typename T> struct num_channels { typedef ... type; };
 BOOST_STATIC_ASSERT(is_planar<rgb8_planar_view_t>::value == true);
 
 {% endhighlight %}
+
+<!--
+GIL also supports type analysis metafunctions of the form:
+[pixel_reference/iterator/locator/view/image] + "_is_" + [basic/mutable/step].
+For example:
+-->
 
 GILは、次に示す命名規則に従う、型解析を行うメタ関数についてもサポートしています。
 
@@ -233,6 +302,11 @@ if (view_is_mutable<View>::value) {
 }
 
 {% endhighlight %}
+
+<!--
+A basic GIL construct is a memory-based construct that uses the built-in GIL classes and does not have any function object to invoke upon dereferencing.
+For example, a simple planar or interleaved, step or non-step RGB image view is basic, but a color converted view or a virtual view is not.
+-->
 
 基本的なGILコンストラクトは、ビルトインGILクラスを用いたメモリベースコンストラクトであり、間接参照に対して実行されるいかなる関数オブジェクトももちません。
 例を挙げると、単純なプラナーまたはインタリーブ形式でstepまたはnon-stepなRGB Image Viewは基本的なGILコンストラクトですが、Color Converted ViewやVirtual Viewはそうではありません。
