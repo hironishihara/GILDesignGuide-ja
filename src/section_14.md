@@ -21,7 +21,18 @@
     Please see "http://stlab.adobe.com/licenses.html" for more information.
 -->
 
+
+<!--
+14. Sample Code
+-->
+
 ## 14. サンプルコード
+
+<!--
+Pixel-level Sample Code
+
+Here are some operations you can do with pixel values, pointers and references:
+-->
 
 ### Pixelレベルの処理
 
@@ -51,6 +62,10 @@ p2=ref; p2=p1; p2=ptr[7]; p2=rgb8_pixel_t(1,2,3);    // planar/interleaved refer
 //p1 = pixel<bits8, rgb_layout_t>();// compile error: Incompatible color space (even though it has the same number of channels)
 //p1 = pixel<bits8,rgba_layout_t>();// compile error: Incompatible color space (even though it contains red, green and blue channels)
 ```
+
+<!--
+Here is how to use pixels in generic code:
+-->
 
 続いては、Pixelをジェネリックコードの中でどのように使うのかを示します。
 
@@ -85,7 +100,19 @@ gray8_view_t gv8(...);
 gray_to_rgb(*gv8.begin(), rpv32[5]);
 ```
 
+<!--
+As the example shows, both the source and the destination can be references or values, planar or interleaved, as long as they model PixelConcept and MutablePixelConcept respectively.
+-->
+
 この例が示すように、入力と出力が共に`PixelConcept`と`MutablePixelConcept`に各々基づいたModelである限りにおいて、それらは、参照であっても値であっても構いませんし、プラナー形式であってもインタリーブ形式であっても構いません。
+
+<!--
+Creating a Copy of an Image with a Safe Buffer
+
+Suppose we want to convolve an image with multiple kernels, the largest of which is 2K+1 x 2K+1 pixels.
+It may be worth creating a margin of K pixels around the image borders.
+Here is how to do it:
+-->
 
 ### 安全のためのバッファを備えた、Imageのコピー
 
@@ -107,6 +134,12 @@ void create_with_margin(const SrcView& src, int k, DstImage& result) {
 }
 ```
 
+<!--
+We allocated a larger image, then we used subimage_view to create a shallow image of its center area of top left corner at (k,k) and of identical size as src, and finally we copied src into that center image.
+If the margin needs initialization, we could have done it with fill_pixels.
+Here is how to simplify this code using the copy_pixels algorithm:
+-->
+
 十分な大きさのImageを確保し、`subimage_view`を使って(k,k)を始点とする`src`と同じサイズの中心領域を指定する浅いImage(すなわち、View)を作成し、`src`をその中心領域へコピーします。
 もしマージンに初期化が必要であれば、`fill_pixels`を実行しておくこともできるでしょう。
 `copy_pixels`アルゴリズムを使って、このコードをいかにシンプルにするかを示します。
@@ -119,6 +152,15 @@ void create_with_margin(const SrcView& src, int k, DstImage& result) {
 }
 ```
 
+<!--
+(Note also that image::recreate is more efficient than operator=, as the latter will do an unnecessary copy construction).
+Not only does the above example work for planar and interleaved images of any color space and pixel depth; it is also optimized.
+GIL overrides std::copy - when called on two identical interleaved images with no padding at the end of rows, it simply does a memmove.
+For planar images it does memmove for each channel. If one of the images has padding, (as in our case) it will try to do memmove for each row.
+When an image has no padding, it will use its lightweight horizontal iterator (as opposed to the more complex 1D image iterator that has to check for the end of rows).
+It choses the fastest method, taking into account both static and run-time parameters.
+-->
+
 (`image::recreate`は、`operator=`が不必要なコピーコンストラクションを行う分、効率的であることにも注意してください。)
 上記のサンプルはColor Spece、Pixel深度、プラナー形式であるかインタリーブ形式であるかを問わずに動作するだけではありません。
 最適化されているのです。
@@ -129,7 +171,15 @@ GILは`std::copy`をオーバーライドします。
 Imageがパディングをもっていない場合、(行の末尾をチェックが必要な少々複雑な1次元Iteratorではなく、)軽量な水平方向Iteratorを使うでしょう。
 staticなパラメータと実行時に型が決まるパラメータの両方を考慮して、最速の方法を選択します。
 
+<!--
+Histogram
+
+The histogram can be computed by counting the number of pixel values that fall in each bin.
+The following method takes a grayscale (one-dimensional) image view, since only grayscale pixels are convertible to integers:
+-->
+
 ### ヒストグラム
+
 ヒストグラムは、各瓶に振り分けられたPixel値の数をカウントすることで得られます。
 グレイスケールPixelは整数型に変換可能なので、次に示すメソッドはグレイスケール(単要素の)Image Viewを取ります。
 
@@ -141,6 +191,10 @@ void grayimage_histogram(const GrayView& img, R& hist) {
 }
 ```
 
+<!--
+Using boost::lambda and GIL's for_each_pixel algorithm, we can write this more compactly:
+-->
+
 `boost::lambda`とGILの`for_each_pixel`アルゴリズムを用いると、もっとコンパクトに書くことができます。
 
 ```cpp
@@ -149,6 +203,11 @@ void grayimage_histogram(const GrayView& v, R& hist) {
     for_each_pixel(v, ++var(hist)[_1]);
 }
 ```
+
+<!--
+Where for_each_pixel invokes std::for_each and var and _1 are boost::lambda constructs.
+To compute the luminosity histogram, we call the above method using the grayscale view of an image:
+-->
 
 ここの`for_each_pixel`は`std::for_each`を呼び出しており、`var`と`_1`は`boost::lambda`コンストラクトです。
 明度のヒストグラムを算出するには、ImageのグレイスケールViewを使って上記のメソッドを呼び出します。
@@ -160,6 +219,10 @@ void luminosity_histogram(const View& v, R& hist) {
 }
 ```
 
+<!--
+This is how to invoke it:
+-->
+
 これは、次のように呼び出します。
 
 ```cpp
@@ -168,15 +231,30 @@ std::fill(hist,hist+256,0);
 luminosity_histogram(my_view,hist);
 ```
 
+<!--
+If we want to view the histogram of the second channel of the image in the top left 100x100 area, we call:
+-->
+
 また、画像の2番目のChannelの左上100x100についてのヒストグラムが見たい場合には、次のように呼びます：
 
 ```cpp
 grayimage_histogram(nth_channel_view(subimage_view(img,0,0,100,100),1),hist);
 ```
 
+<!--
+No pixels are copied and no extra memory is allocated - the code operates directly on the source pixels, which could be in any supported color space and channel depth.
+They could be either planar or interleaved.
+-->
+
 Pixelがコピーされることもなければ、余計なメモリが確保されることもありません。
 すなわち、サポートされたColor SpaceとChannel深度であれば、このコードは入力Pixelの上で直接実行されます。
 プラナー形式でもインタリーブ形式でも問題ありません。
+
+<!--
+Using Image Views
+
+The following code illustrates the power of using image views:
+-->
 
 ### Image Viewの使用
 
@@ -192,9 +270,19 @@ step5=subsampled_view(step4, 2,1);
 jpeg_write_view("monkey_transform.jpg", step5);
 ```
 
+<!--
+The intermediate images are shown here:
+-->
+
 途中経過の画像をここに示します。
 
 ![途中経過](http://hironishihara.github.com/GILDesignGuide-ja/src/img/monkey_steps.jpg "途中経過")
+
+<!--
+Notice that no pixels are ever copied.
+All the work is done inside jpeg_write_view. 
+If we call our luminosity_histogram with step5 it will do the right thing.
+-->
 
 Pixelは全くコピーされていません。
 全ての作業は`jpeg_write_view`のなかで行われます。
