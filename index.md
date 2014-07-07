@@ -3601,10 +3601,37 @@ For example, a simple planar or interleaved, step or non-step RGB image view is 
 基本的なGILコンストラクトは、ビルトインGILクラスを用いたメモリベースコンストラクトであり、間接参照に対して実行されるいかなる関数オブジェクトももちません。
 例を挙げると、単純なプラナーまたはインタリーブ形式でstepまたはnon-stepなRGB Image Viewは基本的なGILコンストラクトですが、Color Converted ViewやVirtual Viewはそうではありません。
 
+
+<!--
+13. I/O Extension
+-->
+
 ## <a name="section_13"> 13. I/O Extension
+
+<!--
+GIL's I/O extension provides low level image i/o utilities.
+It supports loading and saving several image formats, each of which requires linking against the corresponding library:
+-->
 
 GILのI/O Extensionは、ローレベルの画像I/Oユーティリティを提供します。
 このI/O Extensionは、対応するライブラリとのリンクが必要な各種画像フォーマットについての読み込みや保存をサポートしています。
+
+<!--
+JPEG: To use JPEG files, include the file gil/extension/io/jpeg_io.hpp.
+If you are using run-time images, you need to include gil/extension/io/jpeg_dynamic_io.hpp instead.
+You need to compile and link against libjpeg.lib (available at http://www.ijg.org).
+You need to have jpeglib.h in your include path.
+
+TIFF: To use TIFF files, include the file gil/extension/io/tiff_io.hpp.
+If you are using run-time images, you need to include gil/extension/io/tiff_dynamic_io.hpp instead.
+You need to compile and link against libtiff.lib (available at http://www.libtiff.org).
+You need to have tiffio.h in your include path.
+
+PNG: To use PNG files, include the file gil/extension/io/png_io.hpp.
+If you are using run-time images, you need to include gil/extension/io/png_dynamic_io.hpp instead.
+You need to compile and link against libpng.lib (available at http://wwwlibpng.org).
+You need to have png.h in your include path.
+-->
 
 - JPEG: JPEGファイルを利用するには、`gil/extension/io/jpeg_io.hpp`をインクルードする必要があります。
 もし、実行時に型が決まるImageを利用するのであれば、かわりに`gil/extension/io/jpeg_dynamic_io.hpp`をインクルードする必要があります。
@@ -3617,6 +3644,11 @@ GILのI/O Extensionは、ローレベルの画像I/Oユーティリティを提�
 - PNG: PNGファイルを利用するには、`gil/extension/io/png_io.hpp`をインクルードする必要があります。
 もし、実行時に型が決まるImageを利用するのであれば、かわりに`gil/extension/io/png_dynamic_io.hpp`をインクルードする必要があります。
 また、`libpng.lib` (<http://www.libpng.org/> から利用可能です)のコンパイルとリンクを行い、`png.h`をInclude Pathに追加する必要があります。
+
+<!--
+You don't need to install all these libraries; just the ones you will use.
+Here are the I/O APIs for JPEG files (replace "jpeg" with "tiff" or "png" for the APIs of the other libraries):
+-->
 
 これらのライブラリを全てインストールする必要はありません。
 使うものだけで十分です。
@@ -3670,6 +3702,11 @@ template <typename View> struct jpeg_write_support {
 
 {% endhighlight %}
 
+<!--
+If you use the dynamic image extension, make sure to include "jpeg_dynamic_io.hpp" instead of "jpeg_io.hpp".
+In addition to the above methods, you have the following overloads dealing with dynamic images:
+-->
+
 Dynamic Image Extensionを使う場合には、"`jpeg_io.hpp`"に代えて"`jpeg_dynamic_io.hpp`"をインクルードするようにしてください。
 Dynamic Imageを扱う場合には、上記のメソッドに加えて、次に示すオーバーロードをもちます。
 
@@ -3687,9 +3724,24 @@ template <typename Views>  void jpeg_write_view(const char*, any_image_view<View
 
 {% endhighlight %}
 
+<!--
+All of the above methods have overloads taking std::string instead of const char*
+-->
+
 上記の全てのメソッドは、`const char*`の代わりに`std::string`を取るオーバーロードをもちます。
 
+
+<!--
+14. Sample Code
+-->
+
 ## <a name="section_14"> 14. サンプルコード
+
+<!--
+Pixel-level Sample Code
+
+Here are some operations you can do with pixel values, pointers and references:
+-->
 
 ### <a name="section_14_1"> Pixelレベルの処理
 
@@ -3721,6 +3773,10 @@ p2=ref; p2=p1; p2=ptr[7]; p2=rgb8_pixel_t(1,2,3);    // planar/interleaved refer
 //p1 = pixel<bits8,rgba_layout_t>();// compile error: Incompatible color space (even though it contains red, green and blue channels)
 
 {% endhighlight %}
+
+<!--
+Here is how to use pixels in generic code:
+-->
 
 続いては、Pixelをジェネリックコードの中でどのように使うのかを示します。
 
@@ -3757,7 +3813,19 @@ gray_to_rgb(*gv8.begin(), rpv32[5]);
 
 {% endhighlight %}
 
+<!--
+As the example shows, both the source and the destination can be references or values, planar or interleaved, as long as they model PixelConcept and MutablePixelConcept respectively.
+-->
+
 この例が示すように、入力と出力が共に`PixelConcept`と`MutablePixelConcept`に各々基づいたModelである限りにおいて、それらは、参照であっても値であっても構いませんし、プラナー形式であってもインタリーブ形式であっても構いません。
+
+<!--
+Creating a Copy of an Image with a Safe Buffer
+
+Suppose we want to convolve an image with multiple kernels, the largest of which is 2K+1 x 2K+1 pixels.
+It may be worth creating a margin of K pixels around the image borders.
+Here is how to do it:
+-->
 
 ### <a name="section_14_2"> 安全のためのバッファを備えた、Imageのコピー
 
@@ -3781,6 +3849,12 @@ void create_with_margin(const SrcView& src, int k, DstImage& result) {
 
 {% endhighlight %}
 
+<!--
+We allocated a larger image, then we used subimage_view to create a shallow image of its center area of top left corner at (k,k) and of identical size as src, and finally we copied src into that center image.
+If the margin needs initialization, we could have done it with fill_pixels.
+Here is how to simplify this code using the copy_pixels algorithm:
+-->
+
 十分な大きさのImageを確保し、`subimage_view`を使って(k,k)を始点とする`src`と同じサイズの中心領域を指定する浅いImage(すなわち、View)を作成し、`src`をその中心領域へコピーします。
 もしマージンに初期化が必要であれば、`fill_pixels`を実行しておくこともできるでしょう。
 `copy_pixels`アルゴリズムを使って、このコードをいかにシンプルにするかを示します。
@@ -3795,6 +3869,15 @@ void create_with_margin(const SrcView& src, int k, DstImage& result) {
 
 {% endhighlight %}
 
+<!--
+(Note also that image::recreate is more efficient than operator=, as the latter will do an unnecessary copy construction).
+Not only does the above example work for planar and interleaved images of any color space and pixel depth; it is also optimized.
+GIL overrides std::copy - when called on two identical interleaved images with no padding at the end of rows, it simply does a memmove.
+For planar images it does memmove for each channel. If one of the images has padding, (as in our case) it will try to do memmove for each row.
+When an image has no padding, it will use its lightweight horizontal iterator (as opposed to the more complex 1D image iterator that has to check for the end of rows).
+It choses the fastest method, taking into account both static and run-time parameters.
+-->
+
 (`image::recreate`は、`operator=`が不必要なコピーコンストラクションを行う分、効率的であることにも注意してください。)
 上記のサンプルはColor Spece、Pixel深度、プラナー形式であるかインタリーブ形式であるかを問わずに動作するだけではありません。
 最適化されているのです。
@@ -3805,7 +3888,15 @@ GILは`std::copy`をオーバーライドします。
 Imageがパディングをもっていない場合、(行の末尾をチェックが必要な少々複雑な1次元Iteratorではなく、)軽量な水平方向Iteratorを使うでしょう。
 staticなパラメータと実行時に型が決まるパラメータの両方を考慮して、最速の方法を選択します。
 
+<!--
+Histogram
+
+The histogram can be computed by counting the number of pixel values that fall in each bin.
+The following method takes a grayscale (one-dimensional) image view, since only grayscale pixels are convertible to integers:
+-->
+
 ### <a name="section_14_3"> ヒストグラム
+
 ヒストグラムは、各瓶に振り分けられたPixel値の数をカウントすることで得られます。
 グレイスケールPixelは整数型に変換可能なので、次に示すメソッドはグレイスケール(単要素の)Image Viewを取ります。
 
@@ -3819,6 +3910,10 @@ void grayimage_histogram(const GrayView& img, R& hist) {
 
 {% endhighlight %}
 
+<!--
+Using boost::lambda and GIL's for_each_pixel algorithm, we can write this more compactly:
+-->
+
 `boost::lambda`とGILの`for_each_pixel`アルゴリズムを用いると、もっとコンパクトに書くことができます。
 
 {% highlight C++ %}
@@ -3829,6 +3924,11 @@ void grayimage_histogram(const GrayView& v, R& hist) {
 }
 
 {% endhighlight %}
+
+<!--
+Where for_each_pixel invokes std::for_each and var and _1 are boost::lambda constructs.
+To compute the luminosity histogram, we call the above method using the grayscale view of an image:
+-->
 
 ここの`for_each_pixel`は`std::for_each`を呼び出しており、`var`と`_1`は`boost::lambda`コンストラクトです。
 明度のヒストグラムを算出するには、ImageのグレイスケールViewを使って上記のメソッドを呼び出します。
@@ -3842,6 +3942,10 @@ void luminosity_histogram(const View& v, R& hist) {
 
 {% endhighlight %}
 
+<!--
+This is how to invoke it:
+-->
+
 これは、次のように呼び出します。
 
 {% highlight C++ %}
@@ -3852,6 +3956,10 @@ luminosity_histogram(my_view,hist);
 
 {% endhighlight %}
 
+<!--
+If we want to view the histogram of the second channel of the image in the top left 100x100 area, we call:
+-->
+
 また、画像の2番目のChannelの左上100x100についてのヒストグラムが見たい場合には、次のように呼びます：
 
 {% highlight C++ %}
@@ -3860,9 +3968,20 @@ grayimage_histogram(nth_channel_view(subimage_view(img,0,0,100,100),1),hist);
 
 {% endhighlight %}
 
+<!--
+No pixels are copied and no extra memory is allocated - the code operates directly on the source pixels, which could be in any supported color space and channel depth.
+They could be either planar or interleaved.
+-->
+
 Pixelがコピーされることもなければ、余計なメモリが確保されることもありません。
 すなわち、サポートされたColor SpaceとChannel深度であれば、このコードは入力Pixelの上で直接実行されます。
 プラナー形式でもインタリーブ形式でも問題ありません。
+
+<!--
+Using Image Views
+
+The following code illustrates the power of using image views:
+-->
 
 ### <a name="section_14_4"> Image Viewの使用
 
@@ -3880,29 +3999,68 @@ jpeg_write_view("monkey_transform.jpg", step5);
 
 {% endhighlight %}
 
+<!--
+The intermediate images are shown here:
+-->
+
 途中経過の画像をここに示します。
 
 ![途中経過](http://hironishihara.github.com/GILDesignGuide-ja/src/img/monkey_steps.jpg "途中経過")
+
+<!--
+Notice that no pixels are ever copied.
+All the work is done inside jpeg_write_view.
+If we call our luminosity_histogram with step5 it will do the right thing.
+-->
 
 Pixelは全くコピーされていません。
 全ての作業は`jpeg_write_view`のなかで行われます。
 さきほどの`luminosity_histgram`をstep5で呼べば、うまく動作するはずです。
 
+
+<!--
+15. Extending the Generic Image Library
+-->
+
 ## <a name="section_15"> 15. Generic Image Libraryの拡張
+
+<!--
+You can define your own pixel iterators, locators, image views, images, channel types, color spaces and algorithms.
+You can make virtual images that live on the disk, inside a jpeg file, somewhere on the internet, or even fully-synthetic images such as the Mandelbrot set.
+As long as they properly model the corresponding concepts, they will work with any existing GIL code.
+Most such extensions require no changes to the library and can thus be supplied in another module.
+-->
 
 GILでは、独自のPixel Iterator、Locator、Image View、Image、Channel型、Color Space、アルゴリズムを定義することができます。
 ディスク上の画像やjpegファイルに保存された画像やインターネット上にある画像のVirtual Imageをつくることもできますし、マンデルブロ集合といった完全な合成画像までもつくることができます。
 関連するコンセプトに基づいた適切なModelである限りにおいて、それらは既存のあらゆるGILコードと共に動作します。
-
 このような拡張のほとんどはライブラリに変更を求めませんし、だからこそ、これらの拡張を他のモジュールへ提供することが可能なのです。
 
+<!--
+Defining New Color Spaces
+
+Each color space is in a separate file.
+To add a new color space, just copy one of the existing ones (like rgb.hpp) and change it accordingly.
+If you want color conversion support, you will have to provide methods to convert between it and the existing color spaces (see color_convert.h).
+For convenience you may want to provide useful typedefs for pixels, pointers, references and images with the new color space (see typedefs.h).
+-->
+
 ### <a name="section_15_1"> 独自のColor Space定義
+
 それぞれのColor Spaceは個別のファイルに記述されています。
 新しいColor Spaceを追加するには、あるColor Space(たとえば、`rgb.hpp`)をコピーして、適当に編集するだけです。
 もし色変換をサポートしたいと思ったら、新しいColor Spaceと既存のColor Spaceの変換を行うメソッドを提供しなければならないでしょう(`color_convert.hpp`を参照してください)。
 利便性を考えて、Pixel、ポインタ、参照、Imageについての`typedef`を提供したくなるかもしれません(`typedefs.h`を参照してください)。
 
+<!--
+Defining New Channel Types
+
+Most of the time you don't need to do anything special to use a new channel type.
+You can just use it:
+-->
+
 ### <a name="section_15_2"> 独自のChannel型定義
+
 ほとんどの場合、新しいChannel型を使用する際に特別なことをする必要はありません。
 それをただ使うだけです。
 
@@ -3914,8 +4072,22 @@ typedef image_type<double,rgb_layout_t>::type rgb64_image_t;    // 64-bit interl
 
 {% endhighlight %}
 
+<!--
+If you want to use your own channel class, you will need to provide a specialization of channel_traits for it (see channel.hpp).
+If you want to do conversion between your and existing channel types, you will need to provide an overload of channel_convert.
+-->
+
 もし独自のChannel型を使いたいと考えたときには、そのChannel型のための`channel_traits`の実装を提供する必要があるでしょう(`channel.hpp`を参照ください)。
 もし、独自のChannel型と既存のChannel型の変換を行いたいと考えたときには、`channel_convert`のオーバーロードを提供する必要があるでしょう。
+
+<!--
+Overloading Color Conversion
+
+Suppose you want to provide your own color conversion.
+For example, you may want to implement higher quality color conversion using color profiles.
+Typically you may want to redefine color conversion only in some instances and default to GIL's color conversion in all other cases.
+Here is, for example, how to overload color conversion so that color conversion to gray inverts the result but everything else remains the same:
+-->
 
 ### <a name="section_15_3"> 色変換のオーバーロード
 
@@ -3954,6 +4126,11 @@ struct my_color_converter {
 
 {% endhighlight %}
 
+<!--
+GIL's color conversion functions take the color converter as an optional parameter.
+You can pass your own color converter:
+-->
+
 GILの色変換関数はオプションのパラメータとしてカラーコンバータをとります。
 独自のカラーコンバータを渡すこともできます。
 
@@ -3963,7 +4140,17 @@ color_converted_view<gray8_pixel_t>(img_view,my_color_converter());
 
 {% endhighlight %}
 
+<!--
+Defining New Image Views
+
+You can provide your own pixel iterators, locators and views, overriding either the mechanism for getting from one pixel to the next or doing an arbitrary pixel transformation on dereference.
+For example, let's look at the implementation of color_converted_view (an image factory method that, given any image view, returns a new, otherwise identical view, except that color conversion is performed on pixel access).
+First we need to define a model of PixelDereferenceAdaptorConcept; a function object that will be called when we dereference a pixel iterator.
+It will call color_convert to convert to the destination pixel type:
+-->
+
 ### <a name="section_15_4"> 独自のImage View定義
+
 あるPixelから他のPixelを得るメカニズムか間接参照に対して任意のPixel変換を行うメカニズムかをオーバーロードすることで、独自のPixel IteratorやLocatorやViewを提供することが出来ます。
 例として、`color_converted_view` (あるImage Viewが与えられたとき、Pixelの色変換が実行される以外は全くそっくりの新しいViewを作成するfactoryメソッド)の実装をみてみましょう。
 まずは、Pixel Iteratorから間接参照するときに呼ばれる関数オブジェクトである、`PixelDereferenceAdaptorConcept`のModelを定義する必要があります。
@@ -3992,6 +4179,11 @@ public:
 
 {% endhighlight %}
 
+<!--
+We then use the add_deref member struct of image views to construct the type of a view that invokes a given function object (deref_t) upon dereferencing.
+In our case, it performs color conversion:
+-->
+
 そのとき、間接参照の上で与えられた関数オブジェクト(`deref_t`)を実行するView型を構築する、Image Viewのメンバstructである`add_deref`を使用します。
 このケースでは、色変換を実行します。
 
@@ -4010,6 +4202,10 @@ public:
 
 {% endhighlight %}
 
+<!--
+Finally our color_converted_view code simply creates color-converted view from the source view:
+-->
+
 最終的に、`color_converted_view`のコードは、元となるViewから簡単に`color-converted view`を作成します。
 
 {% highlight C++ %}
@@ -4021,12 +4217,32 @@ typename color_converted_view_type<View,DstP>::type color_convert_view(const Vie
 
 {% endhighlight %}
 
+<!--
+(The actual color convert view transformation is slightly more complicated, as it takes an optional color conversion object, which allows users to specify their own color conversion methods).
+See the GIL tutorial for an example of creating a virtual image view that defines the Mandelbrot set.
+-->
+
 (実際の色変換Viewによる変換は、ユーザ独自の色変換メソッドの記述を許可する追加の色変換オブジェクトを取るなど、少し複雑です。)
 マンデルブロ集合を定義するVirtual Image Viewを作成する例については、GILチュートリアルを見てください。
 
+
+<!--
+16. Technicalities
+-->
+
 ## <a name="section_16"> 16. より専門的な事項
 
+<!--
+Creating a reference proxy
+
+Sometimes it is necessary to create a proxy class that represents a reference to a given object.
+Examples of these are GIL's reference to a planar pixel (planar_pixel_reference) and GIL's subbyte channel references.
+Writing a reference proxy class can be tricky.
+One problem is that the proxy reference is constructed as a temporary object and returned by value upon dereferencing the iterator:
+-->
+
 ### <a name="section_16_1"> 参照Proxyの作成
+
 与えられたオブジェクトへの参照となるProxy型の作成が必要となる場合があります。
 これらの例として、GILのプラナー形式Pixelへの参照やGILのサブバイトChannelへの参照が挙げられます。
 参照Proxy型の記述に際しては、注意が必要です。
@@ -4041,6 +4257,10 @@ struct rgb_planar_pixel_iterator {
 
 {% endhighlight %}
 
+<!--
+The problem arises when an iterator is dereferenced directly into a function that takes a mutable pixel:
+-->
+
 この問題は、mutableなPixel型を引数に取る関数がIteratorの間接参照から取得した値を引数に取るときに起こります。
 
 {% highlight C++ %}
@@ -4053,10 +4273,17 @@ invert_pixel(*myIt);        // compile error!
 
 {% endhighlight %}
 
+<!--
+C++ does not allow for matching a temporary object against a non-constant reference.
+The solution is to:
+
+Use const qualifier on all members of the reference proxy object:
+-->
+
 C++では一時的なオブジェクトを非constantな参照と組み合わせることを許可していません。
 この問題は次のように解決します。
 
-参照Proxyオブジェクトの全メンバに対して、const修飾子を使います。
+- 参照Proxyオブジェクトの全メンバに対して、const修飾子を使います
 
 {% highlight C++ %}
 
@@ -4069,8 +4296,13 @@ struct my_reference_proxy {
 
 {% endhighlight %}
 
-(おそらくはテンプレートパラメタのconst性に基づく)mutableでconstantな参照であることを示すためには、異なるクラスを使用します。
-const修飾子を伴った、独自Iteratorの参照型を定義します。
+<!--
+Use different classes to denote mutable and constant reference (maybe based on the constness of the template parameter)
+Define the reference type of your iterator with const qualifier:
+-->
+
+- (おそらくはテンプレートパラメタのconst性に基づく)mutableでconstantな参照であることを示すためには、異なるクラスを使用します
+- const修飾子を伴った、独自Iteratorの参照型を定義します
 
 {% highlight C++ %}
 
@@ -4080,10 +4312,17 @@ struct iterator_traits<rgb_planar_pixel_iterator> {
 
 {% endhighlight %}
 
+<!--
+A second important issue is providing an overload for swap for your reference class.
+The default std::swap will not work correctly.
+You must use a real value type as the temporary.
+A further complication is that in some implementations of the STL the swap function is incorreclty called qualified, as std::swap.
+The only way for these STL algorithms to use your overload is if you define it in the std namespace:
+-->
+
 2番目の問題は、独自の参照クラスをスワップするためのオーバーロードの提供についてです。
 デフォルトの`std::swap`は正確に動作しません。
 一時的な値として、実際の値をもつ型を使用しなければなりません。
-
 さらに複雑なことには、STLのいくつかの実装では`swap`関数を呼んだ際に誤って正規の`std::swap`が呼ばれます。
 これらのSTLアルゴリズムで独自のオーバーロードが用いられるようにするための唯一の方法は、それを`std::namespace`に定義することです。
 
@@ -4100,11 +4339,52 @@ namespace std {
 
 {% endhighlight %}
 
+<!--
+Lastly, remember that constructors and copy-constructors of proxy references are always shallow and assignment operators are deep.
+-->
+
 最後に、Proxy参照のコンストラクタやコピーコンストラクタは常に浅く、代入演算子は常に深いことを覚えておいてください。
+
+<!--
+We are grateful to Dave Abrahams, Sean Parent and Alex Stepanov for suggesting the above solution.
+-->
+
 上記の解決策を提案してくれたDave Abrahams、Sean Parent、Alex Stepanovに感謝します。
 
+
+<!--
+17. Conclusion
+-->
+
 ## <a name="section_17"> 17. 結び
+
+<!--
+The Generic Image Library is designed with the following five goals in mind:
+-->
+
 Generic Image Libraryは次に示す5個の目標を念頭にデザインされています。
+
+<!--
+Generality.
+Abstracts image representations from algorithms on images.
+It allows for writing code once and have it work for any image type.
+
+Performance.
+Speed has been instrumental to the design of the library.
+The generic algorithms provided in the library are in many cases comparable in speed to hand-coding the algorithm for a specific image type.
+
+Flexibility.
+Compile-type parameter resolution results in faster code, but severely limits code flexibility.
+The library allows for any image parameter to be specified at run time, at a minor performance cost.
+
+Extensibility.
+Virtually every construct in GIL can be extended - new channel types, color spaces, layouts, iterators, locators, image views and images can be provided by modeling the corresponding GIL concepts.
+
+Compatibility.
+The library is designed as an STL complement.
+Generic STL algorithms can be used for pixel manipulation, and they are specifically targeted for optimization.
+The library works with existing raw pixel data from another image library.
+-->
 
 - 一般性: 画像処理アルゴリズムから画像の形式を抽象化し、記述したコードがどのような形式の画像でも動作できるにします。
 - パフォーマンス: このライブラリの設計において、速度は大きな指針です。このライブラリによるジェネリックアルゴリズムは、多くの場合、特定の画像形式に合わせて作られたアルゴリズムと速度で匹敵します。
