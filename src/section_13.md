@@ -25,10 +25,37 @@ layout: default
     Please see "http://stlab.adobe.com/licenses.html" for more information.
 -->
 
+
+<!--
+13. I/O Extension
+-->
+
 ## <a name="section_13"> 13. I/O Extension
+
+<!--
+GIL's I/O extension provides low level image i/o utilities.
+It supports loading and saving several image formats, each of which requires linking against the corresponding library:
+-->
 
 GILのI/O Extensionは、ローレベルの画像I/Oユーティリティを提供します。
 このI/O Extensionは、対応するライブラリとのリンクが必要な各種画像フォーマットについての読み込みや保存をサポートしています。
+
+<!--
+JPEG: To use JPEG files, include the file gil/extension/io/jpeg_io.hpp.
+If you are using run-time images, you need to include gil/extension/io/jpeg_dynamic_io.hpp instead.
+You need to compile and link against libjpeg.lib (available at http://www.ijg.org).
+You need to have jpeglib.h in your include path.
+
+TIFF: To use TIFF files, include the file gil/extension/io/tiff_io.hpp.
+If you are using run-time images, you need to include gil/extension/io/tiff_dynamic_io.hpp instead.
+You need to compile and link against libtiff.lib (available at http://www.libtiff.org).
+You need to have tiffio.h in your include path.
+
+PNG: To use PNG files, include the file gil/extension/io/png_io.hpp.
+If you are using run-time images, you need to include gil/extension/io/png_dynamic_io.hpp instead.
+You need to compile and link against libpng.lib (available at http://wwwlibpng.org).
+You need to have png.h in your include path.
+-->
 
 - JPEG: JPEGファイルを利用するには、`gil/extension/io/jpeg_io.hpp`をインクルードする必要があります。
 もし、実行時に型が決まるImageを利用するのであれば、かわりに`gil/extension/io/jpeg_dynamic_io.hpp`をインクルードする必要があります。
@@ -41,6 +68,11 @@ GILのI/O Extensionは、ローレベルの画像I/Oユーティリティを提�
 - PNG: PNGファイルを利用するには、`gil/extension/io/png_io.hpp`をインクルードする必要があります。
 もし、実行時に型が決まるImageを利用するのであれば、かわりに`gil/extension/io/png_dynamic_io.hpp`をインクルードする必要があります。
 また、`libpng.lib` (<http://www.libpng.org/> から利用可能です)のコンパイルとリンクを行い、`png.h`をInclude Pathに追加する必要があります。
+
+<!--
+You don't need to install all these libraries; just the ones you will use.
+Here are the I/O APIs for JPEG files (replace "jpeg" with "tiff" or "png" for the APIs of the other libraries):
+-->
 
 これらのライブラリを全てインストールする必要はありません。
 使うものだけで十分です。
@@ -94,6 +126,11 @@ template <typename View> struct jpeg_write_support {
 
 {% endhighlight %}
 
+<!--
+If you use the dynamic image extension, make sure to include "jpeg_dynamic_io.hpp" instead of "jpeg_io.hpp".
+In addition to the above methods, you have the following overloads dealing with dynamic images:
+-->
+
 Dynamic Image Extensionを使う場合には、"`jpeg_io.hpp`"に代えて"`jpeg_dynamic_io.hpp`"をインクルードするようにしてください。
 Dynamic Imageを扱う場合には、上記のメソッドに加えて、次に示すオーバーロードをもちます。
 
@@ -110,5 +147,9 @@ template <typename Images> void jpeg_read_image(const char*, any_image<Images>&)
 template <typename Views>  void jpeg_write_view(const char*, any_image_view<Views>&);
 
 {% endhighlight %}
+
+<!--
+All of the above methods have overloads taking std::string instead of const char*
+-->
 
 上記の全てのメソッドは、`const char*`の代わりに`std::string`を取るオーバーロードをもちます。
